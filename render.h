@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.1 2004/12/19 22:03:17 lordjaxom Exp $
+ * $Id: render.h,v 1.2 2004/12/21 14:55:39 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -29,7 +29,7 @@ class cText2SkinRender: public cThread {
 	friend class cText2SkinDisplayMenu;
 
 	/* Skin Editor */
-	friend class VSkinnerScreen;
+	//friend class VSkinnerScreen;
 
 private:
 	typedef std::map<txToken,cxType> tTokenCache;
