@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.5 2005/01/07 21:49:23 lordjaxom Exp $
+ * $Id: status.c,v 1.6 2005/01/11 18:10:39 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -14,6 +14,8 @@ cText2SkinStatus Text2SkinStatus;
 cText2SkinStatus::cText2SkinStatus(void): 
 		mRender(NULL),
 		mReplayMode(replayNone),
+		mReplayIsLoop(false),
+		mReplayIsShuffle(false),
 		mRecordings(),
 		mCurrentRecording(0),
 		mNextRecording(0),
@@ -44,8 +46,11 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 				if (Name[i] == ' ' && Name[i-1] == ')')
 					break;
 			}
-			if (Name[i]) // replaying mp3
-				mReplayMode = replayMP3;
+			if (Name[i]) { // replaying mp3
+				mReplayMode      = replayMP3;
+				mReplayIsLoop    = Name[1] == 'L';
+				mReplayIsShuffle = Name[2] == 'S';
+			}
 		} 
 		else if (GetRecordingByName(Name) != NULL)
 			mReplayMode = replayNormal;
@@ -67,8 +72,11 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 				mReplayMode = replayDVD;
 			}
 		}
-	} else
+	} else {
 	  mReplayMode = replayNone;
+	  mReplayIsLoop = false;
+	  mReplayIsShuffle = false;
+	}
 
 	if (mRender != NULL) {
 		if (mReplayMode != oldMode)
@@ -98,6 +106,14 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name)
 	if (mRender != NULL) {
 		mRender->UpdateUnlock();
 		mRender->Flush(true);
+	}
+}
+
+void cText2SkinStatus::OsdClear(void) 
+{
+	if (Setup.OSDLanguage != mLastLanguage) {
+		mLastLanguage = Setup.OSDLanguage;
+		cxString::Reparse();
 	}
 }
 
@@ -134,16 +150,15 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		}
 		return false;
 
+	case tReplayIsLoop:
+		return mReplayIsLoop;
+
+	case tReplayIsShuffle:
+		return mReplayIsShuffle;
+
 	default:
 		break;
 	};
 
 	return false;
-}
-
-void cText2SkinStatus::OsdClear(void) {
-	if (Setup.OSDLanguage != mLastLanguage) {
-		mLastLanguage = Setup.OSDLanguage;
-		cxString::Reparse();
-	}
 }

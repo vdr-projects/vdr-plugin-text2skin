@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.3 2005/01/02 16:54:41 lordjaxom Exp $
+ * $Id: status.h,v 1.4 2005/01/11 18:10:39 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H
@@ -37,6 +37,8 @@ private:
 
 	cText2SkinRender *mRender;
 	eReplayMode       mReplayMode;
+	bool              mReplayIsLoop;
+	bool              mReplayIsShuffle;
 	tRecordings       mRecordings;
 	uint              mCurrentRecording;
 	uint              mNextRecording;
@@ -53,6 +55,8 @@ public:
 	void SetRender(cText2SkinRender *Render);
 
 	cxType GetTokenData(const txToken &Token);
+
+	eReplayMode ReplayMode(void) const { return mReplayMode; }
 };
 
 extern cText2SkinStatus Text2SkinStatus;
