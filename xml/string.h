@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.12 2005/01/19 19:20:37 lordjaxom Exp $
+ *  $Id: string.h,v 1.13 2005/01/20 14:02:41 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -42,22 +42,35 @@ enum exToken {
 	tFollowingDescription,
 	tLanguage,
 	tHasTeletext,
+	tChannelHasTeletext, // alias
 	tHasMultilang,
+	tChannelHasMultilang, // alias
 	tHasDolby,
+	tChannelHasDolby, // alias
 	tIsEncrypted,
+	tChannelIsEncrypted, // alias
 	tIsRadio,
+	tChannelIsRadio, // alias
+	// next 2 also in all other displays
 	tIsRecording,
-	// next 1 also in all other displays
 	tCurrentRecording,
 	// next 3 also in Menu
 	tHasVPS,
 	tHasTimer,
 	tIsRunning,
+	tChannelHasVPS, // alias
+	tPresentHasTimer, // alias
+	tPresentIsRunning, // alias
+	tPresentHasVPS,
+	tFollowingHasTimer,
+	tFollowingIsRunning,
+	tFollowingHasVPS,
 
 	// VolumeDisplay
 	tVolumeCurrent,
 	tVolumeTotal,
 	tIsMute,
+	tVolumeIsMute, // alias
 
 	// Message Display (also in all other displays)
 	tMessage,
@@ -72,11 +85,17 @@ enum exToken {
 	tReplayDurationIndex,
 	tReplayPrompt,
 	tIsPlaying,
+	tReplayIsPlaying, // alias
 	tIsFastForward,
+	tReplayIsFastForward, // alias
 	tIsFastRewind,
+	tReplayIsFastRewind, // alias
 	tIsSlowForward,
+	tReplayIsSlowForward, // alias
 	tIsSlowRewind,
+	tReplayIsSlowRewind, // alias
 	tIsPausing,
+	tReplayIsPausing, // alias
 	tReplayPosition,
 	tReplayDuration,
 	tReplayRemaining,
@@ -100,8 +119,11 @@ enum exToken {
 	tButtonBlue,
 	tCanScrollUp,
 	tCanScrollDown,
+	tEventHasTimer, // alias
+	tEventIsRunning, // alias
+	tEventHasVPS, // alias
 
-#define __COUNT_TOKEN__ (tCanScrollDown + 1)
+#define __COUNT_TOKEN__ (tEventHasVPS + 1)
 };
 
 enum exAttrib {

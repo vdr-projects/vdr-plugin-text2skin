@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.11 2005/01/19 19:20:37 lordjaxom Exp $
+ *  $Id: string.c,v 1.12 2005/01/20 14:02:41 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -15,26 +15,31 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"PresentTitle", "PresentShortText", "PresentDescription", "FollowingStartDateTime", 
 	"FollowingVPSDateTime", "FollowingEndDateTime", "FollowingDuration",
 	"FollowingTitle", "FollowingShortText", "FollowingDescription", "Language",
-	"HasTeletext", "HasMultilang", "HasDolby", "IsEncrypted", "IsRadio", "IsRecording", 
-	"CurrentRecording", "HasVPS", "HasTimer", "IsRunning",
+	"HasTeletext", "ChannelHasTeletext", "HasMultilang", "ChannelHasMultilang", "HasDolby", 
+	"ChannelHasDolby", "IsEncrypted", "ChannelIsEncrypted", "IsRadio", "ChannelIsRadio",
+	"IsRecording", "CurrentRecording", "HasVPS", "HasTimer", "IsRunning", "ChannelHasVPS",
+	"PresentHasTimer", "PresentIsRunning", "PresentHasVPS", "FollowingHasTimer", 
+	"FollowingIsRunning", "FollowingHasVPS",
 	
 	// Volume Display
-	"VolumeCurrent", "VolumeTotal", "IsMute",
+	"VolumeCurrent", "VolumeTotal", "IsMute", "VolumeIsMute",
 	
 	// Message Display
 	"Message", "MessageStatus", "MessageInfo", "MessageWarning",
 	"MessageError",
 	
 	// Replay Display
-	"ReplayTitle", "ReplayPositionIndex", "ReplayDurationIndex", "ReplayPrompt", "IsPlaying", 
-	"IsFastForward", "IsFastRewind", "IsSlowForward", "IsSlowRewind", "IsPausing",
+	"ReplayTitle", "ReplayPositionIndex", "ReplayDurationIndex", "ReplayPrompt", 
+	"IsPlaying", "ReplayIsPlaying", "IsFastForward", "ReplayIsFastForward", "IsFastRewind", 
+	"ReplayIsFastRewind", "IsSlowForward", "ReplayIsSlowForward", "IsSlowRewind", 
+	"ReplayIsSlowRewind", "IsPausing", "ReplayIsPausing",
 	"ReplayPosition", "ReplayDuration", "ReplayRemaining", "ReplayMode", "ReplayIsShuffle",
 	"ReplayIsLoop",
 
 	// Menu Page
 	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", 
 	"IsMenuCurrent", "MenuText", "ButtonRed", "ButtonGreen", "ButtonYellow", "ButtonBlue", 
-	"CanScrollUp", "CanScrollDown"
+	"CanScrollUp", "CanScrollDown", "EventHasTimer", "EventIsRunning", "EventHasVPS",
 };
 
 std::string txToken::Token(const txToken &Token) 
