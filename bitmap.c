@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.15 2004/06/12 19:16:11 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.16 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -11,9 +11,7 @@
 #endif
 #ifdef HAVE_IMAGEMAGICK
 #include <Magick++.h>
-using Magick::Image;
-using Magick::PixelPacket;
-using Magick::Exception;
+using namespace Magick;
 #endif
 
 template<> 
@@ -22,6 +20,7 @@ void cImageCache::Delete(string &key, cText2SkinBitmap *&value) {
 }
 
 cImageCache cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
+bool cText2SkinBitmap::mFirstTime = true;
 
 cText2SkinBitmap::cText2SkinBitmap(void) {
 	mCurrent = 0;
@@ -31,6 +30,7 @@ cText2SkinBitmap::cText2SkinBitmap(void) {
 cText2SkinBitmap::~cText2SkinBitmap() {
 	for (int i = 0; i < (int)mBitmaps.size(); ++i)
 		delete mBitmaps[i];
+	mBitmaps.clear();
 }
 
 cBitmap &cText2SkinBitmap::Get(int &UpdateIn) {
@@ -60,10 +60,25 @@ cBitmap &cText2SkinBitmap::Get(int &UpdateIn) {
 	return *mBitmaps[mCurrent];
 }
 
+void cText2SkinBitmap::SetAlpha(int Alpha) {
+	if (Alpha > 0) {
+		vector<cBitmap*>::iterator it = mBitmaps.begin();
+		for (; it != mBitmaps.end(); ++it) {
+			int count;
+			if ((*it)->Colors(count)) {
+				for (int i = 0; i < count; ++i) {
+					int alpha = (((*it)->Color(i) & 0xFF000000) >> 24) * Alpha / 255;
+					(*it)->SetColor(i, ((*it)->Color(i) & 0x00FFFFFF) | (alpha << 24));
+				}
+			}
+		}
+	}
+}
+
 cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename, int Alpha) {
-	if (mCache.Contains(Filename)) {
+	if (mCache.Contains(Filename))
 		return mCache[Filename];
-	} else {
+	else {
 		cText2SkinBitmap *bmp = new cText2SkinBitmap;
 		int len = strlen(Filename);
 		bool result = false;
@@ -84,8 +99,11 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename, int Alpha) {
 		} else
 			esyslog("ERROR: text2skin: filename %s too short to identify format", Filename);
 	
-		if (result)
+		if (result) {
+			bmp->SetAlpha(Alpha);
 			return (mCache[Filename] = bmp);
+		} else
+			delete bmp;
 	}
 	return false;
 }
@@ -93,11 +111,6 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename, int Alpha) {
 bool cText2SkinBitmap::LoadXpm(const char *Filename, int Alpha) {
 	cBitmap *bmp = new cBitmap(1,1,1);
 	if (bmp->LoadXpm(Filename)) {
-		int count;
-		if (Alpha && bmp->Colors(count)) {
-			for (int i = 0; i < count; ++i) 
-				bmp->SetColor(i, (bmp->Color(i) & 0x00FFFFFF) | (Alpha << 24));
-		}
 		mBitmaps.push_back(bmp);
 		return true;
 	}
@@ -121,13 +134,7 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename, int Alpha) {
 	for (int y = 0; y < bmp->Height(); ++y) {
 		for (int x = 0; x < bmp->Width(); ++x) {
 			tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
-			if (Alpha)
-				col = (col & 0x00FFFFFF) | (Alpha << 24);
-			int res = bmp->Index(col);
-			if (pal > 0 && res == 0)
-				;//esyslog("ERROR: text2skin: Too many colors used in palette");
-			else
-				bmp->SetIndex(x, y, res);
+			bmp->DrawPixel(x, y, col);
 			pos += 4;
 		}
 	}
@@ -140,6 +147,9 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename, int Alpha) {
 
 #ifdef HAVE_IMAGEMAGICK
 bool cText2SkinBitmap::LoadMagick(const char *Filename, int Alpha) {
+	if (mFirstTime)
+		InitializeMagick("text2skin");
+
 	vector<Image> images;
 	cBitmap *bmp = NULL;
 	try {
@@ -154,16 +164,33 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename, int Alpha) {
 		for (it = images.begin(); it != images.end(); ++it) {
 			w = (*it).columns();
 			h = (*it).rows();
-			bmp = new cBitmap(w, h, 8);
+			if ((*it).depth() > 8) {
+				esyslog("ERROR: text2skin: More than 8bpp images are not supported");
+				return false;
+			}
+			bmp = new cBitmap(w, h, (*it).depth());
 
-			const PixelPacket *ptr = (*it).getConstPixels(0, 0, w, h);
+			if ((*it).classType() == PseudoClass) {
+				int total = (*it).totalColors();
+				for (int ic = 0; ic < (int)total; ++ic) {
+					Color c = (*it).colorMap(ic);
+					tColor col = (~(c.alphaQuantum() * 255 / MaxRGB) << 24) | ((c.redQuantum() * 255 / MaxRGB) << 16) | ((c.greenQuantum() * 255 / MaxRGB) << 8) | (c.blueQuantum() * 255 / MaxRGB);
+					bmp->SetColor(ic, col);
+				}
+			}
+		
+			const PixelPacket *pix = (*it).getConstPixels(0, 0, w, h);
+			const IndexPacket *idx = (*it).getConstIndexes();
 			for (int iy = 0; iy < h; ++iy) {
 				for (int ix = 0; ix < w; ++ix) {
-					tColor col = (((~ptr->opacity & 0xFF00) << 16) | ((ptr->red & 0xFF00) << 8) | (ptr->green & 0xFF00) | ((ptr->blue & 0xFF00) >> 8));
-					if (Alpha)
-						col = (col & 0x00FFFFFF) | (Alpha << 24);
-					bmp->DrawPixel(ix, iy, col);
-					++ptr;
+					if ((*it).classType() == PseudoClass) {
+						bmp->SetIndex(ix, iy, *idx);
+						++idx;
+					} else {
+						tColor col = (~(pix->opacity * 255 / MaxRGB) << 24) | ((pix->red * 255 / MaxRGB) << 16) | ((pix->green * 255 / MaxRGB) << 8) | (pix->blue * 255 / MaxRGB);
+						bmp->DrawPixel(ix, iy, col);
+						++pix;
+					}
 				}
 			}
 			mBitmaps.push_back(bmp);

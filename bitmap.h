@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.10 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.11 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -15,11 +15,12 @@ typedef cText2SkinCache<string,cText2SkinBitmap*> cImageCache;
 class cText2SkinBitmap {
 private:
 	static cImageCache mCache;
+	static bool        mFirstTime;
 
-	vector<cBitmap*> mBitmaps;
-	int              mCurrent;
-	time_t           mDelay;
-	time_t           mLastGet;
+	vector<cBitmap*>   mBitmaps;
+	int                mCurrent;
+	time_t             mDelay;
+	time_t             mLastGet;
 
 	// disallow direct construction
 	cText2SkinBitmap(void);
@@ -32,6 +33,7 @@ public:
 
 	cBitmap &Get(int &UpdateIn);
 	void SetColor(int Index, tColor Color) { mBitmaps[mCurrent]->SetColor(Index, Color); }
+	void SetAlpha(int Alpha);
 
 	bool LoadXpm(const char *Filename, int Alpha);
 #ifdef HAVE_IMLIB2

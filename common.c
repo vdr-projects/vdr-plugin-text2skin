@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.9 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: common.c,v 1.10 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -12,7 +12,8 @@ const string SectionNames[__SECTION_COUNT__] =
 
 const string ItemNames[__ITEM_COUNT__] = 
 	{ "Unknown", "Skin", "Background", "Text", "Scrolltext", "Image", "Rectangle",
-	  "Ellipse", "Slope", "Progress", "Logo", "Symbol", "MenuArea", "MenuItem" };
+	  "Ellipse", "Slope", "Progress", "Logo", "Symbol", "MenuArea", "MenuItem",
+		"Scrollbar" };
 
 const string DisplayNames[__DISPLAY_COUNT__] = 
 	{ "Always", "DateTimeF", "DateTime", "Date", "Time", "ChannelNumberName", 
@@ -131,10 +132,10 @@ bool ParseVar(const char *Text, const char *Name, string &Value){
 	return res;
 }
 
-bool ParseVar(const char *Text, const char *Name, tColor **Value) {
+bool ParseVar(const char *Text, const char *Name, tColor *Value) {
 	string value;
 	if (ParseVar(Text, Name, value) && value[0] == '#') {
-		*Value = new tColor(strtoul(value.c_str() + 1, NULL, 16));
+		*Value = (tColor)strtoul(value.c_str() + 1, NULL, 16);
 		return true;
 	}
 	return false;

@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.10 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: loader.c,v 1.11 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -74,7 +74,6 @@ cText2SkinLoader::~cText2SkinLoader() {
 	delete mData;
 	delete mI18n;
 	delete mTheme;
-	// mDescription is part of mData
 }
 
 cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {

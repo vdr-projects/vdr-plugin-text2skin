@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.6 2004/06/12 21:16:18 lordjaxom Exp $
+ * $Id: i18n.c,v 1.7 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -54,6 +54,11 @@ cText2SkinI18n::cText2SkinI18n(const char *Skin): cText2SkinFile(Skin) {
 }
 
 cText2SkinI18n::~cText2SkinI18n() {
+	for (int i = 0; mPhrases[i][0]; ++i) {
+		for (int j = 0; j < I18nNumLanguages; ++j)
+			free((void*)mPhrases[i][j]);
+	}
+	free(mPhrases);
 }
 
 bool cText2SkinI18n::Parse(const char *Text) {
@@ -66,17 +71,18 @@ bool cText2SkinI18n::Parse(const char *Text) {
 			memset(&p, 0, sizeof(tI18nPhrase));
 			Text += 17;
 
-
 			for (i = 0; i < I18nNumLanguages; ++i) {
 				char *langs = strdup(I18nLanguageCode(i));
 				char *ptr = langs, *ep;
 				string text;
-				p[i] = "";
+				p[i] = strdup("");
 				do {
 					if ((ep = strchr(ptr, ',')) != NULL)
 						*ep = '\0';
-					if (ParseVar(Text, ptr, text))
+					if (ParseVar(Text, ptr, text)) {
+						free((void*)p[i]);
 						p[i] = strdup(text.c_str());
+					}
 					ptr = ep + 1;
 				} while (ep != NULL);
 				free(langs);

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.21 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: render.h,v 1.22 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -37,6 +37,7 @@ private:
 		string text;
 		string path;
 		int current;
+		int shown;
 		int total;
 		const cMarks *marks;
 		ItemData(void) { marks = NULL; }
@@ -113,7 +114,8 @@ protected:
 	void DrawSlope(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
 	void DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Fg, const tColor *Bg, const cMarks *Marks = NULL);
  	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal);
-	void DrawScrollText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
+	void DrawScrolltext(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
+	void DrawScrollbar(const POINT &Pos, const SIZE &Size, int Offset, int Shown, int Total, const tColor *Bg, const tColor *Fg);
 
 	// displays a full item
 	void DisplayItem(cText2SkinItem *Item, const ItemData *Data = NULL);
@@ -149,14 +151,13 @@ protected:
 	tColor *ItemFg(cText2SkinItem *Item);
 	tColor *ItemBg(cText2SkinItem *Item);
 	int GetEditableWidth(MenuItem Item, bool Current);
-	void TriggerUpdate(void) { mDoUpdate.Broadcast(); }
 	void Update(void);
 
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Section);
 	virtual ~cText2SkinRender();
 
-	void Flush(void) { TriggerUpdate(); }
+	void Flush(void) { Lock(); mDoUpdate.Broadcast(); Unlock(); }
 };
 
 #endif // VDR_TEXT2SKIN_RENDER_H

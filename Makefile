@@ -9,7 +9,7 @@ HAVE_IMAGEMAGICK=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.10 2004/06/12 18:00:05 lordjaxom Exp $
+# $Id: Makefile,v 1.11 2004/06/16 18:46:50 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -90,9 +90,15 @@ $(DEPFILE): Makefile
 
 all: libvdr-$(PLUGIN).so
 
-libvdr-$(PLUGIN).so: $(OBJS)
+libvdr-$(PLUGIN).so: $(OBJS) SKINS SKINS.de
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
+
+SKINS: contrib/items.doc
+	@contrib/list_items.pl >$@
+
+SKINS.de: contrib/items.doc
+	@contrib/list_items.pl de >$@
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
@@ -103,4 +109,4 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ SKINS SKINS.de

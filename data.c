@@ -1,5 +1,5 @@
 /*
- * $Id: data.c,v 1.18 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: data.c,v 1.19 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -23,27 +23,21 @@ cText2SkinItem::~cText2SkinItem() {
 }
 
 bool cText2SkinItem::Parse(const char *Text) {
-	char *text = strdup(Text);
-	char *ptr = text;
+	const char *text = Text;
+	const char *ptr = text;
+	bool res = false;
 
 	// check if this is an item
 	if (ParseVar(ptr, "Item", &mItem)) {
-		if (mItem == itemSkin) { // the Skin item
-			if (!ParseVar(ptr, "name", mName) || !ParseVar(ptr, "version", mVersion)){
-				esyslog("ERROR: text2skin: Item=Skin is missing the name and/or version parameter(s)");
-				return false;
-			}
-		}
-		
-		if (mItem != itemUnknown) {
+		if (mItem == itemSkin && (!ParseVar(ptr, "name", mName) || !ParseVar(ptr, "version", mVersion)))
+			esyslog("ERROR: text2skin: Item=Skin is missing the name and/or version parameter(s)");
+		else if (mItem != itemUnknown) {
 			ParseItem(ptr);
-			return true;
+			res = true;
 		}
 	} else 
 		esyslog("ERROR: text2skin: unknown item in skin");
-
-	// fall through
-	return false;
+	return res;
 }
 
 bool cText2SkinItem::ParseItem(const char *Text) {
@@ -74,6 +68,11 @@ cText2SkinData::cText2SkinData(const char *Skin): cText2SkinFile(Skin) {
 }
 
 cText2SkinData::~cText2SkinData() {
+	for (int i = 0; i < __SECTION_COUNT__; ++i) {
+		for (int j = 0; j < (int)mSections[i].size(); ++j)
+			delete mSections[i][j];
+		mSections[i].clear();
+	}
 }
 
 bool cText2SkinData::Parse(const char *Text) {

@@ -1,5 +1,5 @@
 /*
- * $Id: theme.c,v 1.1 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: theme.c,v 1.2 2004/06/16 18:46:50 lordjaxom Exp $
  */
 #include "theme.h"
 #include <vdr/osd.h>
@@ -17,9 +17,9 @@ bool cText2SkinTheme::Parse(const char *Text) {
 		if (strncmp(Text, "Item=Color,", 11) == 0) {
 			Text += 11;
 			string name;
-			tColor *value;
+			tColor value;
 			if (ParseVar(Text, "name", name) && ParseVar(Text, "default", &value)) {
-				mMap[name] = mTheme.AddColor(name.c_str(), *value);
+				mMap[name] = mTheme.AddColor(name.c_str(), value);
 				result = true;
 			} else
 				esyslog("ERROR: text2skin: Parameters name and default must be present\n");

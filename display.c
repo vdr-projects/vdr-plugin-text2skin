@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.16 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: display.c,v 1.17 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -300,8 +300,8 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 		if (!Tab(i + 1))
 			break;
 	}
-	SetEditableWidth(mRender->GetEditableWidth(item, Current));
 	mRender->Lock();
+	SetEditableWidth(mRender->GetEditableWidth(item, Current));
 	if ((int)mRender->mMenuItems.size() <= Index) {
 		mRender->mMenuItems.push_back(item);
 		mDirty = true;

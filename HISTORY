@@ -1,6 +1,22 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-16: Version 0.0.5
+
+- fixed disappearing Scrolltext when Message was displayed
+- fixed display-items "MenuScrollUp" and "MenuScrollDown" which didn't display
+  any other items than "Symbol"
+- fixed the above for all replay- and channel-symbols
+  (for all display-items that can be symbols there must be path, altpath or
+  both to tell the plugin if that item is to be drawn if the symbol is on,
+  off or in both cases)
+- fixed various memory leaks and missing destructions (valgrind rox)
+- fixed the image loaders to respect the alpha value and palette properly 
+  (this hopefully also fixes the phenomenon that images "get lost" after some 
+  time)
+- added display-item "Scrollbar"
+- SKINS and SKINS.de are now generated during the make
+
 2004-06-13: Version 0.0.4
 
 - added parameter alpha for images

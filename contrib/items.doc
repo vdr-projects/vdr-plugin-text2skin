@@ -1,0 +1,620 @@
+%LANGS = ("en" => 0, "de" => 1);
+
+%TRANS = (
+	"Known Sections"       => [ "Bekannte Sektionen"        ],
+	"Known drawable Items" => [ "Bekannte Zeichnungs-Items" ],
+	"Known Display-Items"  => [ "Bekannte Anzeige-Items"    ],
+	"Known Parameters"     => [ "Bekannte Parameter"        ],
+
+	"Section:"     => [ "Sektion:"      ],
+	"Description:" => [ "Beschreibung:" ],
+	"Item:"        => [ "Item:"         ],
+	"Parameters:"  => [ "Parameter:"    ],
+	"Display:"     => [ "Anzeige:"      ],
+	"Parameter:"   => [ "Parameter:"    ],
+	"Default:"     => [ "Standard:"     ],
+	"Substitutes:" => [ "Ersetzt:"      ],
+);
+
+
+@INTRO = ( <<END_EN
+
+This is the documentation to the Text2Skin file-format (version 0.0.2).
+
+How To create text-based skins
+------------------------------
+
+It is important that you understand the limitations of the OSD memory. If there
+are too many objects with too many colors defined, VDR will throw an error and
+some areas will not be displayed. For other output devices this limitations may
+not apply, so if you are planning to design a skin for another output device,
+feel free to use more colors, but remember that VDR can handle a maximum of 256
+areas per object.
+
+An object is defined to be a specific area with a specific palette and color 
+depth. Those objects will be referred to as 'backgrounds' later on. Calculate
+the dimensions of them wisely, since overlapping areas or oversized areas will
+lead to an error. Also, the width and height of each area has to be a multiple
+of four when using a DVB-Card.
+
+
+Creation of an image
+--------------------
+
+I used gimp to create some test images displaying things on screen, although
+I don't know much about image processing :-). To give an advice, I will point
+out how I created those test images.
+
+I've used a template for a menu provided by a community member, tiled it into
+sections fully covered by the image. That made three images in this case. Then
+I added a little bit of transparency to the image covering the middle part. I've
+resized the image so that it's width and height were multiples of four. Now I've
+added 50% transparency to the top layer of the image. Then I've reduced the 
+colordepth of the image (Image->Mode->Indexed) to 14 colors (of course the 
+image may not be too extensive, but 14 colors can give some nice gradients). 
+That leaves two colors for text and progress bar in the same display. Reduce 
+the number of colors according to the background depth and additional 
+decoration you intend to use. I saved the results to a png file and placed the
+result into the skin.
+
+If you intend to use xpm's, be aware that VDR doesn't know about named colors,
+so some images GIMP creates will not be read on-the-fly, because GIMP may use
+some named colors, but VDR only recognizes "None".
+
+
+The Description File Format
+---------------------------
+
+It is a simple configuration file, consisting of Sections and items. 
+Commentary lines can be added when they are lead in by a '#'. Blank lines will
+be ignored. A section is placed in '[]' brackets. All other lines specify
+drawable items and are lead in by the phrase "Item=<...>" followed by one or
+more parameters (separated by commas). The line must end with a semicolon.
+
+It is quite important that you understand the relation between the Item and
+it's display parameter. The display parameter doesn't only specify WHAT to
+display, it also specifies IF it is displayed. For example a rectangle with
+display=PresentVPSTime will only be drawn if there is a present VPS time given.
+A text with display=PresentVPSTime behaves the same, but the text is
+substituted by the actual VPS time string. If the text-parameter contains a
+dollar-sign, like in display=PresentVPSTime,text=VPS: $, the VPS time will be
+substituted in place of the dollar-sign.
+
+Example (sorry for the long lines):
+
+# Description of the skin file
+Item=Skin,name=Test,version=0.0.2;
+[Channel]
+# This is the full channel display
+# Background area to draw on (a background MUST be specified to make items
+# drawn on it actually visible!!!), with background picture. Bpp=4 equals 16 
+# colors
+Item=Background,path=channeltop.xpm,x=42,y=350,width=540,height=32,bpp=4;
+# A second area below the first one, again with 16 colors (make 32 colors
+# alltogether)
+Item=Background,path=channel.png,x=48,y=382,width=528,height=84,bpp=4;
+# A textual item displaying the channel numer and name (if present)
+# The color is a symbolic name that will be filled in the .colors-file
+Item=Text,display=ChannelNumberName,x=50,y=355,width=250,height=28,fg=ChNumNameFG,font=Sml;
+# A textual item displaying the current date and time
+Item=Text,display=PresentDateTime,x=52,y=387,width=150,height=28,fg=DateTimeFG,font=Osd;
+[Volume]
+# This is the volume display
+# Again, we specify an area to be able to draw items on it
+Item=Background,x=10,y=10,width=20,height=200,bpp=4;
+# A progressbar displaying the current volume. 
+Item=Progress,display=VolumeCurrent,x=10,y=10,width=20,height=200,bg=VolumeBG,fg=VolumeFG;
+
+
+END_EN
+
+, <<END_DE
+
+Wie man textbasierte Skins erstellt
+-----------------------------------
+
+Es ist wichtig, dass sie die Limitierungen des OSD Speichers verstehen. Wenn 
+zuviele Objekte mit zuvielen Farben definiert werden, dann wird VDR einen 
+Fehler ins Log schreiben und einige Bereiche werden nicht angezeigt werden. Bei
+anderen Ausgabegeräten mag es sein, dass diese Limitierungen nicht zutreffen, 
+wenn Sie also ein Skin für ein anderes Gerät schreiben möchten, benutzen Sie
+ruhig ein paar mehr Farben, aber denken Sie daran, dass VDR generell maximal
+256 Farben pro Objekt verwalten kann.
+
+Ein Objekt ist als ein bestimmter Bereich definiert, der eine bestimmte 
+Farbpalette und Farbtiefe verwendet. Diese Objekte werden im Verlauf dieses
+Dokuments "Backgrounds" genannt. Berechnen sie die Dimensionen dieser Bereiche
+weise, denn überlappende oder übergroße Backgrounds führen zu einem Fehler.
+Zusätzlich muss die Breite und Höhe jedes Backgrounds durch vier teilbar sein,
+wenn eine DVB-Karte verwendet wird.
+
+
+Die Erstellung eines Bildes
+---------------------------
+
+Ich habe mit gimp einige Beispielbilder erstellt, die Dinge auf dem Bildschirm
+anzeigen, obwohl ich mit Grafik eigentlich recht wenig am Hut habe. Um einige
+Hinweise zu geben, werde ich erklären wie ich diese Bilder erzeugt habe.
+
+Ich habe eine Vorlage für ein Kanaldisplay von einem Community-Mitglied 
+erhalten, dieses in drei Bereiche zerlegt, die jeweils komplett vom Hintergrund
+gefüllt wurden. Nun habe ich das Bild so vergrößert, dass Breite und Höhe durch
+vier teilbar sind. Um im mittleren Bereich etwas Transparenz zu erzeugen, habe
+ich die Deckkraft der Bildebene auf 50% reduziert. Anschliessend habe ich alle
+Bilder auf 14 Farben reduziert (Bild->Modus->Indiziert) (natürlich darf das
+Bild nicht zu aufwändig sein, aber mit 14 Farben bekommt man schon schöne
+Übergänge hin. Dann bleiben zwei Farben für Text und Symbole übrig, und das
+ganze passt in einen 16-farb (4-bit) Background. Reduzieren sie die Azahl der
+Farben entsprechend, wenn Sie beabsichtigen, mehr Vordergrundobjekte zu 
+zeichnen. Das Ergebnis habe ich als PNG gespeichert und in das Skin kopiert.
+
+Wenn sie beabsichtigen, xpm's zu nutzen, achten sie darauf dass VDR keine 
+benannten Farben beherrscht, es könnte also sein dass Bilder die gimp erzeugt
+nicht sofort nutzbar sind. Die einzige benannte Farbe, die VDR beherrscht, ist
+"None".
+
+
+Das Format der Beschreibungsdatei
+---------------------------------
+
+Die Datei ist eine einfache Konfigurationsdatei, die aus Sektionen und Objekten
+besteht. Kommentarzeilen können mit einem '#' eingeleitet werden. Leerzeilen 
+werden ignoriert. Eine Sektion ist von eckigen '[]' Klammern eingeschlossen.
+Ein Objekt beginnt mit dem Text "Item=", gefolgt von der Art des Objekts. 
+Dahinter folgen Parameter für das Objekt, mit Komma getrennt. Die Zeile wird
+durch ein Semikolon ';' abgeschlossen.
+
+Es ist sehr wichtig, dass sie den Zusammenhang zwischen Item und seinem 
+display-Parameter verstehen. Der display-Parameter gibt nicht nur an WAS 
+angezeigt wird, sondern auch OB es angezeigt wird. Ein Rechteck mit 
+display=PresentVPSTime wird nur angezeigt, wenn eine aktuelle VPS-Zeit gegeben
+ist. Ein Text-Item mit display=PresentVPSTime verhält sich genauso, aber der
+anzuzeigende Text durch die tatsächliche VPS-Zeit ersetzt. Wenn Text ein 
+Dollarzeichen enthält, wie in display=PresentVPSTime,text=VPS: $, dann wird
+die VPS-Zeit an der Stelle des Dollarzeichens eingesetzt.
+
+Beispiel:
+
+# Description of the skin file
+Item=Skin,name=Test,version=0.0.2;
+[Channel]
+# Dies ist die grosse Kanalanzeige
+# Hintergrundbereich wo wir drauf zeichnen (so etwas MUSS angegeben werden, 
+# damit Objekte die darauf gezeichnet werden überhaupt sichtbar werden), mit
+# Bild. Bpp=4 entspricht 16 Farben
+Item=Background,path=channeltop.xpm,x=42,y=350,width=540,height=32,bpp=4;
+# Ein zweiter Bereich unter dem ersten, wieder mit 16 Farben (macht 32 Farben 
+# insgesamt)
+Item=Background,path=channel.png,x=48,y=382,width=528,height=84,bpp=4;
+# Ein Text-Objekt welches die Kanalnummer und den -namen anzeigt (wenn 
+# vorhanden)
+Item=Text,display=ChannelNumberName,x=50,y=355,width=250,height=28,fg=ChNumNameFG,font=Sml;
+# Ein Text-Objekt welches das aktuelle Datum und die Zeit anzeigt.
+Item=Text,display=PresentDateTime,x=52,y=387,width=150,height=28,fg=DateTimeFG,font=Osd;
+[Volume]
+# Dies ist die Lautstärkeanzeige
+# Und wieder ein Bereich in dem wir Objekte zeichnen können (diesmal ohne Bild)
+# Wird keine BG-Farbe angegeben, so wird transparent (unsichtbar) benutzt.
+Item=Background,x=10,y=10,width=20,height=200,bpp=4;
+# Eine Fortschrittsleiste welche die aktuelle Lautstärke anzeigt.
+Item=Progress,display=VolumeCurrent,x=10,y=10,width=20,height=200,bg=VolumeBG,fg=VolumeFG;
+
+
+END_DE
+
+);
+
+%SECTIONS = (
+	"ChannelSmall" => [
+		"The channel display. It displays the current programme and number only, ".
+		"together with some decoration. [UNUSED]",
+
+		"Die Kanalanzeige, die nur den aktuellen Kanalnamen und die -nummer mit ".
+		"etwas Dekoration anzeigt. [UNGENUTZT]"
+	],
+
+	"Channel" => [
+		"The channel display. It displays the current programme and number, ".
+    "together with the currently running programme and possibly a ".
+    "timebar, channel logo and some symbols.",
+
+		"Die Kanalanzeige. Sie zeigt aktuellen Kanalnamen und -nummer, ".
+    "gemeinsam mit dem aktuellen Programm und möglicherweise eine ".
+    "Zeitleiste und ein Kanallogo (noch nicht implementiert)."
+	],
+
+	"Volume" => [
+		"The volume display. It displays the volumebar and possibly a mute ".
+    "symbol, along with decorative items.",
+
+		"Die Lautstärkeanzeige. Zeigt die Lautstärkeleiste und ".
+    "möglicherweise ein Mute-Symbol und etwas Dekoration."
+	],
+
+	"ReplayMode" => [
+		"The replay modes display. Will be shown if only the replay mode ".
+    "symbol(s) shall be shown. This display can't contain a progress-bar.",
+
+		"Die Wiedergabeanzeige. Wird angezeigt wenn nur der ".
+    "Wiedergabemodus gezeigt werden soll. Diese Anzeige kann keine ".
+		"Wiedergabeleiste enthalten."
+	],
+
+	"Replay" => [
+		"The full replay display. It shows the title, time and length of an ".
+		"ongoing replay, together with a Progressbar and maybe even a replay logo",
+
+		""
+	],
+
+	"Message" => [
+		"This display will be used only if there is no other display open, and ".
+		"VDR wants to display a message. Therefore this display shouldn't show ".
+		"much more than that message.",
+
+		""
+	],
+
+	"Menu" => [
+		"The full menu. This is the all-round display used when showing a list of ".
+		"items or when showing something in detail (EPG-summary for example).",
+
+		""
+	],
+);
+
+%ITEMS = (
+	"Background" => [
+		"This adds a background area for the specific display. This area ".
+    "will be used to draw anything else, so you have to define a ".
+    "background for everything that will be drawn later on. You can ".
+    "define a background image for that area here, too. That picture ".
+    "has to be the same width and height as the area. If you don't use ".
+    "a background image, the area will be initialized with the bg color ".
+    "(default transparent). If an image is present, the background color will ".
+    "replace the color 0 in the image's palette, and the foreground ".
+    "color will replace color 1.",
+
+		""
+	],
+
+	"Text" => [
+		"Draws plain text into the given area, using the given foreground ".
+    "color. Text has no background, only the pixels containing the foreground ".
+		"color will be drawn. If no width or height are given, the ".
+    "limits are the background areas. If you want to align the text, you need ".
+		"to specify at least the width. If this item is specified with an ".
+		"appropriate display parameter, and text is not given or contains a ".
+		"dollar sign, it will be substituted by the content given by the display ".
+		"parameter.",
+
+		""
+	],
+
+	"Scrolltext" => [
+		"Draws a line-wrapped, scrollable text-area into the area, using the ".
+		"given foreground color. Behaves like Text otherwise. This item makes ".
+		"most sense for display=MenuText, display=PresentDescription and ".
+		"display=MenuRecording, since those are the only one's supporting ".
+		"the actual scrolling mechanism (inside the menu).",
+
+		""
+	],
+
+	"Image" => [
+		"Draws the image from the parameter path into the area, substituting ".
+		"foreground and background colors like in Item=Background",
+
+		""
+	],
+
+	"Rectangle" => [
+		"Draws a rectangle filled with the foreground color into the area.",
+
+		""
+	],
+
+	"Ellipse" => [
+		"Draws an ellipse (or part of it) filled with the foreground color into ".
+		"the area. The parameter arc, if given, specifies which part of the ".
+		"ellipse will be drawn.",
+
+		""
+	],
+
+	"Slope" => [
+		"Draws a slope (some kind of wave) (or part of it) filled with the ".
+		"foreground color into the area. The parameter arc, if give, specifies ".
+		"how the slope is formed.",
+
+		""
+	],
+
+	"Progress" => [
+		"Draws a progress bar into the display. The \"shown\" fraction of the ".
+		"relevant display-parameter is drawn using the foreground color, while ".
+		"the \"rest\" fraction is drawn using the background color (if given). ".
+		"This item makes sense for display=PresentDuration, VolumeCurrent and ".
+		"ReplayTime",
+
+		""
+	],
+
+	"Logo" => [
+		"Draws an image displaying some kind of logo into the area. The image ".
+		"file is given by the path- and type-parameters, together with the result ".
+		"from the corresponding display-parameter. This item makes sense for ".
+		"display=ChannelName (where the channel name is the filename), for ".
+		"display=ReplayMode (where the filename can be one of \"normal\", ".
+		"\"dvd\", \"vcd\", \"mp3\" and \"mplayer\" (more to come hopefully) ".
+		"and for display=Language (where the language code is [WILL BE] the ".
+		"filename. Behaves like Item=Image otherwise",
+
+		""
+	],
+
+	"Symbol" => [
+		"Draws an On/Off-symbol into the area. The On-image is given by the path-".
+		"parameter, the Off-image with the altpath-parameter. Otherwise like ".
+		"Item=Image",
+
+		""
+	],
+
+	"MenuArea" => [
+		"Specifies the area that is considered to be the central menu area ".
+		"(where the list of menu items is drawn). Note that this will not display ".
+		"anything yet, you have to give additional Text items to actually draw ".
+		"the list",
+
+		""
+	],
+
+	"MenuItem" => [
+		"Specifies the area occupied by one item of the list which is displayed ".
+		"in the central menu area. The number of items that can be displayed is ".
+		"determined by the height of MenuArea and the height of this item. Note ".
+		"that this will not display anything yet, you have to give additional ".
+		"Text items to actually draw the list. Also note that the x- and y-".
+		"parameters (if given) are relative to the top-left corner of the ".
+		"MenuArea.",
+
+		""
+	],
+
+	"Scrollbar" => [
+		"Draws a real scrollbar into the display. The \"seen\" and \"rest\" ".
+		"fractions are drawn using the background color, while the bar indicating ".
+		"the \"shown\" fraction and the current position, is drawn using the ".
+		"foreground color. This item makes sense for display=MenuText, ".
+		"PresentDescription and MenuRecording",
+
+		""
+	],
+);
+
+%ITEMPARAMS = (
+	"Background" => "x, y, width, height, bpp, path, bg, fg",
+	"Text" => "display, x, y, width, height, fg, font, align",
+	"Scrolltext" => "display, x, y, width, height, fg, font",
+	"Image" => "display, x, y, width, height, bg, fg, path",
+	"Rectangle" => "display, x, y, width, height, fg",
+	"Ellipse" => "display, x, y, width, height, fg, arc",
+	"Slope" => "display, x, y, width, height, fg, arc",
+	"Progress" => "display, x, y, width, height, bg, fg",
+	"Logo" => "display, x, y, width, height, bg, fg, path, type",
+	"Symbol" => "display, x, y, width, height, bg, fg, path, altpath",
+	"MenuArea" => "x, y, width, height",
+	"MenuItem" => "x, y, width, height",
+	"Scrollbar" => "display, x, y, width, height, bg, fg",
+);
+
+%DISPLAYS = (
+	"DateTimeF" => [
+		"The current date and time, formatted according to the format-parameter. ".
+		"To learn how the string can be formatted, please see man strftime.",
+
+		""
+	],
+
+	"DateTime" => [
+		"The current date and time, pre-formatted like \"dd.mm. HH:MM\".",
+
+		""
+	],
+
+	"Date" => [
+		"The current date, pre-formatted like \"dd.mm.\".",
+
+		""
+	],
+	
+	"Time" => [
+		"The current time, pre-formatted like \"HH:MM\".",
+
+		""
+	],
+
+	"ChannelNumberName" => [
+		"A string containing the current channel number and name, where the ".
+		"channel number can be followed by a minus (while entering a channel) ".
+		"or where the channel name can be a channel group separator",
+
+		""
+	],
+
+	"ChannelNumber" => [
+		"A string containing the current channel number, where the ".
+		"channel number can be followed by a minus (while entering a channel).",
+
+		""
+	],
+	"ChannelName" => [
+		"A string containing the current channel name, where the ".
+		"channel name can be a channel group separator. This also substitutes the ".
+		"channel logo (if present).",
+
+		""
+	],
+
+	"Language" => [
+		"This substitutes a language logo, which will someday show the flag of ".
+		"the language currently in programme. Today only \"Audio 1\", \"Audio 2\" ".
+		"and \"Digital Audio\" are possible.",
+
+		""
+	],
+
+	"PresentDateTimeF" => [
+		"The start date and time of the present event (in the channel display or ".
+		"while viewing EPG-details in the menu), formatted according to the ".
+		"format-parameter. ".
+		"To learn how the string can be formatted, please see man strftime.",
+
+		""
+	],
+
+	"PresentStartTime" => [
+		"The start time of the present event (in the channel display or ".
+		"while viewing EPG-details in the menu), formatted like \"HH:MM\"",
+
+		""
+	],
+
+	"PresentDate" => [
+		"The start date of the present event (in the channel display or ".
+		"while viewing EPG-details in the menu), formatted like \"dd.mm.\"",
+
+		""
+	],
+
+	"PresentVPSTime" => [
+		"The VPS start time of the present event (in the channel display or ".
+		"while viewing EPG-details in the menu), formatted like \"HH:MM\", ".
+		"if present and different from the normal start time.",
+
+		""
+	],
+
+	"PresentEndTime" => [
+		"The end time of the present event (in the channel display or ".
+		"while viewing EPG-details in the menu), formatted like \"HH:MM\"",
+
+		""
+	],
+
+	"PresentDuration" => [
+		"The duration time of the present event (in the channel display or ".
+		"while viewing EPG-details in the menu), formatted like \"HH:MM\". This ".
+		"also substitutes the progress bar (timebar).",
+
+		""
+	],
+
+	"PresentVPS" => [
+		"Substitutes a symbol, which shows whether the channel broadcasting ".
+		"the present event is a VPS-channel",
+
+		""
+	],
+	
+	"PresentRunning" => [
+		"Substitutes a symbol, which shows whether the present event is running.",
+
+		""
+	],
+	
+	"PresentTimer" => [
+		"Substitutes a symbol, which shows whether the present event is scheduled ".
+		"for recording.",
+
+		""
+	],
+
+	"PresentTitle" => [
+		"The title of the currently displayed event.",
+
+		""
+	],
+	
+	"PresentShortText" => [
+		"The short text (or episode name) of the currently displayed event.",
+
+		""
+	],
+	
+	"PresentDescription" => [
+		"The long description of the currently displayed event. Makes most sense ".
+		"when used when displaying an EPG-detail in the menu, inside a Scrolltext.",
+
+		""
+	],
+	
+	"FollowingStartTime" => [
+		"The start time of the following event (in the channel display only), ".
+		"formatted like \"HH:MM\"",
+
+		""
+	],
+
+	"FollowingEndTime" => [
+		"The end time of the following event (in the channel display only), ".
+		"formatted like \"HH:MM\"",
+
+		""
+	],
+
+	"FollowingDuration" => [
+		"The duration time of the following event (in the channel display only), ".
+		"formatted like \"HH:MM\".",
+
+		""
+	],
+
+	"FollowingTitle" => [
+		"The title of the following event.",
+
+		""
+	],
+	
+	"FollowingShortText" => [
+		"The short text (or episode name) of the following event.",
+
+		""
+	],
+);
+
+%DISPLAYPARAMS = (
+	"DateTimeF" => "format",
+	"PresentDateTimeF" => "format"
+);
+
+%DISPLAYSUBST = (
+	"DateTimeF" => "text",
+	"DateTime" => "text",
+	"Date" => "text",
+	"Time" => "text",
+	"ChannelNumberName" => "text",
+	"ChannelNumber" => "text",
+	"ChannelName" => "text, path",
+	"Language" => "path",
+	"PresentDateTimeF" => "text",
+	"PresentStartTime" => "text",
+	"PresentDate" => "text",
+	"PresentVPSTime" => "text",
+	"PresentEndTime" => "text",
+	"PresentDuration" => "text, progress",
+	"PresentVPS" => "path",
+	"PresentRunning" => "path",
+	"PresentTimer" => "path",
+	"PresentTitle" => "text",
+	"PresentShortText" => "text",
+	"PresentDescription" => "text",
+	"FollowingStartTime" => "text",
+	"FollowingEndTime" => "text",
+	"FollowingDuration" => "text, progress",
+	"FollowingTitle" => "text",
+	"FollowingShortText" => "text",
+);
+
+return 1;

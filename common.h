@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.9 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: common.h,v 1.10 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -49,6 +49,7 @@ enum eSkinItem {
 	itemSymbol,
 	itemMenuArea,
 	itemMenuItem,
+	itemScrollbar,
 	__ITEM_COUNT__
 };
 
@@ -74,9 +75,9 @@ enum eSkinDisplay {
 	displayPresentTitle,               // exc: text
 	displayPresentShortText,           // exc: text
 	displayPresentDescription,         // exc: text
-	displayFollowingStartTime,         // exc: text, progress
-	displayFollowingEndTime,           // exc: text, progress
-	displayFollowingDuration,          // exc: text, progress
+	displayFollowingStartTime,         // exc: text
+	displayFollowingEndTime,           // exc: text
+	displayFollowingDuration,          // exc: text
 	displayFollowingTitle,             // exc: text
 	displayFollowingShortText,         // exc: text
 	displayTeletext,                   // exc: symbol
@@ -161,7 +162,7 @@ bool ParseVar(const char *Text, const char *Name, eSkinDisplay *Value);
 bool ParseVar(const char *Text, const char *Name, int *Value);
 bool ParseVar(const char *Text, const char *Name, const cFont **Value);
 bool ParseVar(const char *Text, const char *Name, string &Value);
-bool ParseVar(const char *Text, const char *Name, tColor **Value);
+bool ParseVar(const char *Text, const char *Name, tColor *Value);
 bool ParseVar(const char *Text, const char *Name, eTextAlignment *Value);
 
 #endif // VDR_TEXT2SKIN_COMMON_H

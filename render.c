@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.30 2004/06/13 18:19:18 lordjaxom Exp $
+ * $Id: render.c,v 1.31 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -48,8 +48,6 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 	mActive            = false;
 	mUpdateIn          = 0;
 
-	cText2SkinBitmap::FlushCache();
-
 	cText2SkinData::tIterator it = mData->First(mSection);
 	for (; it != mData->Last(mSection); ++it) {
 		if ((*it)->Item() == itemBackground) {
@@ -90,26 +88,25 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 		}
 		esyslog("ERROR: text2skin: OSD provider can't handle skin: %s\n", emsg);
 	}
-
 	Start();
 }
 
 cText2SkinRender::~cText2SkinRender() {
 	if (mActive) {
 		mActive = false;
-		TriggerUpdate();
+		Flush();
 		Cancel(3);
 	}
 	delete mScroller;
 	delete mOsd; 
+	cText2SkinBitmap::FlushCache();
 }
 
 void cText2SkinRender::Action(void) {
 	mActive = true;
 	Lock();
 	while (mActive) {
-		bool res = true;
-		if (mUpdateIn) res = mDoUpdate.TimedWait(mMutex, mUpdateIn);
+		if (mUpdateIn) mDoUpdate.TimedWait(mMutex, mUpdateIn);
 		else           mDoUpdate.Wait(mMutex);
 
 		if (!mActive) break; // fall out if thread to be stopped
@@ -121,6 +118,9 @@ void cText2SkinRender::Action(void) {
 }
 
 void cText2SkinRender::Update(void) {
+	if (mScroller && !mMenuScroll)
+		mOsd->SaveRegion(mScroller->Left(), mScroller->Top(), mScroller->Left() + mScroller->Width() - 1, mScroller->Top() + mScroller->Height() - 1);
+
 	cText2SkinData::tIterator it = mData->First(mSection);
 	for (; it != mData->Last(mSection); ++it) {
 		switch ((*it)->Display()) {
@@ -362,12 +362,30 @@ void cText2SkinRender::DrawMark(const POINT &Pos, const SIZE &Size, bool Start, 
 	}
 }
 
-void cText2SkinRender::DrawScrollText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align) {
+void cText2SkinRender::DrawScrolltext(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align) {
 	if (mScroller == NULL)
 		mScroller = new cTextScroller(mOsd, Pos.x, Pos.y, Size.w, Size.h, Text.c_str(), Font, Fg ? *Fg : 0, clrTransparent);
 	else if (mMenuScroll) {
 		mScroller->Scroll(mMenuScrollUp, mMenuScrollPage);
 		mMenuScroll = false;
+	} else
+		mOsd->RestoreRegion();
+}
+	
+void cText2SkinRender::DrawScrollbar(const POINT &Pos, const SIZE &Size, int Offset, int Shown, int Total, const tColor *Bg, const tColor *Fg) {
+	DrawRectangle(Pos, Size, Bg);
+	if (Size.h > Size.w) {
+		POINT sp = Pos;
+		SIZE ss = Size;
+		sp.y += Size.h * Offset / Total;
+		ss.h -= Size.h * (Shown - 2) / Total;
+		DrawRectangle(sp, ss, Fg);
+	} else {
+		POINT sp = Pos;
+		SIZE ss = Size;
+		sp.x += Size.w * Offset / Total;
+		ss.w -= Size.w * (Shown - 2) / Total;
+		DrawRectangle(sp, ss, Fg);
 	}
 }
 
@@ -382,14 +400,15 @@ void cText2SkinRender::DisplayItem(cText2SkinItem *Item, const ItemData *Data) {
 		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, Data->text), Item->Font(), Item->Align());
 		break;
 	case itemScrolltext:
-		DrawScrollText(Item->Pos(), Item->Size(), ItemFg(Item), Data->text, Item->Font(), Item->Align());
+		DrawScrolltext(Item->Pos(), Item->Size(), ItemFg(Item), Data->text, Item->Font(), Item->Align());
 		break;
 	case itemImage:
 		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Alpha(), Item->Path());
 		break;
 	case itemLogo:
 	case itemSymbol:
-		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Alpha(), Data->path);
+		if (Data->path != "")
+			DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Alpha(), Data->path);
 		break;
 	case itemRectangle:
 		DrawRectangle(Item->Pos(), Item->Size(), ItemFg(Item));
@@ -403,6 +422,8 @@ void cText2SkinRender::DisplayItem(cText2SkinItem *Item, const ItemData *Data) {
 	case itemProgress:
 		DrawProgressbar(Item->Pos(), Item->Size(), Data->current, Data->total, ItemBg(Item), ItemFg(Item), Data->marks);
 		break;
+	case itemScrollbar:
+		DrawScrollbar(Item->Pos(), Item->Size(), Data->current, Data->shown, Data->total, ItemBg(Item), ItemFg(Item));
 	default: 
 		break;
 	}
@@ -710,11 +731,10 @@ void cText2SkinRender::DisplayVolume(cText2SkinItem *Item) {
 }
 
 void cText2SkinRender::DisplayMuteIcon(cText2SkinItem *Item) {
-	if (mVolumeMute) {
-		ItemData data;
-		data.path = Item->Path();
+	ItemData data;
+	data.path = mVolumeMute ? Item->Path() : Item->AltPath();
+	if (data.path != "")
 		DisplayItem(Item, &data);
-	}
 }
 
 void cText2SkinRender::DisplayReplayTime(cText2SkinItem *Item) {
@@ -841,8 +861,15 @@ void cText2SkinRender::DisplayMenuText(cText2SkinItem *Item) {
 	default:
 		break;
 	}
-	if (data.text != "")
+	if (data.text != "") {
+		// HACK: make sure the scroller exists!
+		if (mScroller) {
+			data.current = mScroller->Offset();
+			data.shown = mScroller->Shown();
+			data.total = mScroller->Total();
+		}
 		DisplayItem(Item, &data);
+	}
 }
 
 void cText2SkinRender::DisplayMenuScrollIcon(cText2SkinItem *Item) {

@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.3 2004/06/08 20:45:52 lordjaxom Exp $
+ * $Id: cache.h,v 1.4 2004/06/16 18:46:50 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -69,10 +69,6 @@ inline void cText2SkinCache<K,D>::Delete(Item *item) {
 }
 
 template<class K,class D>
-inline void cText2SkinCache<K,D>::Delete(K &key, D &Data) {
-}
-
-template<class K,class D>
 inline void cText2SkinCache<K,D>::Update(Item *item) {
 	item->_lastUsed = time_ms();
 	if (item->_next != NULL || item->_prev != NULL)
@@ -108,6 +104,11 @@ cText2SkinCache<K,D>::cText2SkinCache(int maxItems) {
 template<class K,class D>
 cText2SkinCache<K,D>::~cText2SkinCache() {
 	Flush();
+}
+
+template<class K,class D>
+void cText2SkinCache<K,D>::Delete(K &key, D &Data) {
+	abort();
 }
 
 template<class K,class D>
