@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.15 2005/01/02 20:34:20 lordjaxom Exp $
+ * $Id: render.c,v 1.16 2005/01/05 19:30:14 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -152,7 +152,7 @@ void cText2SkinRender::Update(void)
 
 void cText2SkinRender::DrawObject(const cxObject *Object)
 {
-	if (Object->Condition() != NULL && !Object->Condition()->EvaluateToBool())
+	if (Object->Condition() != NULL && !Object->Condition()->Evaluate())
 		return;
 
 	switch (Object->Type()) {
@@ -216,10 +216,16 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 				uint maxitems = areasize.h / itemheight;
 				uint yoffset = 0;
 
+				SetMaxItems(maxitems); Dprintf("setmaxitems %d\n", maxitems);
 				for (uint i = 0; i < maxitems; ++i, yoffset += itemheight) {
 					for (uint j = 1; j < Object->Objects(); ++j) {
 						const cxObject *o = Object->GetObject(j);
-						for (int t = -1; t < cSkinDisplayMenu::MaxTabs; ++t) {
+						int maxtabs = 1;
+
+						if (o->Display()->Type() == cxDisplay::menu)
+							maxtabs = cSkinDisplayMenu::MaxTabs;
+
+						for (int t = -1; t < maxtabs; ++t) {
 							if (!HasTabText(i, t))
 								continue;
 
@@ -228,7 +234,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 
 							cxObject obj(*o);
 							obj.SetListIndex(i, t);
-							if (obj.Condition() != NULL && !obj.Condition()->EvaluateToBool())
+							if (obj.Condition() != NULL && !obj.Condition()->Evaluate())
 								continue;
 
 							obj.mPos1.x += Object->mPos1.x + (t >= 0 ? thistab : 0);
