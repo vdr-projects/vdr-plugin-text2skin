@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.11 2005/01/16 20:55:20 lordjaxom Exp $
+ * $Id: display.c,v 1.12 2005/01/20 14:04:15 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -230,31 +230,48 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return false;
 		
 	case tHasTeletext:
+	case tChannelHasTeletext:
 		return mChannel != NULL && mChannel->Tpid() != 0;
 
 	case tHasMultilang:
+	case tChannelHasMultilang:
 		return mChannel != NULL && mChannel->Apid2() != 0;
 
 	case tHasDolby:
+	case tChannelHasDolby:
 		return mChannel != NULL && mChannel->Dpid1() != 0;
 
 	case tIsEncrypted:
+	case tChannelIsEncrypted:
 		return mChannel != NULL && mChannel->Ca() != 0;
 
 	case tIsRadio:
+	case tChannelIsRadio:
 		return mChannel != NULL && ISRADIO(mChannel);
 
-	case tIsRecording:
-		return cRecordControls::Active();
-
 	case tHasVPS:
+	case tChannelHasVPS:
 		return mPresent != NULL && mPresent->Vps() != 0;
 
+	case tPresentHasVPS:
+		return mPresent != NULL && mPresent->Vps() != mPresent->StartTime();
+
 	case tHasTimer:
+	case tPresentHasTimer:
 		return mPresent != NULL && mPresent->HasTimer();
 	
 	case tIsRunning:
+	case tPresentIsRunning:
 		return mPresent != NULL && mPresent->IsRunning();
+
+	case tFollowingHasTimer:
+		return mFollowing != NULL && mFollowing->HasTimer();
+	
+	case tFollowingIsRunning:
+		return mFollowing != NULL && mFollowing->IsRunning();
+
+	case tFollowingHasVPS:
+		return mFollowing != NULL && mFollowing->Vps() != mFollowing->StartTime();
 
 	case tMessage:
 		return mText;
@@ -324,17 +341,14 @@ void cText2SkinDisplayVolume::SetVolume(int Current, int Total, bool Mute)
 
 cxType cText2SkinDisplayVolume::GetTokenData(const txToken &Token) {
 	switch (Token.Type) {
-	case tVolumeCurrent:
-		return mCurrent;
+	case tVolumeCurrent: return mCurrent;
 
-	case tVolumeTotal:
-		return mTotal;
+	case tVolumeTotal:   return mTotal;
 
 	case tIsMute:
-		return mMute;
+	case tVolumeIsMute:  return mMute;
 
-	default:
-		return cText2SkinRender::GetTokenData(Token);
+	default:             return cText2SkinRender::GetTokenData(Token);
 	}
 }
 	
@@ -497,12 +511,15 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return mPrompt;
 
 	case tIsPlaying:
+	case tReplayIsPlaying:
 		return mStateInfo && mSpeed == -1 && mPlay;
 	
 	case tIsPausing:
+	case tReplayIsPausing:
 		return mStateInfo && mSpeed == -1 && !mPlay;
 
 	case tIsFastForward:
+	case tReplayIsFastForward:
 		if (mStateInfo && mSpeed != -1 && mPlay && mForward) {
 			return Token.Attrib.Type == aNumber
 			       ? (cxType)(mSpeed == Token.Attrib.Number)
@@ -511,6 +528,7 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return false;
 		
 	case tIsFastRewind:
+	case tReplayIsFastRewind:
 		if (mStateInfo && mSpeed != -1 && mPlay && !mForward) {
 			return Token.Attrib.Type == aNumber
 			       ? (cxType)(mSpeed == Token.Attrib.Number)
@@ -519,6 +537,7 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return false;
 
 	case tIsSlowForward:
+	case tReplayIsSlowForward:
 		if (mStateInfo && mSpeed != -1 && !mPlay && mForward) {
 			return Token.Attrib.Type == aNumber
 			       ? (cxType)(mSpeed == Token.Attrib.Number)
@@ -527,6 +546,7 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return false;
 
 	case tIsSlowRewind:
+	case tReplayIsSlowRewind:
 		if (mStateInfo && mSpeed != -1 && !mPlay && !mForward) {
 			return Token.Attrib.Type == aNumber
 			       ? (cxType)(mSpeed == Token.Attrib.Number)
@@ -938,12 +958,18 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 	
 	case tHasVPS:
+	case tChannelHasVPS:
 		return mEvent != NULL && mEvent->Vps() != 0;
 
+	case tEventHasVPS:
+		return mEvent != NULL && mEvent->Vps() != mEvent->StartTime();
+
 	case tHasTimer:
+	case tEventHasTimer:
 		return mEvent != NULL && mEvent->HasTimer();
 	
 	case tIsRunning:
+	case tEventIsRunning:
 		return mEvent != NULL && mEvent->IsRunning();
 
 	case tMenuText:
