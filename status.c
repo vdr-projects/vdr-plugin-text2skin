@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.7 2005/01/15 21:02:40 lordjaxom Exp $
+ * $Id: status.c,v 1.8 2005/01/25 15:15:53 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -88,19 +88,13 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name)
 	if (mRender != NULL)
 		mRender->UpdateLock();
 
-	if (Name != NULL) {
-		tRecordingInfo info(Name, Device);
-		mRecordings.push_back(info);
-	} else {
-		tRecordings::iterator it = mRecordings.begin();
-		for (; it != mRecordings.end(); ++it) {
-			if ((*it).device == Device && StoppedTimer((*it).name.c_str())) {
-				mRecordings.erase(it);
-				break;
-			}
-		}
+	mRecordings.clear();
+	cTimer *t = Timers.First();
+	for (; t != NULL; t = Timers.Next(t)) {
+		if (t->Recording())
+			mRecordings.push_back(t->File());
 	}
-	
+
 	if (mRender != NULL) {
 		mRender->UpdateUnlock();
 		mRender->Flush(true);
@@ -125,7 +119,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		Dprintf("token attrib type is: %d, number: %d\n", Token.Attrib.Type, Token.Attrib.Number);
 		if (Token.Attrib.Type == aNumber) {
 			return mRecordings.size() > (uint)Token.Attrib.Number
-			       ? (cxType)mRecordings[Token.Attrib.Number].name
+			       ? (cxType)mRecordings[Token.Attrib.Number]
 			       : (cxType)false;
 		} else if (mRecordings.size() > 0) {
 			uint now = time_ms();
@@ -142,7 +136,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 				Dprintf("next update in %d ms\n", next);
 			}
 
-			cxType res = mRecordings[mCurrentRecording].name;
+			cxType res = mRecordings[mCurrentRecording];
 			res.SetUpdate(next);
 			return res;
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.5 2005/01/15 21:02:40 lordjaxom Exp $
+ * $Id: status.h,v 1.6 2005/01/25 15:15:53 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H
@@ -24,12 +24,7 @@ public:
 #define __REPLAY_COUNT__ (cText2SkinStatus::replayImage+1)
 	};
 
-	struct tRecordingInfo {
-		std::string    name;
-		const cDevice *device;
-
-		tRecordingInfo(const std::string &n, const cDevice *d): name(n), device(d) {}
-	};
+	typedef std::string tRecordingInfo;
 	typedef std::vector<tRecordingInfo> tRecordings;
 
 private:
