@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.6 2005/01/23 19:43:28 lordjaxom Exp $
+ *  $Id: type.h,v 1.7 2005/01/31 14:39:23 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
@@ -23,7 +23,6 @@ private:
 	eType       mType;
 	std::string mString;
 	int         mNumber;
-	bool        mCache;
 	uint        mUpdateIn;
 
 public:
@@ -35,7 +34,6 @@ public:
 	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0), mUpdateIn(0) {}
 
 	std::string String(void) const;
-	//std::string String(void);
 	int         Number(void) const { return mType == number ? mNumber : atoi(mString.c_str()); }
 
 	void SetUpdate(uint UpdateIn) { mUpdateIn = UpdateIn; }
