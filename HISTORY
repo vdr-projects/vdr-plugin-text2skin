@@ -1,6 +1,12 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2005-02-06: Version 1.0
+
+- major rewrite
+- xml-based format
+- true type font support
+
 2004-07-14: Version 0.0.8
 
 - fixed display of scrollbar if there is no text present
