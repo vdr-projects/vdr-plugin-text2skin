@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.2 2005/01/11 18:00:34 lordjaxom Exp $
+ * $Id: i18n.c,v 1.3 2005/01/20 17:07:28 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -113,6 +113,31 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "V‰limuistin maksimikoko",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+  },
+  { "Skin too large or incorrectly aligned",
+    "Skin zu groﬂ oder nicht korrekt ausgerichtet",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
     "",
     "",
     "",
