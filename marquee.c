@@ -1,11 +1,12 @@
 /*
- *  $Id: marquee.c,v 1.2 2004/12/21 20:26:25 lordjaxom Exp $
+ *  $Id: marquee.c,v 1.3 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #include "marquee.h"
 #include "screen.h"
 #include <vdr/tools.h>
 
+/*
 cText2SkinMarquee::cText2SkinMarquee(const cText2SkinMarquee &Src):
 		mScreen(Src.mScreen),
 		mFont(Src.mFont),
@@ -49,7 +50,52 @@ void cText2SkinMarquee::Set(cText2SkinScreen *Screen, int Left, int Top, int Wid
 	mScrolling = mFont->Width(mText.c_str()) > mWidth;
 	DrawText(UpdateIn);
 }
+*/
 
+void cText2SkinMarquee::DrawText(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
+                                 const std::string &Text, const cFont *Font, tColor ColorFg, 
+                                 tColor ColorBg, uint Delay, int &Offset, int &Direction,
+                                 uint &NextTime)
+{
+	uint now = time_ms();
+	bool scrolling = Font->Width(Text.c_str()) > Width;
+	
+	if (NextTime == 0)
+		NextTime = now + 1500;
+	else if (now >= NextTime) {
+		uint nextin = Delay;
+		if (Direction > 0) {
+			if (Font->Width(Text.c_str() + Offset) <= Width) {
+				--Direction;
+				nextin = 1500;
+			} else
+				++Offset;
+		}
+		else {
+			if (Offset <= 0) {
+				++Direction;
+				nextin = 1500;
+			} else
+				--Offset;
+		}
+		NextTime = now + nextin;
+	}
+
+	if (!scrolling)
+		NextTime = 0;
+
+	/*
+	if (scrolling) {
+		uint updatein = NextTime - now;
+		if (UpdateIn == 0 || updatein < UpdateIn)
+			UpdateIn = updatein;
+	}
+	*/
+		
+	Screen->DrawText(Left, Top, Text.c_str() + Offset, ColorFg, ColorBg, Font, Width, Height);
+}
+
+/*
 void cText2SkinMarquee::DrawText(uint &UpdateIn)
 {
 	uint now = time_ms();
@@ -85,3 +131,4 @@ void cText2SkinMarquee::DrawText(uint &UpdateIn)
 	mScreen->DrawText(mLeft, mTop, mText.c_str() + mOffset, mColorFg, mColorBg, mFont, mWidth, 
 					  mHeight);
 }
+*/

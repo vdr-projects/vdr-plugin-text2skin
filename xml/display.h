@@ -1,5 +1,5 @@
 /*
- *  $Id: display.h,v 1.1 2004/12/19 22:03:25 lordjaxom Exp $
+ *  $Id: display.h,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DISPLAY_H 
@@ -31,6 +31,7 @@ private:
 	eType     mType;
 	txWindow  mWindows[MAXOSDAREAS];
 	int       mNumWindows;
+	int       mNumMarquees;
 	cxObjects mObjects;
 	cxSkin   *mSkin;
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
+ *  $Id: string.h,v 1.4 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -175,10 +175,10 @@ public:
 	bool Parse(const std::string &Text);
 	cxType Evaluate(void) const;
 
-	void SetIndex(uint Index, int Tab);
+	void SetListIndex(uint Index, int Tab);
 };
 
-inline void cxString::SetIndex(uint Index, int Tab)
+inline void cxString::SetListIndex(uint Index, int Tab)
 {
 	for (uint i = 0; i < mTokens.size(); ++i) {
 		mTokens[i].Index = Index;

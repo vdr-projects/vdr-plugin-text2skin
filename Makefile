@@ -13,7 +13,7 @@ HAVE_FREETYPE=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.1 2004/12/19 22:03:06 lordjaxom Exp $
+# $Id: Makefile,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -55,7 +55,7 @@ PACKAGE = vdr-$(ARCHIVE)
 
 OBJS = $(PLUGIN).o loader.o display.o render.o common.o bitmap.o \
        file.o i18n.o theme.o cache.o setup.o status.o scroller.o screen.o \
-       menu.o font.o quantize.o marquee.o \
+       menu.o font.o quantize.o \
        \
        xml/skin.o xml/parser.o xml/string.o xml/object.o xml/function.o \
        xml/type.o xml/display.o xml/xml.o

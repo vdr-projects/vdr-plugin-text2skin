@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.1 2004/12/19 22:03:26 lordjaxom Exp $
+ *  $Id: function.h,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -55,14 +55,14 @@ public:
 	std::string Evaluate(void) const;
 	bool EvaluateToBool(void);
 
-	void SetIndex(uint Index, int Tab);
+	void SetListIndex(uint Index, int Tab);
 };
 
-inline void cxFunction::SetIndex(uint Index, int Tab)
+inline void cxFunction::SetListIndex(uint Index, int Tab)
 {
-	mString.SetIndex(Index, Tab);
+	mString.SetListIndex(Index, Tab);
 	for (uint i = 0; i < mNumParams; ++i)
-		mParams[i]->SetIndex(Index, Tab);
+		mParams[i]->SetListIndex(Index, Tab);
 }
 
 #endif // VDR_TEXT2SKIN_XML_FUNCTION_H

@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
+ * $Id: render.c,v 1.4 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -33,6 +33,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mDoUpdateMutex(),
 		mStarted(),
 		mUpdateIn(0),
+		mNow(0),
 		mBaseSize()
 {
 	mRender = this;
@@ -108,10 +109,10 @@ cText2SkinRender::~cText2SkinRender()
 		Cancel(3);
 	}
 	delete mScroller;
-	mMarquees.clear();
 	delete mScreen;
-	mRender = NULL;
+
 	Text2SkinStatus.SetRender(NULL);
+	mRender = NULL;
 }
 
 void cText2SkinRender::Action(void) 
@@ -126,6 +127,7 @@ void cText2SkinRender::Action(void)
 		if (!mActive)  break; // fall out if thread to be stopped
 
 		mUpdateIn = 0; // has to be re-set within Update();
+		mNow = time_ms();
 		Update();
 	}
 	UpdateUnlock();
@@ -162,7 +164,12 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 
 	case cxObject::marquee:
 		DrawMarquee(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
-		            Object->Align(), Object->Index());
+		            Object->Align(), Object->Delay(), Object->Index());
+		break;
+
+	case cxObject::blink:
+		DrawBlink(Object->Pos(), Object->Size(), Object->Fg(), Object->Bg(), Object->Text(), 
+		          Object->Font(), Object->Align(), Object->Delay(), Object->Index());
 		break;
 
 	case cxObject::rectangle:
@@ -218,7 +225,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 							int nexttab = GetTab(t + 1);
 
 							cxObject obj(*o);
-							obj.SetIndex(i, t);
+							obj.SetListIndex(i, t);
 							if (obj.Condition() != NULL && !obj.Condition()->EvaluateToBool())
 								continue;
 
@@ -285,19 +292,72 @@ void cText2SkinRender::DrawText(const txPoint &Pos, const txSize &Size, const tC
 
 void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
                                    const std::string &Text, const cFont *Font, int Align, 
-                                   uint Index) 
+                                   uint Delay, uint Index)
 {
-	Dprintf("DrawMarquee %d -> %s\n", Index, Text.c_str());
-	if (Index >= mMarquees.size()) {
-		cText2SkinMarquee marquee(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text, Font, Fg ? *Fg : 0,
-		                          clrTransparent, mUpdateIn);
-		mMarquees.push_back(marquee);
-	} 
-	else if (Text != mMarquees[Index].Text())
-		mMarquees[Index].Set(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text, Font, Fg ? *Fg : 0,
-		                     clrTransparent, mUpdateIn);
-	else
-		mMarquees[Index].DrawText(mUpdateIn);
+	bool scrolling = Font->Width(Text.c_str()) > Size.w;
+
+	tState &state = mStates[Index];
+	if (state.text != Text) {
+		state = tState();
+		state.text = Text;
+	}
+	Dprintf("drawMarquee state.text = %s, offset = %d\n", state.text.c_str(), state.offset);
+	
+	if (state.nexttime == 0)
+		state.nexttime = mNow + 1500;
+	else if (mNow >= state.nexttime) {
+		uint nextin = Delay;
+		if (state.direction > 0) {
+			if (Font->Width(Text.c_str() + state.offset) <= Size.w) {
+				--state.direction;
+				nextin = 1500;
+			} else
+				++state.offset;
+		}
+		else {
+			if (state.offset <= 0) {
+				++state.direction;
+				nextin = 1500;
+			} else
+				--state.offset;
+		}
+		state.nexttime = mNow + nextin;
+	}
+
+	if (scrolling) {
+		uint updatein = state.nexttime - mNow;
+		if (mUpdateIn == 0 || updatein < mUpdateIn)
+			mUpdateIn = updatein;
+	}
+		
+	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + state.offset, Fg ? *Fg : 0, clrTransparent, Font,
+	                  Size.w, Size.h);
+}
+	
+void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
+                                 const tColor *Bg, const std::string &Text, const cFont *Font, 
+                                 int Align, uint Delay, uint Index)
+{
+	tState &state = mStates[Index];
+	if (state.text != Text) {
+		state = tState();
+		state.text = Text;
+	}
+	Dprintf("drawBlink state.text = %s, offset = %d\n", state.text.c_str(), state.offset);
+
+	if (state.nexttime == 0 || mNow >= state.nexttime) {
+		state.nexttime = mNow + Delay;
+		state.offset = 1 - state.offset;
+	}
+
+	uint updatein = state.nexttime - mNow;
+	if (mUpdateIn == 0 || updatein < mUpdateIn)
+		mUpdateIn = updatein;
+
+	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), state.offset == 0 
+	                                              ? (Fg ? *Fg : 0) 
+	                                              : (Bg ? *Bg : 0),
+	                  clrTransparent, Font, Size.w, Size.h);
 }
 
 void cText2SkinRender::DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg) 

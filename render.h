@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.4 2004/12/21 20:26:25 lordjaxom Exp $
+ * $Id: render.h,v 1.5 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -35,7 +35,6 @@ class cText2SkinRender: public cThread {
 
 private:
 	typedef std::map<txToken,cxType> tTokenCache;
-	typedef std::vector<cText2SkinMarquee> tMarquees;
 
 	static cText2SkinRender *mRender;
 
@@ -45,7 +44,6 @@ private:
 	cText2SkinTheme    *mTheme;
 	cText2SkinScreen   *mScreen;
 	cText2SkinScroller *mScroller;
-	tMarquees           mMarquees;
 	tTokenCache         mTokenCache;
 
 	std::string         mBasePath;
@@ -58,9 +56,23 @@ private:
 	cMutex              mDoUpdateMutex;
 	cCondVar            mStarted;
 	uint                mUpdateIn;
+	uint                mNow; // timestamp to calculate update timings
 
 	// coordinate transformation
 	txSize              mBaseSize;
+	
+	// state information for marquee, blink, scroll
+	struct tState {
+		bool        scrolling;
+		int         offset;
+		int         direction;
+		uint        nexttime;
+		std::string text;
+
+		tState(void): scrolling(false), offset(0), direction(1), nexttime(0) {}
+	};
+	typedef std::map<uint,tState> tStates;
+	tStates mStates;
 	
 protected:
 	// Update thread
@@ -77,9 +89,10 @@ protected:
 	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const std::string &Text,
 	              const cFont *Font, int Align);
 	void DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-	                 const std::string &Text, const cFont *Font, int Align, uint Index);
-	void DrawRectangle(const txPoint &Pos, const txSize &Size, 
-	                   const tColor *Fg);
+	                 const std::string &Text, const cFont *Font, int Align, uint Delay, uint Index);
+	void DrawBlink(const txPoint &Pos, const txSize &Size, const tColor *Fg, const tColor *Bg,
+	               const std::string &Text, const cFont *Font, int Align, uint Delay, uint Index);
+	void DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg);
 	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
 	void DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
 	void DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, int Total, 
@@ -106,7 +119,7 @@ protected:
 	void Flush(bool Force = false);
 	void SetDirty(void) { mDirty = true; }
 	void Scroll(bool Up, bool Page) { if (mScroller) mScroller->Scroll(Up, Page); }
-	void Clear(void) { DELETENULL(mScroller); mMarquees.clear(); }
+	void Clear(void) { DELETENULL(mScroller); }
 
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, 

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.2 2004/12/21 20:36:41 lordjaxom Exp $
+ *  $Id: object.c,v 1.3 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -7,8 +7,8 @@
 #include "font.h"
 
 static const std::string ObjectNames[] =
-	{ "image", "text", "marquee", "rectangle", "ellipse", "slope", "progress", "scrolltext", 
-	  "scrollbar", "block", "list", "item" };
+	{ "image", "text", "marquee", "blink", "rectangle", "ellipse", "slope", "progress", 
+	  "scrolltext", "scrollbar", "block", "list", "item" };
 
 cxObject::cxObject(cxDisplay *parent):
 		mType((eType)__COUNT_OBJECT__),
@@ -21,6 +21,7 @@ cxObject::cxObject(cxDisplay *parent):
 		mCondition(NULL),
 		mFontFace("Osd"),
 		mFontSize(0),
+		mDelay(150),
 		mIndex(0),
 		mObjects(NULL),
 		mDisplay(parent),
@@ -48,6 +49,7 @@ cxObject::cxObject(const cxObject &Src):
 		mTotal(Src.mTotal),
 		mFontFace(Src.mFontFace),
 		mFontSize(Src.mFontSize),
+		mDelay(0),
 		mObjects(NULL),
 		mDisplay(Src.mDisplay),
 		mSkin(Src.mSkin)

@@ -1,5 +1,5 @@
 /*
- * $Id: theme.c,v 1.1 2004/12/19 22:03:19 lordjaxom Exp $
+ * $Id: theme.c,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
  */
 #include "theme.h"
 #include <vdr/osd.h>
@@ -22,7 +22,7 @@ bool cText2SkinTheme::Parse(const char *Text) {
 				mMap[name] = mTheme.AddColor(name.c_str(), value);
 				result = true;
 			} else
-				esyslog("ERROR: text2skin: Parameters name and default must be present\n");
+				esyslog("ERROR: text2skin: Parameters name and default must be present");
 		} else
 			esyslog("ERROR: text2skin: syntax error");
 	}

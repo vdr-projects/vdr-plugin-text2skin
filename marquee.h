@@ -1,5 +1,5 @@
 /*
- *  $Id: marquee.h,v 1.2 2004/12/21 20:26:25 lordjaxom Exp $
+ *  $Id: marquee.h,v 1.3 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_MARQUEE_H
@@ -13,6 +13,7 @@ class cText2SkinScreen;
 
 class cText2SkinMarquee {
 private:
+	/*
 	cText2SkinScreen *mScreen;
 	const cFont      *mFont;
 	int               mLeft;
@@ -33,14 +34,14 @@ public:
 	cText2SkinMarquee(const cText2SkinMarquee &Src);
 	cText2SkinMarquee(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
 	                  const std::string &Text, const cFont *Font, tColor ColorFg, tColor ColorBg, 
-	                  uint &UpdateIn);
+	                  uint &UpdateIn);*/
+public:
+	static void DrawText(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
+	                     const std::string &Text, const cFont *Font, tColor ColorFg, tColor ColorBg,
+	                     uint Delay, int &Offset, int &Direction, uint &NextTime);
+	//static void DrawText(uint &UpdateIn);
 
-	void Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
-	         const std::string &Text, const cFont *Font, tColor ColorFg, tColor ColorBg, 
-	         uint &UpdateIn);
-	void DrawText(uint &UpdateIn);
-
-	const std::string &Text(void) const { return mText; }
+	//const std::string &Text(void) const { return mText; }
 };
 
 #endif // VDR_TEXT2SKIN_MARQUEE_H

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.1 2004/12/19 22:03:27 lordjaxom Exp $
+ *  $Id: object.h,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -49,6 +49,7 @@ public:
 		image,
 		text,
 		marquee,
+		blink,
 		rectangle,
 		ellipse,
 		slope,
@@ -81,6 +82,7 @@ private:
 	cxString       mTotal;
 	std::string    mFontFace;
 	int            mFontSize;
+	uint           mDelay;
 	uint           mIndex;
 	cxObjects     *mObjects; // used for block objects such as <list>
 	cxDisplay     *mDisplay;
@@ -96,7 +98,7 @@ public:
 	bool ParseAlignment(const std::string &Text);
 	bool ParseFontFace (const std::string &Text);
 
-	void               SetIndex(uint Index, int Tab);
+	void               SetListIndex(uint Index, int Tab);
 
 	eType              Type(void)            const { return mType; }
 	cxFunction        *Condition(void)       const { return mCondition; }
@@ -108,6 +110,7 @@ public:
 	std::string        Text(void)            const { return mText.Evaluate(); }
 	int                Current(void)         const { return mCurrent.Evaluate(); }
 	int                Total(void)           const { return mTotal.Evaluate(); }
+	uint               Delay(void)           const { return mDelay; }
 	uint               Index(void)           const { return mIndex; }
 	cxDisplay         *Display(void)         const { return mDisplay; }
 	cxSkin            *Skin(void)            const { return mSkin; }
@@ -126,12 +129,12 @@ public:
 	const cxObject    *GetObject(uint Index) const;
 };
 
-inline void cxObject::SetIndex(uint Index, int Tab)
+inline void cxObject::SetListIndex(uint Index, int Tab)
 {
-	mText.SetIndex(Index, Tab);
-	mPath.SetIndex(Index, Tab);
+	mText.SetListIndex(Index, Tab);
+	mPath.SetListIndex(Index, Tab);
 	if (mCondition != NULL)
-		mCondition->SetIndex(Index, Tab);
+		mCondition->SetListIndex(Index, Tab);
 }
 
 class cxObjects: public std::vector<cxObject*> {

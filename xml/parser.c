@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.2 2004/12/21 20:36:12 lordjaxom Exp $
+ *  $Id: parser.c,v 1.3 2004/12/28 01:24:35 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -84,7 +84,7 @@ static cxSkin    *skin    = NULL;
 static cxDisplay *display = NULL;
 static cxObject  *parent  = NULL;
 static cxObject  *object  = NULL;
-static uint       mindex  = 0;
+static uint       oindex  = 0;
 
 bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs) {
 	//Dprintf("start element: %s\n", name.c_str());
@@ -148,13 +148,25 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				}
 				else if (name == "text"
 				      || name == "marquee"
+				      || name == "blink"
 				      || name == "scrolltext") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
 					ATTRIB_OPT_FUNC  ("align",   object->ParseAlignment);
 					ATTRIB_OPT_FUNC  ("font",    object->ParseFontFace);
 
-					if (name == "marquee")
-						object->mIndex = mindex++;
+					if      (name == "blink") {
+						ATTRIB_OPT_STRING("blinkColor", object->mBg);
+						ATTRIB_OPT_NUMBER("delay",      object->mDelay);
+						
+						if (object->mDelay == 0)
+							object->mDelay = 1000;
+					}
+					else if (name == "marquee") {
+						ATTRIB_OPT_NUMBER("delay",      object->mDelay);
+
+						if (object->mDelay == 0)
+							object->mDelay = 500;
+					}
 				}
 				else if (name == "rectangle") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
@@ -216,9 +228,10 @@ bool xEndElem(const std::string &name) {
 	//Dprintf("end element: %s\n", name.c_str());
 	if (context[context.size() - 1] == name) {
 		if      (name == "display") {
+			//display->mNumMarquees = mindex;
 			skin->mDisplays[display->Type()] = display;
 			display = NULL;
-			mindex = 0;
+			oindex = 0;
 		}
 		else if (object != NULL || parent != NULL) {
 			if (object == NULL) {
@@ -238,6 +251,7 @@ bool xEndElem(const std::string &name) {
 				}
 			}
 
+			object->mIndex = oindex++;
 			if (parent != NULL) {
 				//Dprintf("pushing to parent\n");
 				if (parent->mObjects == NULL)
