@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.31 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: render.c,v 1.33 2004/06/18 16:41:08 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -99,7 +99,7 @@ cText2SkinRender::~cText2SkinRender() {
 	}
 	delete mScroller;
 	delete mOsd; 
-	cText2SkinBitmap::FlushCache();
+	cText2SkinBitmap::ResetCache();
 }
 
 void cText2SkinRender::Action(void) {
@@ -247,6 +247,7 @@ void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const 
 	if (Path != "") {
 		char *p;
 		asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
+		Dprintf("Trying to load image: %s\n", p);
 		if ((bmp = cText2SkinBitmap::Load(p, Alpha)) != NULL) {
 			if (Bg) bmp->SetColor(0, *Bg);
 			if (Fg) bmp->SetColor(1, *Fg);
@@ -378,13 +379,13 @@ void cText2SkinRender::DrawScrollbar(const POINT &Pos, const SIZE &Size, int Off
 		POINT sp = Pos;
 		SIZE ss = Size;
 		sp.y += Size.h * Offset / Total;
-		ss.h -= Size.h * (Shown - 2) / Total;
+		ss.h = Size.h * Shown / Total;
 		DrawRectangle(sp, ss, Fg);
 	} else {
 		POINT sp = Pos;
 		SIZE ss = Size;
 		sp.x += Size.w * Offset / Total;
-		ss.w -= Size.w * (Shown - 2) / Total;
+		ss.w = Size.w * Shown / Total;
 		DrawRectangle(sp, ss, Fg);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: setup.h,v 1.2 2004/06/12 19:16:11 lordjaxom Exp $
+ * $Id: setup.h,v 1.3 2004/06/18 16:08:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SETUP_H
@@ -26,6 +26,7 @@ public:
 	virtual ~cText2SkinSetupPage();
 
 	virtual void Store(void);
+	eOSState ProcessKey(eKeys Key);
 };
 
 extern cText2SkinSetup Text2SkinSetup;

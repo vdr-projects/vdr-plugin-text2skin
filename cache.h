@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.4 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: cache.h,v 1.5 2004/06/18 16:08:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -8,133 +8,38 @@
 #include "common.h"
 #include <vdr/tools.h>
 
-// template class generic cache
+class cText2SkinBitmap;
 
-template<class K,class D>
 class cText2SkinCache {
 private:
-	struct Item {
-		K      _key;
-		D      _data;
-		time_t _lastUsed;
+	typedef string            key_type;
+	typedef cText2SkinBitmap* data_type;
 
-		Item  *_next;
-		Item  *_prev;
+	typedef map<key_type,data_type> item_map;
+	typedef item_map::iterator item_iterator;
+	typedef vector<key_type> usage_list;
+	typedef usage_list::iterator usage_iterator;
 
-		Item() { _next = _prev = NULL; }
-	};
+	item_map   mItems;
+	usage_list mUsage;
+	int        mMaxItems;
 
-	typedef map <K,Item*> DataMap;
-
-	DataMap _items;
-	int     _maxItems;
-	Item   *_first;
-	Item   *_last;
-	
-	void Unlink(Item *item);
-	void Update(Item *item);
-	void Delete(Item *item);
-	void Delete(K &key, D &data);
+protected:
+	void Delete(const key_type &Key, data_type &Data);
 
 public:
-	cText2SkinCache(int maxItems);
+	cText2SkinCache(int MaxItems);
 	~cText2SkinCache();
 
+	void Reset(void);
 	void Flush(void);
-	bool Contains(const K &key);
-	D &operator[](const K &key);
+	bool Contains(const key_type &Key);
+	data_type &operator[](const key_type &Key);
+	uint Count(void) { return mItems.size(); }
 };
 
-template<class K,class D>
-inline void cText2SkinCache<K,D>::Unlink(Item *item) {
-	if (item == _first) {
-		_first = item->_next;
-		if (_first)
-			_first->_prev = NULL;
-		else
-			_last = NULL;
-	} else if (item == _last) {
-		_last = item->_prev;
-		_last->_next = NULL;
-	} else {
-		item->_prev->_next = item->_next;
-		item->_next->_prev = item->_prev;
-	}
-}
-
-template<class K,class D>
-inline void cText2SkinCache<K,D>::Delete(Item *item) {
-	Delete(item->_key, item->_data);
-	delete item;
-}
-
-template<class K,class D>
-inline void cText2SkinCache<K,D>::Update(Item *item) {
-	item->_lastUsed = time_ms();
-	if (item->_next != NULL || item->_prev != NULL)
-		Unlink(item);
-
-	item->_next = NULL;
-	item->_prev = _last;
-	if (_last)
-		_last->_next = item;
-	_last = item;
-	if (!_first)
-		_first = item;
-
-	while ((int)_items.size() > _maxItems) {
-		Item *aged = _first;
-		_items.erase(aged->_key);
-		Unlink(aged);
-		Delete(aged);
-	}
-}
-
-template<class K,class D>
-inline bool cText2SkinCache<K,D>::Contains(const K &key) {
-	return (_items.find(key) != _items.end());
-}
-
-template<class K,class D>
-cText2SkinCache<K,D>::cText2SkinCache(int maxItems) {
-	_maxItems = maxItems;
-	_first = _last = NULL;
-}
-
-template<class K,class D>
-cText2SkinCache<K,D>::~cText2SkinCache() {
-	Flush();
-}
-
-template<class K,class D>
-void cText2SkinCache<K,D>::Delete(K &key, D &Data) {
-	abort();
-}
-
-template<class K,class D>
-void cText2SkinCache<K,D>::Flush(void) {
-	Item *cur = _first;
-	while (cur) {
-		Item *tmp = cur->_next;
-		_items.erase(cur->_key);
-		Unlink(cur);
-		Delete(cur);
-		cur = tmp;
-	}
-}
-
-template<class K,class D>
-D &cText2SkinCache<K,D>::operator[](const K &key) {
-	Item *item;
-	if (Contains(key)) {
-		item = _items[key];
-	} else {
-		item = new Item;
-		item->_key = key;
-		_items[key] = item;
-	}
-	Update(item);
-	return item->_data;
+inline bool cText2SkinCache::Contains(const key_type &Key) {
+	return mItems.find(Key) != mItems.end();
 }
 
 #endif // VDR_TEXT2SKIN_CACHE_HPP

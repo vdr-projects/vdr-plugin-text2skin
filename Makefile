@@ -9,7 +9,7 @@ HAVE_IMAGEMAGICK=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.11 2004/06/16 18:46:50 lordjaxom Exp $
+# $Id: Makefile,v 1.12 2004/06/18 16:08:11 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -56,7 +56,7 @@ endif
 
 ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
-	LIBS += -lMagick++
+	LIBS += -lMagick -lMagick++
 endif
 
 ifdef DEBUG

@@ -1,6 +1,18 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-18: Version 0.0.6
+
+- reimplemented image cache (fixes segfaults and speeds up image loading)
+- fixed a recursion wenn de-initializing ImageMagick (crashes on exit)
+- reverted the changes in ImageMagick-loader that concerned palettes
+  (obviously some versions of ImageMagick are BROKEN!!! I am using 5.5.7 which
+  works fine. Version 5.4.7 shows random errors)
+- reimplemented "Flush image cache" into the setup menu
+- included -lMagick into Makefile as a workaround for Debian (and others 
+  possibly)
+- fixed display of scrollbar
+
 2004-06-16: Version 0.0.5
 
 - fixed disappearing Scrolltext when Message was displayed

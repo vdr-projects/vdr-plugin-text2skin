@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.7 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: i18n.c,v 1.8 2004/06/18 16:08:11 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -14,6 +14,44 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "Helposti muokattavat ulkoasut",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  },
+  { "Flush image cache",
+    "Bildspeicher leeren",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Tyhjenn‰ kuvat v‰limuistista",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  },
+  { "Flushing image cache...",
+    "Bildspeicher wird geleert...",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Tyhjennet‰‰n v‰limuistia...",
     "",
     "",
     "",
