@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.6 2005/01/09 18:43:00 lordjaxom Exp $
+ * $Id: display.h,v 1.7 2005/01/11 17:59:04 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -203,12 +203,15 @@ private:
 
 	tListItems  mItems;
 	uint        mCurrentItem;
+	int         mAudioChannel;
 	
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
 	virtual bool HasTabText(int Index, int n);
 
 public:
+	static const std::string &ChannelName(int AudioChannel);
+
 	cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title, int NumTracks, 
 	                        const char * const *Tracks);
 	virtual ~cText2SkinDisplayTracks();

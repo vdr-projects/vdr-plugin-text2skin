@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.7 2005/01/09 18:43:00 lordjaxom Exp $
+ * $Id: display.c,v 1.8 2005/01/11 17:59:04 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -952,12 +952,15 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 #if VDRVERSNUM >= 10318
 // --- cText2SkinDisplayTracks ------------------------------------------------
 
+const std::string ChannelNames[] = { "", "stereo", "left", "right" };
+
 cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title,
                                                  int NumTracks, const char * const *Tracks):
 		cText2SkinRender(Loader, cxDisplay::audioTracks),
 		mTitle(Title),
 		mItems(),
-		mCurrentItem((uint)-1)
+		mCurrentItem((uint)-1),
+		mAudioChannel(-1)
 {
 	for (int i = 0; i < NumTracks; ++i) {
 		tListItem item(Tracks[i]);
@@ -967,6 +970,11 @@ cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const
 
 cText2SkinDisplayTracks::~cText2SkinDisplayTracks()
 {
+}
+
+const std::string &cText2SkinDisplayTracks::ChannelName(int AudioChannel)
+{
+	return ChannelNames[AudioChannel + 1];
 }
 
 void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
@@ -981,7 +989,12 @@ void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
 
 void cText2SkinDisplayTracks::SetAudioChannel(int AudioChannel)
 {
-	//XXX
+	UpdateLock();
+	if (mAudioChannel != AudioChannel) {
+		mAudioChannel = AudioChannel;
+		SetDirty();
+	}
+	UpdateUnlock();
 }
 
 cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
@@ -1017,6 +1030,9 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 
 	case tIsMenuCurrent:
 		return mItems.size() > (uint)Token.Index && mCurrentItem == (uint)Token.Index;
+
+	case tAudioChannel:
+		return mAudioChannel;
 			
 	default:
 		return cText2SkinRender::GetTokenData(Token);
