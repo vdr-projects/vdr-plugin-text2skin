@@ -3,13 +3,13 @@
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
 
 HAVE_IMAGEMAGICK=1
-# HAVE_IMLIB2=1
+#HAVE_IMLIB2=1
 
 
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.8 2004/06/07 18:23:11 lordjaxom Exp $
+# $Id: Makefile,v 1.9 2004/06/08 20:45:52 lordjaxom Exp $
 #
 
 # The official name of this plugin.

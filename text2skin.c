@@ -3,7 +3,7 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.13 2004/06/07 19:08:42 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.15 2004/06/11 15:02:57 lordjaxom Exp $
  */
 
 #include "text2skin.h"
@@ -11,8 +11,8 @@
 #include "i18n.h"
 #include "loader.h"
 
-const char *cText2SkinPlugin::VERSION        = "0.0.2";
-const char *cText2SkinPlugin::THEMEVERSION   = "0.0.1";
+const char *cText2SkinPlugin::VERSION        = "0.0.3";
+const char *cText2SkinPlugin::THEMEVERSION   = "0.0.2";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
 cText2SkinPlugin::cText2SkinPlugin(void)

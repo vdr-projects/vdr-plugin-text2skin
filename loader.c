@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.9 2004/06/07 18:23:11 lordjaxom Exp $
+ * $Id: loader.c,v 1.10 2004/06/11 15:01:58 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -7,6 +7,7 @@
 #include "i18n.h"
 #include "theme.h"
 #include "display.h"
+#include "text2skin.h"
 #include <vdr/plugin.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -48,14 +49,18 @@ void cText2SkinLoader::Load(const char *Skin) {
 		if (data->Load(skinfile)) {
 			cText2SkinItem *skin = data->Get(sectionSkin, itemSkin);
 			if (skin) {
-				new cText2SkinLoader(data, translations, theme, Skin, skin->Name());
+				if (skin->Version() == cText2SkinPlugin::ThemeVersion()) {
+					new cText2SkinLoader(data, translations, theme, Skin, skin->Name());
+					return;
+				} else
+					esyslog("ERROR: text2skin: Skin %s is version %s, expecting %s", Skin, skin->Version().c_str(), cText2SkinPlugin::ThemeVersion());
 				return;
 			} else
-				esyslog("ERROR: Item=Skin is missing in Skin\n");
+				esyslog("ERROR: text2skin: Item=Skin is missing in Skin %s", Skin);
 		}
 		delete data;
 	} else
-		esyslog("ERROR: text2skin: %s/%s is not a valid skin directory\n", SkinPath(), Skin);
+		esyslog("ERROR: text2skin: %s/%s is not a valid skin directory", SkinPath(), Skin);
 }
 
 cText2SkinLoader::cText2SkinLoader(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, const string &Skin, const string &Description): cSkin(Skin.c_str(), Theme->Theme()) {

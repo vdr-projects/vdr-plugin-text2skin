@@ -1,10 +1,29 @@
 /*
- * $Id: i18n.c,v 1.3 2004/06/07 18:23:11 lordjaxom Exp $
+ * $Id: i18n.c,v 1.5 2004/06/08 20:45:52 lordjaxom Exp $
  */
 
 #include "i18n.h"
 
 const tI18nPhrase Phrases[] = {
+  { "Loader for text-based skins",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Helposti muokattavat ulkoasut",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  },
   { "Flush image cache",
     "Bildspeicher leeren",
     "",
@@ -13,7 +32,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "",
+    "Tyhjenn‰ kuvat v‰limuistista",
     "",
     "",
     "",
@@ -32,7 +51,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "",
+    "Tyhjennet‰‰n v‰limuistia...",
     "",
     "",
     "",
@@ -104,5 +123,6 @@ bool cText2SkinI18n::Load(const string &Filename) {
 }
 
 string cText2SkinI18n::Translate(const string &Text) {
-	return I18nTranslate(Text.c_str(), mIdentity.c_str());
+	string s = I18nTranslate(Text.c_str(), mIdentity.c_str());
+	return s != "" ? s : Text;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.14 2004/06/07 19:08:42 lordjaxom Exp $
+ * $Id: data.h,v 1.15 2004/06/11 15:01:58 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -11,107 +11,12 @@
 #include <vdr/osd.h>
 #include <vdr/config.h>
 
-// sections and items known by skin files
-
-enum eSkinSection {
-	sectionSkin,
-	sectionChannelSmall,
-	sectionChannel,
-	sectionVolume,
-	sectionReplayMode,
-	sectionReplay,
-	sectionMessage,
-	sectionMenu,
-	__SECTION_COUNT__
-};
-
-enum eSkinItem {
-	itemUnknown,
-	itemSkin, // item identifying the Skin itself
-	itemBackground,
-	itemText,
-	itemImage,
-	itemRectangle,
-	itemEllipse,
-	itemSlope,
-	itemDateTime,
-	itemDate,
-	itemTime,
-	itemChannelLogo,
-	itemChannelNumberName,
-	itemChannelNumber,
-	itemChannelName,
-	itemLanguage,
-	itemTimebar,
-	itemPresentTime,
-	itemPresentTitle,
-	itemPresentShortText,
-	itemFollowingTime,
-	itemFollowingTitle,
-	itemFollowingShortText,
-	itemSymbolTeletext,
-	itemSymbolAudio,
-	itemSymbolDolby,
-	itemSymbolEncrypted,
-	itemSymbolRecording,
-	itemSymbolRadio,
-	itemVolumebar,
-	itemMute,
-	itemReplaybar,
-	itemReplayTitle,
-	itemReplayCurrent,
-	itemReplayTotal,
-	itemReplayJump,
-	itemSymbolPlay,
-	itemSymbolPause,
-	itemSymbolFastFwd,
-	itemSymbolFastRew,
-	itemSymbolSlowFwd,
-	itemSymbolSlowRew,
-	itemMessageStatus,
-	itemMessageInfo,
-	itemMessageWarning,
-	itemMessageError,
-	itemMenuArea,
-	itemMenuItem,
-	itemMenuCurrent,
-	itemMenuTitle,
-	itemMenuRed,
-	itemMenuGreen,
-	itemMenuYellow,
-	itemMenuBlue,
-	itemMenuText,
-	itemSymbolScrollUp,
-	itemSymbolScrollDown,
-	itemMenuEventTitle,
-	itemMenuEventShortText,
-	itemMenuEventDescription,
-	itemMenuEventTime,
-	itemSymbolEventRunning,
-	itemSymbolEventTimer,
-	itemSymbolEventVPS,
-	itemMenuRecording,
-	itemMenuEventEndTime,
-	itemMenuEventVPSTime,
-	itemMenuEventDate,
-	itemMenuEventDateTimeF,
-	itemDateTimeF,
-	__ITEM_COUNT__
-};
-
-struct POINT {
-	int x, y;
-};
-
-struct SIZE {
-	int w, h;
-};
-
 class cText2SkinItem {
 	friend class cText2SkinRender;
 
 private:
 	eSkinItem       mItem;
+	eSkinDisplay    mDisplay;
 	POINT           mPos;
 	SIZE            mSize;
 	int             mBpp;
@@ -138,6 +43,7 @@ public:
 	bool Parse(const char *Text);
 
 	eSkinItem       Item(void)    const { return mItem; }
+	eSkinDisplay    Display(void) const { return mDisplay; }
 	const POINT    &Pos(void)     const { return mPos; }
 	const SIZE     &Size(void)    const { return mSize; }
 	int             Bpp(void)     const { return mBpp; }
@@ -159,9 +65,6 @@ class cText2SkinData: public cText2SkinFile {
 public:
 	typedef vector<cText2SkinItem*> tSection;
 	typedef tSection::iterator      tIterator;
-
-	static const string SectionNames[__SECTION_COUNT__];
-	static const string ItemNames[__ITEM_COUNT__];
 
 private:
 	eSkinSection mCurrentSection;

@@ -1,11 +1,12 @@
 /*
- * $Id: cache.h,v 1.2 2004/06/07 18:23:11 lordjaxom Exp $
+ * $Id: cache.h,v 1.3 2004/06/08 20:45:52 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
 #define VDR_TEXT2SKIN_CACHE_HPP
 
 #include "common.h"
+#include <vdr/tools.h>
 
 // template class generic cache
 

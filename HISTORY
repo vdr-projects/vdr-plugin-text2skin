@@ -1,6 +1,18 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-11: Version 0.0.3
+
+- fixed VPSTime which was displayed on channels that didn't even have VPS
+- fixed Symbols in channel display when viewing a group
+- fixed text translation if no translation is present
+- fixed compile error with gcc 3.4 (thanks to Gregoire Favre for reporting this)
+- restructured Skin (now the official Skin version is 0.0.2)
+  it is now possible to control visibility of all items
+- added a script to convert 0.0.1 themes to 0.0.2
+- added support for animated logos (mng or gif files) ONLY IMAGEMAGICK!!!
+- added finnish language translations (thanks to Rolf Ahrenberg)
+
 2004-06-07: Version 0.0.2
 
 - fixed Timebar which sometimes displayed something beyond 100%

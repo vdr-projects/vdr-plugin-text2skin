@@ -1,36 +1,15 @@
 /*
- * $Id: data.c,v 1.16 2004/06/07 19:08:42 lordjaxom Exp $
+ * $Id: data.c,v 1.17 2004/06/11 15:01:58 lordjaxom Exp $
  */
 
 #include "data.h"
 #include "common.h"
 
-const string cText2SkinData::SectionNames[__SECTION_COUNT__] =
-	{ "Skin", "ChannelSmall", "Channel", "Volume", "ReplayMode", "Replay", 
-	  "Message", "Menu" };
-
-const string cText2SkinData::ItemNames[__ITEM_COUNT__] = 
-	{ "Unknown", "Skin", "Background", "Text", "Image", "Rectangle", "Ellipse",
-	  "Slope", "DateTime", "Date", "Time", "ChannelLogo", "ChannelNumberName",
-	  "ChannelNumber", "ChannelName", "Language", "Timebar", "PresentTime",
-	  "PresentTitle", "PresentShortText", "FollowingTime", "FollowingTitle",
-	  "FollowingShortText", "SymbolTeletext", "SymbolAudio", "SymbolDolby",
-	  "SymbolEncrypted", "SymbolRecording", "SymbolRadio", "Volumebar", "Mute",
-	  "Replaybar", "ReplayTitle", "ReplayCurrent", "ReplayTotal", "ReplayJump",
-	  "SymbolPlay", "SymbolPause", "SymbolFastFwd", "SymbolFastRew",
-	  "SymbolSlowFwd", "SymbolSlowRew", "MessageStatus", "MessageInfo",
-	  "MessageWarning", "MessageError", "MenuArea", "MenuItem", "MenuCurrent",
-	  "MenuTitle", "MenuRed", "MenuGreen", "MenuYellow", "MenuBlue", "MenuText",
-		"SymbolScrollUp", "SymbolScrollDown", "MenuEventTitle", 
-		"MenuEventShortText", "MenuEventDescription", "MenuEventTime", 
-		"SymbolEventRunning", "SymbolEventTimer", "SymbolEventVPS",
-		"MenuRecording", "MenuEventEndTime", "MenuEventVPSTime", "MenuEventDate",
-		"MenuEventDateTimeF", "DateTimeF" };
-	
 cText2SkinItem::cText2SkinItem(void) {
 	mItem    = itemUnknown;
-	mPos.x   = -1;
-	mPos.y   = -1;
+	mDisplay = displayAlways;
+	mPos.x   = 0;
+	mPos.y   = 0;
 	mSize.w  = 0;
 	mSize.h  = 0;
 	mBpp     = 4;
@@ -47,39 +26,27 @@ bool cText2SkinItem::Parse(const char *Text) {
 	char *ptr = text;
 
 	// check if this is an item
-	string item;
-	if (ParseVar(ptr, "Item", item)) {
-		if (item == "Skin") { // the Skin item
-			if (ParseVar(ptr, "name", mName) && ParseVar(ptr, "version", mVersion))
-				mItem = itemSkin;
-			else
-				esyslog("ERROR: text2skin: Skin doesn't contain Item=Skin keyphrase");
-		} else {
-			int i;
-			// valid items begin at index two
-			for (i = 2; i < __ITEM_COUNT__; ++i) {
-				if (cText2SkinData::ItemNames[i] == item) {
-					mItem = (eSkinItem)i;
-					break;
-				}
+	if (ParseVar(ptr, "Item", &mItem)) {
+		if (mItem == itemSkin) { // the Skin item
+			if (!ParseVar(ptr, "name", mName) || !ParseVar(ptr, "version", mVersion)){
+				esyslog("ERROR: text2skin: Item=Skin is missing the name and/or version parameter(s)");
+				return false;
 			}
-			if (i == __ITEM_COUNT__)
-				esyslog("ERROR: text2skin: %s is not a valid theme item\n", item.c_str());
 		}
 		
 		if (mItem != itemUnknown) {
-			if (mItem != itemSkin)
-				ParseItem(ptr);
+			ParseItem(ptr);
 			return true;
 		}
 	} else 
-		esyslog("ERROR: text2skin: Missing Item= in Skin");
+		esyslog("ERROR: text2skin: unknown item in skin");
 
 	// fall through
 	return false;
 }
 
 bool cText2SkinItem::ParseItem(const char *Text) {
+	ParseVar(Text, "display", &mDisplay);
 	ParseVar(Text, "x",       &mPos.x);
 	ParseVar(Text, "y",       &mPos.y);
 	ParseVar(Text, "width",   &mSize.w);

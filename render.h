@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.17 2004/06/07 19:08:42 lordjaxom Exp $
+ * $Id: render.h,v 1.20 2004/06/11 15:01:58 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -32,6 +32,15 @@ private:
 	eSkinSection      mSection;
 	cOsd             *mOsd;
 	cTextScroller    *mScroller;
+
+	struct ItemData {
+		string text;
+		string path;
+		int current;
+		int total;
+		const cMarks *marks;
+		ItemData(void) { marks = NULL; }
+	};
 
 	// channel display
 	const cChannel   *mChannel;
@@ -87,6 +96,7 @@ private:
 	bool              mActive;
 	cCondVar          mDoUpdate;
 	cMutex            mMutex;
+	int               mUpdateIn;
 	
 protected:
 	// Update thread
@@ -105,44 +115,32 @@ protected:
  	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal);
 	void DrawScrollText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
 
+	// displays a full item
+	void DisplayItem(cText2SkinItem *Item, const ItemData *Data = NULL);
+
 	// High-level operations
-	void DisplayBackground(cText2SkinItem *Item); 
-	void DisplayChannelLogo(cText2SkinItem *Item); 
-	void DisplayLanguage(cText2SkinItem *Item); 
-	void DisplayText(cText2SkinItem *Item); 
-	void DisplayImage(cText2SkinItem *Item); 
-	void DisplayDateTime(cText2SkinItem *Item); 
-	void DisplayChannelNumberName(cText2SkinItem *Item); 
-	void DisplayChannelNumber(cText2SkinItem *Item); 
-	void DisplayChannelName(cText2SkinItem *Item); 
-	void DisplayRectangle(cText2SkinItem *Item); 
-	void DisplayEllipse(cText2SkinItem *Item); 
-	void DisplaySlope(cText2SkinItem *Item); 
-	void DisplayTimebar(cText2SkinItem *Item); 
+	void DisplayDateTime(cText2SkinItem *Item);
+	void DisplayChannelNumberName(cText2SkinItem *Item);
 	void DisplayPresentTime(cText2SkinItem *Item); 
-	void DisplayPresentTitle(cText2SkinItem *Item); 
-	void DisplayPresentShortText(cText2SkinItem *Item); 
+	void DisplayPresentIcon(cText2SkinItem *Item); 
+	void DisplayPresentText(cText2SkinItem *Item); 
 	void DisplayFollowingTime(cText2SkinItem *Item); 
 	void DisplayFollowingTitle(cText2SkinItem *Item); 
 	void DisplayFollowingShortText(cText2SkinItem *Item); 
-	void DisplaySymbol(cText2SkinItem *Item);
-	void DisplayVolumebar(cText2SkinItem *Item); 
-	void DisplayMute(cText2SkinItem *Item); 
-	void DisplayReplaybar(cText2SkinItem *Item); 
+	void DisplayLanguage(cText2SkinItem *Item); 
+	void DisplayChannelIcon(cText2SkinItem *Item);
+	void DisplayVolume(cText2SkinItem *Item); 
+	void DisplayMuteIcon(cText2SkinItem *Item); 
+	void DisplayReplayTime(cText2SkinItem *Item);
 	void DisplayReplayTitle(cText2SkinItem *Item);
-	void DisplayReplayCurrent(cText2SkinItem *Item);
-	void DisplayReplayTotal(cText2SkinItem *Item);
-	void DisplayReplayJump(cText2SkinItem *Item);
+	void DisplayReplayPrompt(cText2SkinItem *Item);
+	void DisplayReplaySymbol(cText2SkinItem *Item);
 	void DisplayMessage(cText2SkinItem *Item);
-	void DisplayMenuItems(cText2SkinItem *Item);
 	void DisplayMenuTitle(cText2SkinItem *Item);
-	void DisplayMenuColorbutton(cText2SkinItem *Item);
+	void DisplayMenuButton(cText2SkinItem *Item);
 	void DisplayMenuText(cText2SkinItem *Item);
-	void DisplayMenuEventTitle(cText2SkinItem *Item);
-	void DisplayMenuEventShortText(cText2SkinItem *Item);
-	void DisplayMenuEventDescription(cText2SkinItem *Item);
-	void DisplayMenuEventTime(cText2SkinItem *Item);
-	void DisplayMenuRecording(cText2SkinItem *Item);
+	void DisplayMenuScrollIcon(cText2SkinItem *Item);
+	void DisplayMenuItems(cText2SkinItem *Item);
 
 	// Helpers
 	string ItemText(cText2SkinItem *Item);
@@ -150,12 +148,14 @@ protected:
 	tColor *ItemFg(cText2SkinItem *Item);
 	tColor *ItemBg(cText2SkinItem *Item);
 	int GetEditableWidth(MenuItem Item, bool Current);
+	void TriggerUpdate(void) { mDoUpdate.Broadcast(); }
+	void Update(void);
 
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Section);
 	virtual ~cText2SkinRender();
 
-	void Flush(void);
+	void Flush(void) { TriggerUpdate(); }
 };
 
 #endif // VDR_TEXT2SKIN_RENDER_H
