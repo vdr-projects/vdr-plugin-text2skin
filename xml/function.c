@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.5 2005/01/02 20:04:09 lordjaxom Exp $
+ *  $Id: function.c,v 1.6 2005/01/02 20:33:53 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -112,6 +112,12 @@ bool cxFunction::Parse(const std::string &Text)
 					expr = new cxFunction(mSkin);
 					if (!expr->Parse(std::string(last, ptr - last))) {
 						delete expr;
+						return false;
+					}
+
+					if (mNumParams == MAXPARAMETERS) {
+						esyslog("ERROR: Too many parameters to function, maximum is %d",
+						        MAXPARAMETERS);
 						return false;
 					}
 
