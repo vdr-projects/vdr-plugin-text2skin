@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.1 2004/12/19 22:03:13 lordjaxom Exp $
+ * $Id: display.h,v 1.2 2004/12/21 22:15:45 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -95,7 +95,8 @@ public:
 	virtual void SetTotal(const char *Total);
 	virtual void SetJump(const char *Jump);
 	virtual void SetMessage(eMessageType Type, const char *Text);
-	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
+	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, 
+	                        const char *Blue);
 
 	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
@@ -146,9 +147,10 @@ private:
 
 		bool operator!=(const tListItem &b) { return b.text != text || b.sel != sel; }
 	};
+	typedef std::vector<tListItem> tListItems;
 
-	std::vector<tListItem> mItems;
-	uint                   mCurrentItem;
+	tListItems mItems;
+	uint       mCurrentItem;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
