@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
+ *  $Id: string.h,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -43,6 +43,8 @@ enum exToken {
 	tIsEncrypted,
 	tIsRadio,
 	tIsRecording,
+	// next 1 also in all other displays
+	tCurrentRecording,
 	// next 3 also in Menu
 	tHasVPS,
 	tHasTimer,

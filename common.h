@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
+ * $Id: common.h,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -26,6 +26,7 @@
 
 class cMarks;
 class cChannel;
+class cRecording;
 
 // helper functions
 
@@ -34,6 +35,9 @@ const char *ChannelNumber(const cChannel *Channel, int Number);
 const char *ChannelName(const cChannel *Channel, int Number);
 const char *ChannelShortName(const cChannel *Channel, int Number);
 //const char *ChannelBouquet(const cChannel *Channel, int Number);
+
+bool StoppedTimer(const char *Name);
+const cRecording *GetRecordingByName(const char *Name);
 
 cxType TimeType(time_t Time, const std::string &Format);
 cxType DurationType(uint Index, const std::string &Format);

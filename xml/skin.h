@@ -1,5 +1,5 @@
 /*
- *  $Id: skin.h,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
+ *  $Id: skin.h,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_SKIN_H 
@@ -37,15 +37,13 @@ private:
 	
 	cxDisplays  mDisplays;
 
-protected:
-	void SetBase(eScreenBase Base);
-
 public:
 	cxSkin(const std::string &Name);
 
 	cxDisplay *Get(cxDisplay::eType Type);
 
 	bool ParseBase(const std::string &Text);
+	void SetBase(eScreenBase Base = (eScreenBase)-1);
 
 	eScreenBase        Base(void)       const { return mBase; }
 	const txPoint     &BaseOffset(void) const { return mBaseOffset; }

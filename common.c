@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
+ * $Id: common.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
  */
 
 #include "common.h"
@@ -89,6 +89,28 @@ const char *ChannelBouquet(const cChannel *Channel, int Number) {
 #endif
 }
 */
+
+bool StoppedTimer(const char *Name) 
+{
+	cTimer *timer = Timers.First();
+	while (timer) {
+		if (strcmp(Name, timer->File()) == 0)
+			break;
+		timer = Timers.Next(timer);
+	}
+	return timer == NULL || !timer->Recording();
+}
+
+const cRecording *GetRecordingByName(const char *Name)
+{
+	const cRecording *rec = Recordings.First();
+	for (; rec != NULL; rec = Recordings.Next(rec)) {
+		if (strcmp(rec->Name(), Name) == 0)
+			return rec;
+	}
+	return NULL;
+}
+
 cxType TimeType(time_t Time, const std::string &Format) 
 {
 	static char result[1000];

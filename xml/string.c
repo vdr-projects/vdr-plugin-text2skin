@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.1 2004/12/19 22:03:25 lordjaxom Exp $
+ *  $Id: string.c,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -11,14 +11,13 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
-	"ChannelSource", "PresentStartDateTime", 
-	"PresentVPSDateTime", "PresentEndDateTime", "PresentDuration", "PresentProgress", 
-	"PresentRemaining",
+	"ChannelSource", "PresentStartDateTime", "PresentVPSDateTime", "PresentEndDateTime", 
+	"PresentDuration", "PresentProgress", "PresentRemaining",
 	"PresentTitle", "PresentShortText", "PresentDescription", "FollowingStartDateTime", 
 	"FollowingVPSDateTime", "FollowingEndDateTime", "FollowingDuration",
 	"FollowingTitle", "FollowingShortText", "FollowingDescription", "Language",
-	"HasTeletext", "HasMultilang", "HasDolby", "IsEncrypted", "IsRadio", "IsRecording", "HasVPS", 
-	"HasTimer", "IsRunning",
+	"HasTeletext", "HasMultilang", "HasDolby", "IsEncrypted", "IsRadio", "IsRecording", 
+	"CurrentRecording", "HasVPS", "HasTimer", "IsRunning",
 	
 	// Volume Display
 	"VolumeCurrent", "VolumeTotal", "IsMute",

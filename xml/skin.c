@@ -1,5 +1,5 @@
 /*
- *  $Id: skin.c,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
+ *  $Id: skin.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
  */
 
 #include "xml/skin.h"
@@ -13,7 +13,9 @@ cxSkin::cxSkin(const std::string &Name):
 }
 
 void cxSkin::SetBase(eScreenBase Base) {
-	mBase = Base;
+	if (Base != (eScreenBase)-1)
+		mBase = Base;
+
 	switch (mBase) {
 	case relative:
 		mBaseOffset = txPoint(Setup.OSDLeft, Setup.OSDTop);

@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.1 2004/12/19 22:03:16 lordjaxom Exp $
+ * $Id: render.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -36,6 +36,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mBaseSize()
 {
 	mRender = this;
+	Text2SkinStatus.SetRender(this);
 
 	SetDescription("Text2Skin: %s display update", mDisplay->GetType().c_str());
 
@@ -49,6 +50,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 	if (!mScreen->IsOpen())
 		return;
 
+	mSkin->SetBase(); // refresh base coords in case the setup changed
 	mBaseSize = mSkin->BaseSize();
 
 	eOsdError res;
@@ -108,8 +110,8 @@ cText2SkinRender::~cText2SkinRender()
 	delete mScroller;
 	mMarquees.clear();
 	delete mScreen;
-	//cText2SkinBitmap::ResetCache();
 	mRender = NULL;
+	Text2SkinStatus.SetRender(NULL);
 }
 
 void cText2SkinRender::Action(void) 
@@ -474,8 +476,12 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 			if (Token.Type == tMenuCurrent) {
 				const char *ptr = str.c_str(); 
 				char *end;
-				strtoul(ptr, &end, 10);
-				res = skipspace(end);
+				int n = strtoul(ptr, &end, 10);
+				if (n != 0)
+					res = skipspace(end);
+				else
+					res = ptr;
+				Dprintf("MenuCurrent result: |%s|\n", res.String().c_str());
 			}
 			else if (Token.Type == tMenuTitle) {
 				if ((pos = str.find(" - ")) != -1
@@ -488,7 +494,9 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
 			}
 		}
-		return (mRender->mTokenCache[Token] = res);
+		if (!res.NoCache())
+			mRender->mTokenCache[Token] = res;
+		return res;
 	}
 	return cxType::False;
 }
@@ -506,5 +514,5 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	default:             break;
 	}
 
-	return cxType::False;
+	return Text2SkinStatus.GetTokenData(Token);
 }

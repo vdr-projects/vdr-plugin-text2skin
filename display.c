@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.1 2004/12/19 22:03:12 lordjaxom Exp $
+ * $Id: display.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -549,9 +549,6 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		       ? (cxType)mText
 		       : (cxType)false;
 
-	case tReplayMode:
-		return cText2SkinStatus::ReplayMode();
-
 	case tButtonRed:
 		return mButtonRed;
 
@@ -723,8 +720,6 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 		return;
 
 	tListItem *item = new tListItem(Text, Selectable);
-	//item.text = Text;
-	//item.sel = Selectable;
 
 	for (int i = 0; i < MaxTabs; ++i) {
 		const char *tab = GetTabbedText(Text, i);
