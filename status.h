@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.4 2005/01/11 18:10:39 lordjaxom Exp $
+ * $Id: status.h,v 1.5 2005/01/15 21:02:40 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H
@@ -33,8 +33,6 @@ public:
 	typedef std::vector<tRecordingInfo> tRecordings;
 
 private:
-	static cText2SkinStatus *mStatus;
-
 	cText2SkinRender *mRender;
 	eReplayMode       mReplayMode;
 	bool              mReplayIsLoop;
@@ -52,6 +50,7 @@ protected:
 public:
 	cText2SkinStatus(void);
 
+	void SetLanguage(int Language) { mLastLanguage = Language; }
 	void SetRender(cText2SkinRender *Render);
 
 	cxType GetTokenData(const txToken &Token);

@@ -3,7 +3,7 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.3 2005/01/05 19:31:39 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.4 2005/01/15 21:02:40 lordjaxom Exp $
  */
 
 #include "text2skin.h"
@@ -11,6 +11,7 @@
 #include "menu.h"
 #include "i18n.h"
 #include "loader.h"
+#include "status.h"
 
 const char *cText2SkinPlugin::VERSION        = "1.0-rc1";
 const char *cText2SkinPlugin::SKINVERSION    = "1.0";
@@ -24,6 +25,7 @@ cText2SkinPlugin::~cText2SkinPlugin() {
 
 bool cText2SkinPlugin::Start(void) {
 	RegisterI18n(Phrases);
+	Text2SkinStatus.SetLanguage(Setup.OSDLanguage);
 	cText2SkinLoader::Start();
 	return true;
 }

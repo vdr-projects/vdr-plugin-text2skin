@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.6 2005/01/11 18:10:39 lordjaxom Exp $
+ * $Id: status.c,v 1.7 2005/01/15 21:02:40 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -8,7 +8,6 @@
 const std::string ReplayNames[__REPLAY_COUNT__] =
 	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image" };
 
-cText2SkinStatus *cText2SkinStatus::mStatus = NULL;
 cText2SkinStatus Text2SkinStatus;
 
 cText2SkinStatus::cText2SkinStatus(void): 
@@ -19,9 +18,8 @@ cText2SkinStatus::cText2SkinStatus(void):
 		mRecordings(),
 		mCurrentRecording(0),
 		mNextRecording(0),
-		mLastLanguage(Setup.OSDLanguage)
+		mLastLanguage(0)
 {
-	mStatus = this;
 }
 
 void cText2SkinStatus::SetRender(cText2SkinRender *Render)
