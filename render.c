@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.23 2005/01/20 14:04:29 lordjaxom Exp $
+ * $Id: render.c,v 1.24 2005/01/20 17:07:09 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -16,6 +16,7 @@
 #include <vdr/epg.h>
 #include <vdr/menu.h>
 #include <vdr/videodir.h>
+#include <vdr/skinclassic.h>
 
 cText2SkinRender *cText2SkinRender::mRender = NULL;
 
@@ -29,6 +30,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mScroller(NULL),
 		mBasePath(BasePath),
 		mDirty(true),
+		mFallback(NULL),
 		mActive(false),
 		mDoUpdate(),
 		mDoUpdateMutex(),
@@ -96,6 +98,8 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 			break;
 		}
 		esyslog("ERROR: text2skin: OSD provider can't handle skin: %s\n", emsg);
+		DELETENULL(mScreen);
+		mFallback = new cSkinClassic();
 		return;
 	}
 
@@ -338,8 +342,8 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 		if (mUpdateIn == 0 || updatein < mUpdateIn)
 			mUpdateIn = updatein;
 	}
-	Dprintf("drawMarquee text = %s, state.text = %s, offset = %d, index = %d, scrolling = %d, mUpdatteIn = %d, nexttime = %d, delay = %d\n", 
-	        Text.c_str(), state.text.c_str(), state.offset, Index, scrolling, mUpdateIn, state.nexttime, Delay);
+	//Dprintf("drawMarquee text = %s, state.text = %s, offset = %d, index = %d, scrolling = %d, mUpdatteIn = %d, nexttime = %d, delay = %d\n", 
+	//        Text.c_str(), state.text.c_str(), state.offset, Index, scrolling, mUpdateIn, state.nexttime, Delay);
 		
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + state.offset, Fg ? *Fg : 0, clrTransparent, Font,
 	                  Size.w, Size.h, Align);

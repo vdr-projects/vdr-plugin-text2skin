@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.8 2005/01/16 20:55:20 lordjaxom Exp $
+ * $Id: display.h,v 1.9 2005/01/20 17:07:09 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -17,16 +17,18 @@ class cText2SkinLoader;
 
 class cText2SkinDisplayChannel: public cSkinDisplayChannel, public cText2SkinRender {
 private:
-	const cChannel *mChannel;
-	int             mNumber;
-	const cEvent   *mPresent;
-	const cEvent   *mFollowing;
-	eMessageType    mType;
-	std::string     mText;
-	std::string     mButtonRed;
-	std::string     mButtonGreen;
-	std::string     mButtonYellow;
-	std::string     mButtonBlue;
+	cSkinDisplayChannel *mFallbackDisplay;
+
+	const cChannel      *mChannel;
+	int                  mNumber;
+	const cEvent        *mPresent;
+	const cEvent        *mFollowing;
+	eMessageType         mType;
+	std::string          mText;
+	std::string          mButtonRed;
+	std::string          mButtonGreen;
+	std::string          mButtonYellow;
+	std::string          mButtonBlue;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
@@ -40,8 +42,15 @@ public:
 	virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
 
-	virtual void Flush(void) { cText2SkinRender::Flush(); }
+	virtual void Flush(void);
 };
+
+inline void cText2SkinDisplayChannel::Flush(void) {
+	if (mFallbackDisplay != NULL)
+		mFallbackDisplay->Flush();
+	else
+		cText2SkinRender::Flush();
+}
 
 class cText2SkinDisplayVolume: public cSkinDisplayVolume, public cText2SkinRender {
 private:
@@ -119,6 +128,7 @@ public:
 
 class cText2SkinDisplayMenu: public cSkinDisplayMenu, public cText2SkinRender {
 private:
+	cSkinDisplayMenu *mFallbackDisplay;
 	int               mMaxItems;
 
 	// common for all menus
@@ -157,7 +167,7 @@ protected:
 	virtual int GetTab(int n) { return cSkinDisplayMenu::Tab(n); }
 	virtual bool HasTabText(int Index, int n);
 	virtual void SetEditableWidth(int Width) { cSkinDisplayMenu::SetEditableWidth(Width); }
-	virtual int MaxItems(void) { return mMaxItems;}
+	virtual int MaxItems(void) { return mMaxItems; }
 	virtual void SetMaxItems(int MaxItems) { mMaxItems = MaxItems; }
 
 public:
@@ -175,7 +185,7 @@ public:
 	virtual void SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5);
 	virtual void Scroll(bool Up, bool Page);
 
-	virtual void Flush(void) { cText2SkinRender::Flush(); }
+	virtual void Flush(void);
 };
 
 inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
@@ -185,6 +195,14 @@ inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
 		       ? mItems[Index].text.length() > 0
 		       : mItems[Index].tabs[n].length() > 0;
 	return false;
+}
+
+inline void cText2SkinDisplayMenu::Flush(void) 
+{
+	if (mFallbackDisplay != NULL)
+		mFallbackDisplay->Flush();
+	else
+		cText2SkinRender::Flush();
 }
 
 #if VDRVERSNUM >= 10318

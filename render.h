@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.9 2005/01/11 18:02:44 lordjaxom Exp $
+ * $Id: render.h,v 1.10 2005/01/20 17:07:09 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -47,6 +47,7 @@ private:
 
 	std::string         mBasePath;
 	bool                mDirty;
+	cSkin              *mFallback;
 	
 	// update thread
 	bool                mActive;
@@ -120,6 +121,7 @@ protected:
 	void SetDirty(void) { mDirty = true; }
 	void Scroll(bool Up, bool Page) { if (mScroller != NULL) mScroller->Scroll(Up, Page); }
 	void Clear(void) { DELETENULL(mScroller); }
+	cSkin *Fallback(void) const { return mFallback; }
 
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, 

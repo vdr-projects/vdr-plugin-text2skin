@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.13 2005/01/20 15:12:16 lordjaxom Exp $
+ * $Id: display.c,v 1.14 2005/01/20 17:07:09 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -15,6 +15,7 @@
 
 cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinLoader *Loader, bool WithInfo):
 		cText2SkinRender(Loader, WithInfo ? cxDisplay::channelInfo : cxDisplay::channelSmall),
+		mFallbackDisplay(NULL),
 		mChannel(NULL),
 		mNumber(0),
 		mPresent(NULL),
@@ -26,14 +27,25 @@ cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinLoader *Loader, boo
 		mButtonYellow(""),
 		mButtonBlue("")
 {
+	if (Fallback() != NULL) {
+		mFallbackDisplay = Fallback()->DisplayChannel(WithInfo);
+		Skins.Message(mtError, tr("Skin too large or incorrectly aligned"), 2);
+	}
 }
 
 cText2SkinDisplayChannel::~cText2SkinDisplayChannel()
 {
+	if (mFallbackDisplay != NULL)
+		delete mFallbackDisplay;
 }
 
 void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetChannel(Channel, Number);
+		return;
+	}
+
 	UpdateLock();
 	if (mChannel != Channel || mNumber != Number) {
 		mChannel = Channel;
@@ -45,6 +57,11 @@ void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 
 void cText2SkinDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following)
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetEvents(Present, Following);
+		return;
+	}
+
 	UpdateLock();
 	if (mPresent != Present || mFollowing != Following) {
 		mPresent = Present;
@@ -56,6 +73,11 @@ void cText2SkinDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Fo
 
 void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text)
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetMessage(Type, Text);
+		return;
+	}
+
 	UpdateLock();
 	if (Text == NULL) Text = "";
 	if (mType != Type || mText != Text) {
@@ -68,6 +90,11 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text)
 	
 void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue)
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetButtons(Red, Green, Yellow, Blue);
+		return;
+	}
+
 	UpdateLock();
 	Dprintf("SetButtons(%s, %s, %s, %s)\n", Red, Green, Yellow, Blue);
 	if (Red    == NULL) Red    = "";
@@ -653,6 +680,7 @@ cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token)
 
 cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinLoader *Loader):
 		cText2SkinRender(Loader, cxDisplay::menu),
+		mFallbackDisplay(NULL),
 		mMaxItems(0),
 		mTitle(""),
 		mButtonRed(""),
@@ -665,6 +693,13 @@ cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinLoader *Loader):
 		mItems(),
 		mCurrentItem((uint)-1)
 {
+	if (Fallback() != NULL) {
+		mFallbackDisplay = Fallback()->DisplayMenu();
+		mMaxItems = mFallbackDisplay->MaxItems();
+		Skins.Message(mtError, tr("Skin too large or incorrectly aligned"), 2);
+		return;
+	}
+
 	cxDisplay *disp = Loader->Data()->Get(cxDisplay::menu);
 	const cxObject *area = NULL;
 	for (uint i = 0; i < disp->Objects(); ++i) {
@@ -684,10 +719,18 @@ cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinLoader *Loader):
 
 cText2SkinDisplayMenu::~cText2SkinDisplayMenu() 
 {
+	if (mFallbackDisplay != NULL)
+		delete mFallbackDisplay;
 }
 
 void cText2SkinDisplayMenu::Clear(void) 
 {
+	if (mFallbackDisplay != NULL) {
+		printf("fallback clear\n");
+		mFallbackDisplay->Clear();
+		return;
+	}
+
 	UpdateLock();
 	mItems.clear();
 	mCurrentItem = (uint)-1;
@@ -701,6 +744,12 @@ void cText2SkinDisplayMenu::Clear(void)
 
 void cText2SkinDisplayMenu::SetTitle(const char *Title) 
 {
+	if (mFallbackDisplay != NULL) {
+		printf("fallback title\n");
+		mFallbackDisplay->SetTitle(Title);
+		return;
+	}
+
 	UpdateLock();
 	if (Title == NULL) Title = "";
 	if (mTitle != Title) {
@@ -713,6 +762,11 @@ void cText2SkinDisplayMenu::SetTitle(const char *Title)
 void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const char *Yellow, 
                                        const char *Blue) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetButtons(Red, Green, Yellow, Blue);
+		return;
+	}
+
 	UpdateLock();
 	if (Red    == NULL) Red    = "";
 	if (Green  == NULL) Green  = "";
@@ -731,6 +785,12 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 
 void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) 
 {
+	if (mFallbackDisplay != NULL) {
+		printf("fallback message\n");
+		mFallbackDisplay->SetMessage(Type, Text);
+		return;
+	}
+
 	UpdateLock();
 	if (Text == NULL) Text = "";
 	if (mMessageType != Type || mMessageText != Text) {
@@ -743,6 +803,11 @@ void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 
 void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetItem(Text, Index, Current, Selectable);
+		return;
+	}
+
 	UpdateLock();
 	if (Text == NULL)
 		return;
@@ -776,6 +841,11 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 
 void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetEvent(Event);
+		return;
+	}
+
 	UpdateLock();
 	if (mEvent != Event) {
 		mEvent = Event;
@@ -787,6 +857,11 @@ void cText2SkinDisplayMenu::SetEvent(const cEvent *Event)
 
 void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetRecording(Recording);
+		return;
+	}
+
 	UpdateLock();
 	// yet unused
 	if (mRecording != Recording) {
@@ -797,8 +872,13 @@ void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetText(const char *Text, bool /*FixedFont*/) 
+void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetText(Text, FixedFont);
+		return;
+	}
+
 	UpdateLock();
 	if (Text == NULL) Text = "";
 	if (mText != Text) {
@@ -810,6 +890,11 @@ void cText2SkinDisplayMenu::SetText(const char *Text, bool /*FixedFont*/)
 
 void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->SetTabs(Tab1, Tab2, Tab3, Tab4, Tab5);
+		return;
+	}
+
 	UpdateLock();
 	cSkinDisplayMenu::SetTabs(Tab1, Tab2, Tab3, Tab4, Tab5);
 	UpdateUnlock();
@@ -817,6 +902,11 @@ void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int 
 
 void cText2SkinDisplayMenu::Scroll(bool Up, bool Page) 
 {
+	if (mFallbackDisplay != NULL) {
+		mFallbackDisplay->Scroll(Up, Page);
+		return;
+	}
+
 	UpdateLock();
 	cText2SkinRender::Scroll(Up, Page);
 	SetDirty();
