@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.25 2005/01/20 20:59:13 lordjaxom Exp $
+ * $Id: render.c,v 1.26 2005/01/21 18:28:04 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -267,8 +267,20 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 							obj.mPos2.y += Object->mPos1.y + yoffset;
 
 							std::string text = obj.Text();
+							bool isprogress = false;
 							if (text.length() > 5 
 									&& text[0] == '[' && text[text.length() - 1] == ']') {
+								const char *p = text.c_str() + 1;
+								isprogress = true;
+								for (; *p != ']'; ++p) {
+									if (*p != ' ' && *p != '|') {
+										isprogress = false;
+										break;
+									}
+								}
+							}
+
+							if (isprogress) {
 								Dprintf("detected progress bar tab\n");
 								if (obj.Condition() == NULL || obj.Condition()->Evaluate()) {
 									int total = text.length() - 2;
