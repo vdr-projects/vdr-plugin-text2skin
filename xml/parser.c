@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.6 2005/01/01 23:44:36 lordjaxom Exp $
+ *  $Id: parser.c,v 1.7 2005/01/02 16:53:27 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -107,8 +107,8 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 			TAG_ERR_REMAIN("skin");
 	}
 	else if (context[context.size() - 1] == "display"
-        || context[context.size() - 1] == "list"
-				|| context[context.size() - 1] == "block") {
+          || context[context.size() - 1] == "list"
+          || context[context.size() - 1] == "block") {
 		if      (object != NULL) {
 			parent = object;
 			object = NULL;
