@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.10 2005/01/15 21:00:57 lordjaxom Exp $
+ * $Id: display.c,v 1.11 2005/01/16 20:55:20 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -1016,25 +1016,33 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 		break;
 	}
 
+	int index = Token.Index;
+	if (index >= 0 && mCurrentItem >= (uint)mMaxItems) {
+		int offset = mCurrentItem - mMaxItems + 1;
+		index += offset;
+	}
+
 	switch (Token.Type) {
 	case tMenuTitle:
 		return mTitle;
 
-	case tMenuItem:
-		return mItems.size() > (uint)Token.Index && mCurrentItem != (uint)Token.Index
-		       ? (cxType)mItems[Token.Index].text
+	case tMenuItem: {
+		return mItems.size() > (uint)index && mCurrentItem != (uint)index
+		       ? (cxType)((std::string)(const char*)itoa(index) + " " + mItems[index].text)
 		       : (cxType)false;
+					}
 	
 	case tIsMenuItem:
-		return mItems.size() > (uint)Token.Index && mCurrentItem != (uint)Token.Index;
+		return mItems.size() > (uint)index && mCurrentItem != (uint)index;
 
-	case tMenuCurrent:
-		return mItems.size() > (uint)Token.Index && mCurrentItem == (uint)Token.Index
-		       ? (cxType)mItems[Token.Index].text
+	case tMenuCurrent: {
+		return mItems.size() > (uint)index && mCurrentItem == (uint)index
+		       ? (cxType)((std::string)(const char*)itoa(index) + " " + mItems[index].text)
 		       : (cxType)false;
+					   }
 
 	case tIsMenuCurrent:
-		return mItems.size() > (uint)Token.Index && mCurrentItem == (uint)Token.Index;
+		return mItems.size() > (uint)index && mCurrentItem == (uint)index;
 
 	case tAudioChannel:
 		return ChannelName(mAudioChannel);

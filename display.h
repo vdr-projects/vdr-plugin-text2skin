@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.7 2005/01/11 17:59:04 lordjaxom Exp $
+ * $Id: display.h,v 1.8 2005/01/16 20:55:20 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -190,6 +190,8 @@ inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
 #if VDRVERSNUM >= 10318
 class cText2SkinDisplayTracks: public cSkinDisplayTracks, public cText2SkinRender {
 private:
+	int         mMaxItems;
+
 	std::string mTitle;
 
 	struct tListItem {
@@ -208,6 +210,7 @@ private:
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
 	virtual bool HasTabText(int Index, int n);
+	virtual void SetMaxItems(int MaxItems) { mMaxItems = MaxItems; }
 
 public:
 	static const std::string &ChannelName(int AudioChannel);
