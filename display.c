@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.18 2005/01/23 20:29:52 lordjaxom Exp $
+ * $Id: display.c,v 1.19 2005/01/26 20:43:12 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -1088,6 +1088,7 @@ cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const
 		mCurrentItem((uint)-1),
 		mAudioChannel(-1)
 {
+	Dprintf("NumTracks: %d\n", NumTracks);
 	for (int i = 0; i < NumTracks; ++i) {
 		tListItem item(Tracks[i]);
 		mItems.push_back(item);
@@ -1106,6 +1107,7 @@ const std::string &cText2SkinDisplayTracks::ChannelName(int AudioChannel)
 void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
 {
 	UpdateLock();
+	Dprintf("SetTrack: %d (%s here, %s in array)\n", Index, Tracks[Index], mItems[Index].c_str());
 	if (mCurrentItem != (uint)Index) {
 		mCurrentItem = Index;
 		SetDirty();
@@ -1149,7 +1151,7 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 
 	case tMenuItem:
 		return mItems.size() > (uint)index && mCurrentItem != (uint)index
-		       ? (cxType)mItems[index].text
+		       ? (cxType)mItems[index]
 		       : (cxType)false;
 	
 	case tIsMenuItem:
@@ -1157,11 +1159,14 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 
 	case tMenuCurrent:
 		return mItems.size() > (uint)index && mCurrentItem == (uint)index
-		       ? (cxType)mItems[index].text
+		       ? (cxType)mItems[index]
 		       : (cxType)false;
 
 	case tIsMenuCurrent:
 		return mItems.size() > (uint)index && mCurrentItem == (uint)index;
+
+	case tAudioTrack:
+		return mItems[mCurrentItem];
 
 	case tAudioChannel:
 		return ChannelName(mAudioChannel);
