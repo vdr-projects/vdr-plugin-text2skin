@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.10 2005/01/15 21:00:57 lordjaxom Exp $
+ *  $Id: string.c,v 1.11 2005/01/19 19:20:37 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -139,6 +139,8 @@ bool cxString::Parse(const std::string &Text, bool Translate)
 				txToken &lastToken = mTokens[mTokens.size() - 1];
 				if (attr == "clean")
 					lastToken.Attrib = aClean;
+				else if (attr == "rest")
+					lastToken.Attrib = aRest;
 				else {
 					char *end;
 					int n = strtol(attr.c_str(), &end, 10);

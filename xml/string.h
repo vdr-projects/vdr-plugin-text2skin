@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.11 2005/01/15 21:00:57 lordjaxom Exp $
+ *  $Id: string.h,v 1.12 2005/01/19 19:20:37 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -108,9 +108,10 @@ enum exAttrib {
 	aNone,
 	aNumber,
 	aString,
-	aClean
+	aClean,
+	aRest
 
-#define __COUNT_ATTRIB__ (aClean + 1)
+#define __COUNT_ATTRIB__ (aRest + 1)
 };
 
 struct txAttrib {
