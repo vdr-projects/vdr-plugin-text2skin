@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.9 2005/01/11 18:17:46 lordjaxom Exp $
+ *  $Id: function.c,v 1.10 2005/01/15 16:29:38 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -188,7 +188,7 @@ cxType cxFunction::FunFile(const cxType &Param) const
 
 cxType cxFunction::FunPlugin(const cxType &Param) const
 {
-	cPlugin *p = cPluginManager::GetPlugin(Param);
+	cPlugin *p = cPluginManager::GetPlugin(Param.String().c_str());
 	if (p) {
 		const char *entry = p->MainMenuEntry();
 		if (entry)
