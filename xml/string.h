@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.9 2005/01/11 18:18:31 lordjaxom Exp $
+ *  $Id: string.h,v 1.10 2005/01/15 20:54:37 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -180,15 +180,15 @@ private:
 	std::string          mOriginal;
 	std::vector<txToken> mTokens;
 	cxSkin              *mSkin;
+	bool                 mTranslate;
 
 public:
 	static void Reparse(void);
 
-	cxString(cxSkin *Skin);
+	cxString(cxSkin *Skin, bool Translate);
 	~cxString();
 
-	bool Parse(const std::string &Text);
-	bool Parse(void) { return mOriginal.length() > 0 ? Parse(mOriginal) : true; }
+	bool Parse(const std::string &Text, bool Translate = false);
 	cxType Evaluate(void) const;
 
 	void SetListIndex(uint Index, int Tab);

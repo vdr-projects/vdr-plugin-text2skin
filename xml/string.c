@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.8 2005/01/11 18:18:31 lordjaxom Exp $
+ *  $Id: string.c,v 1.9 2005/01/15 20:54:37 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -49,8 +49,9 @@ std::string txToken::Token(const txToken &Token)
 
 cxString::tStringList cxString::mStrings;
 
-cxString::cxString(cxSkin *Skin):
-		mSkin(Skin)
+cxString::cxString(cxSkin *Skin, bool Translate):
+		mSkin(Skin),
+		mTranslate(Translate)
 {
 	mStrings.push_back(this);
 }
@@ -69,13 +70,15 @@ cxString::~cxString()
 void cxString::Reparse(void)
 {
 	tStringList::iterator it = mStrings.begin();
-	for (; it != mStrings.end(); ++it)
-		(*it)->Parse();
+	for (; it != mStrings.end(); ++it) {
+		if ((*it)->mTranslate && (*it)->mText.length() > 0)
+			(*it)->Parse((*it)->mOriginal, true);
+	}
 }
 
-bool cxString::Parse(const std::string &Text) 
+bool cxString::Parse(const std::string &Text, bool Translate) 
 {
-	std::string trans = mSkin->Translate(Text);
+	std::string trans = Translate ? mSkin->Translate(Text) : Text;
 	const char *text = trans.c_str();
 	const char *ptr = text, *last = text;
 	bool inToken = false;
@@ -183,6 +186,9 @@ bool cxString::Parse(const std::string &Text)
 	}
 
 	mText.append(last, ptr - last);
+
+	if (mTranslate && !Translate && mText.length() > 0)
+		Parse(Text, true);
 	return true;
 }
 
