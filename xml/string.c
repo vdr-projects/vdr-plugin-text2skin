@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.14 2005/01/25 14:14:43 lordjaxom Exp $
+ *  $Id: string.c,v 1.15 2005/01/26 20:38:45 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -54,8 +54,9 @@ std::string txToken::Token(const txToken &Token)
 
 cxString::tStringList cxString::mStrings;
 
-cxString::cxString(cxSkin *Skin, bool Translate):
-		mSkin(Skin),
+cxString::cxString(cxObject *Parent, bool Translate):
+		mObject(Parent),
+		mSkin(Parent->Skin()),
 		mTranslate(Translate)
 {
 	mStrings.push_back(this);

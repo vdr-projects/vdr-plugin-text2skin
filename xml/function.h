@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.8 2005/01/11 18:17:46 lordjaxom Exp $
+ *  $Id: function.h,v 1.9 2005/01/26 20:40:08 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -13,6 +13,9 @@
 #define INTERNAL  0x04000000
 
 #define MAXPARAMETERS 512
+
+class cxObject;
+class cxSkin;
 
 class cxFunction {
 public:
@@ -37,6 +40,7 @@ public:
 	};
 
 private:
+	cxObject   *mObject;
 	cxSkin     *mSkin;
 	eType       mType;
 	cxString    mString;
@@ -49,7 +53,7 @@ protected:
 	cxType FunPlugin(const cxType &Param) const;
 
 public:
-	cxFunction(cxSkin *Skin);
+	cxFunction(cxObject *Parent);
 	cxFunction(const cxString &String);
 	cxFunction(const cxFunction &Src);
 	~cxFunction();

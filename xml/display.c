@@ -1,5 +1,5 @@
 /*
- *  $Id: display.c,v 1.3 2005/01/02 20:16:00 lordjaxom Exp $
+ *  $Id: display.c,v 1.4 2005/01/26 20:40:08 lordjaxom Exp $
  */
 
 #include "xml/display.h"
@@ -9,9 +9,9 @@ static const std::string DisplayNames[] =
       "replaySmall", "menu" };
 
 cxDisplay::cxDisplay(cxSkin *parent):
+		mSkin(parent),
 		mType((eType)__COUNT_DISPLAY__),
-		mNumWindows(0),
-		mSkin(parent) 
+		mNumWindows(0)
 {
 }
 

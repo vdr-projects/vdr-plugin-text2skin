@@ -1,5 +1,5 @@
 /*
- *  $Id: display.h,v 1.4 2005/01/02 20:16:00 lordjaxom Exp $
+ *  $Id: display.h,v 1.5 2005/01/26 20:40:08 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DISPLAY_H 
@@ -29,15 +29,15 @@ public:
 	};
 
 private:
+	cxSkin   *mSkin;
 	eType     mType;
 	txWindow  mWindows[MAXOSDAREAS];
 	int       mNumWindows;
 	int       mNumMarquees;
 	cxObjects mObjects;
-	cxSkin   *mSkin;
 
 public:
-	cxDisplay(cxSkin *parent);
+	cxDisplay(cxSkin *Parent);
 
 	static const std::string &GetType(eType Type);
 	bool ParseType(const std::string &Text);
