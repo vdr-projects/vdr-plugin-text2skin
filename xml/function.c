@@ -4,6 +4,7 @@
 
 #include "xml/function.h"
 #include "render.h"
+#include "bitmap.h"
 #include "common.h"
 #include <vdr/tools.h>
 
@@ -156,10 +157,8 @@ bool cxFunction::Parse(const std::string &Text)
 const std::string &cxFunction::FunFile(const std::string &Param) const
 {
 	std::string path = cText2SkinRender::ImagePath(Param);
-	Dprintf("checking file(%s)\n", path.c_str());
-	if (access(path.c_str(), F_OK) == 0)
-		return Param;
-	return False;
+	Dprintf("checking file(%s) in cache\n", path.c_str());
+ 	return cText2SkinBitmap::Load(path) ? Param : False;
 }
 
 std::string cxFunction::Evaluate(void) const

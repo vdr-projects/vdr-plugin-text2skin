@@ -205,6 +205,9 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				      || name == "scrollbar") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
 					ATTRIB_OPT_STRING("bgColor", object->mBg);
+					ATTRIB_OPT_STRING("mark",    object->mMark);
+					ATTRIB_OPT_STRING("active",  object->mActive);
+					ATTRIB_OPT_STRING("keep",    object->mKeep);
 					ATTRIB_OPT_FUNC  ("current", object->mCurrent.Parse);
 					ATTRIB_OPT_FUNC  ("total",   object->mTotal.Parse);
 				}

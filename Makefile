@@ -13,7 +13,7 @@ HAVE_FREETYPE=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.7 2004/12/08 18:47:37 lordjaxom Exp $
+# $Id: Makefile,v 1.8 2004/12/09 12:43:14 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -74,8 +74,13 @@ ifdef HAVE_IMAGEMAGICK
 endif
 
 ifdef HAVE_FREETYPE
-	INCLUDES += $(shell freetype-config --cflags)
-	LIBS += $(shell freetype-config --libs)
+	ifneq ($(shell which freetype-config),)
+		INCLUDES += $(shell freetype-config --cflags)
+		LIBS += $(shell freetype-config --libs)
+	else
+		INCLUDES += -I/usr/include/freetype -I/usr/local/include/freetype
+		LIBS += -lfreetype
+	endif
 	DEFINES += -DHAVE_FREETYPE
 	OBJS += graphtft/font.o
 endif

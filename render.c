@@ -161,7 +161,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 		break;
 
 	case cxObject::progress:
-		DrawProgressbar(Object->Pos(), Object->Size(), Object->Current(), Object->Total(), Object->Bg(), Object->Fg(), Object->Active(), Object->Mark(), Object->Keep(), GetMarks());
+		DrawProgressbar(Object->Pos(), Object->Size(), Object->Current(), Object->Total(), Object->Bg(), Object->Fg(), Object->Keep(), Object->Mark(), Object->Active(), GetMarks());
 		break;
 
 	case cxObject::scrolltext:
@@ -243,9 +243,9 @@ void cText2SkinRender::DrawImage(const txPoint &Pos, const tColor *Bg, const tCo
                                  const std::string &Path)
 {
 	cText2SkinBitmap *bmp;
-	Dprintf("trying to draw image %s to %dx%d\n", ImagePath(Path).c_str(), Pos.x, Pos.y);
+	//Dprintf("trying to draw image %s to %dx%d\n", ImagePath(Path).c_str(), Pos.x, Pos.y);
 	if ((bmp = cText2SkinBitmap::Load(ImagePath(Path), Alpha)) != NULL) {
-		Dprintf("success loading image\n");
+		//Dprintf("success loading image\n");
 		if (Bg) bmp->SetColor(0, *Bg);
 		if (Fg) bmp->SetColor(1, *Fg);
 		mScreen->DrawBitmap(Pos.x, Pos.y, bmp->Get(mUpdateIn));
@@ -255,7 +255,7 @@ void cText2SkinRender::DrawImage(const txPoint &Pos, const tColor *Bg, const tCo
 void cText2SkinRender::DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
                                 const std::string &Text, const cFont *Font, int Align) 
 {
-	Dprintf("trying to draw text %s to %d,%d size %d,%d, color %x\n", Text.c_str(), Pos.x, Pos.y, Size.w, Size.h, Fg ? *Fg : 0);
+	//Dprintf("trying to draw text %s to %d,%d size %d,%d, color %x\n", Text.c_str(), Pos.x, Pos.y, Size.w, Size.h, Fg ? *Fg : 0);
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), Fg ? *Fg : 0, 0, Font, Size.w, Size.h, Align);
 }
 
@@ -279,7 +279,7 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 																			 const tColor *Selected, const tColor *Mark, 
 																			 const tColor *Cur, const cMarks *Marks) 
 {
-	Dprintf("trying to draw Progressbar, Current = %d, Total = %d\n", Current, Total);
+	//Dprintf("trying to draw Progressbar, Current = %d, Total = %d, bg = %x, marks = %p\n", Current, Total, Bg ? *Bg : 0, Marks);
 	if (Bg)
 		DrawRectangle(Pos, Size, Bg);
 	if (Total == 0)
@@ -349,7 +349,7 @@ void cText2SkinRender::DrawMark(const txPoint &Pos, const txSize &Size, bool Sta
 void cText2SkinRender::DrawScrolltext(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
                                       const std::string &Text, const cFont *Font, int /*Align*/)
 {
-	Dprintf("trying to draw scrolltext %s\n", Text.c_str());
+	//Dprintf("trying to draw scrolltext %s\n", Text.c_str());
 	if (mScroller == NULL)
 		mScroller = new cText2SkinScroller(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text.c_str(), Font, Fg ? *Fg : 0, clrTransparent);
 	else

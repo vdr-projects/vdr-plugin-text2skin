@@ -1,10 +1,11 @@
 /*
- *  $Id: font.c,v 1.2 2004/12/06 21:19:07 lordjaxom Exp $
+ *  $Id: font.c,v 1.3 2004/12/09 12:43:14 lordjaxom Exp $
  *
  * Taken from GraphTFT 
  */
 
 #include "font.h"
+#include <stdio.h>
 
 cGraphtftFont::cGraphtftFont()
 {

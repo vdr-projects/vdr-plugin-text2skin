@@ -138,7 +138,7 @@ protected:
 	virtual cxType GetTokenData(const txToken &Token);
 	virtual int GetTab(int n) { return cSkinDisplayMenu::Tab(n); }
 	virtual bool HasTabText(int Index, int n);
-	virtual void SetEditableWidth(int Width) { printf("seteditablewidth: %d\n", Width); cSkinDisplayMenu::SetEditableWidth(Width); }
+	virtual void SetEditableWidth(int Width) { cSkinDisplayMenu::SetEditableWidth(Width); }
 
 public:
 	cText2SkinDisplayMenu(cText2SkinLoader *Loader);

@@ -302,7 +302,6 @@ void cText2SkinDisplayReplay::SetMode(bool Play, bool Forward, int Speed) {
 }
 
 void cText2SkinDisplayReplay::SetProgress(int Current, int Total) {
-	Dprintf("SetProgress: %d %d\n", Current, Total);
 	if (mCurrent != Current || mTotal != Total) {
 		mCurrent = Current;
 		mTotal = Total;
@@ -535,11 +534,11 @@ cText2SkinDisplayMenu::~cText2SkinDisplayMenu() {
 }
 
 void cText2SkinDisplayMenu::Clear(void) {
-	Dprintf("Clear\n");
 	mItems.clear();
 	mEvent = NULL;
 	mRecording = NULL;
 	mText = "";
+	cText2SkinRender::Clear();
 	SetDirty();
 }
 
@@ -606,7 +605,9 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 }
 
 void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) {
+	Dprintf("setEvent %p\n", Event);
 	if (mEvent != Event) {
+	Dprintf("dirty\n");
 		mEvent = Event;
 		if (mEvent != NULL)
 			SetDirty();
@@ -647,12 +648,8 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) {
 	switch (Token.Type) {
 	case tMenuItem:
 	case tMenuGroup:
-	case tIsMenuItem:
-	case tIsMenuGroup:
-	case tIsMenuCurrent:
 		if (Token.Index < 0) return false;
 	case tMenuCurrent:
-		Dprintf("MenuCurrent: index %d\n", Token.Index);
 		if (Token.Index >= 0 && Token.Tab == -1) return false;
 		break;
 

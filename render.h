@@ -84,7 +84,6 @@ protected:
 			const tColor *Fg, const std::string &Text, const cFont *Font, int Align);
 	void DrawScrollbar(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg);
 
-	//int GetEditableWidth(MenuItem Item, bool Current);
 	void Update(void);
 
 	// all renderers shall return appropriate data for the tokens
@@ -100,6 +99,7 @@ protected:
 	void Flush(bool Force = false);
 	void SetDirty(void) { mDirty = true; }
 	void Scroll(bool Up, bool Page) { if (mScroller) mScroller->Scroll(Up, Page); }
+	void Clear(void) { DELETENULL(mScroller); }
 
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, const std::string &BasePath = "", 
