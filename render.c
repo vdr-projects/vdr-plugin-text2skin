@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.13 2005/01/02 19:58:30 lordjaxom Exp $
+ * $Id: render.c,v 1.14 2005/01/02 20:16:20 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -35,10 +35,15 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mNow(0),
 		mBaseSize()
 {
+	if (mDisplay == NULL) {
+		esyslog("ERROR: text2skin: display for %s missing", cxDisplay::GetType(Display));
+		return;
+	}
+
 	mRender = this;
 	Text2SkinStatus.SetRender(this);
 
-	SetDescription("Text2Skin: %s display update", mDisplay->GetType().c_str());
+	SetDescription("Text2Skin: %s display update", cxDisplay::GetType(Display).c_str());
 
 	if (mBasePath.length() == 0)
 		mBasePath = SkinPath() + "/" + mSkin->Name();
