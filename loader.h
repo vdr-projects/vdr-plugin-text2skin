@@ -1,5 +1,5 @@
 /*
- * $Id: loader.h,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
+ * $Id: loader.h,v 1.2 2005/01/02 19:56:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_LOADER_H
@@ -32,6 +32,10 @@ public:
 	virtual cSkinDisplayMenu *DisplayMenu(void);
 	virtual cSkinDisplayReplay *DisplayReplay(bool ModeOnly);
 	virtual cSkinDisplayVolume *DisplayVolume(void);
+#if VDRVERSNUM >= 10318
+	virtual cSkinDisplayTracks *DisplayTracks(const char *Title, int NumTracks, 
+	                                          const char * const *Tracks);
+#endif
 	virtual cSkinDisplayMessage *DisplayMessage(void);
 
 	cxSkin          *Data(void) const { return mData; }

@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.3 2004/12/21 21:22:41 lordjaxom Exp $
+ * $Id: display.c,v 1.4 2005/01/02 19:55:36 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -7,6 +7,7 @@
 #include "display.h"
 #include "scroller.h"
 #include "status.h"
+#include "common.h"
 #include "xml/string.h"
 #include <vdr/menu.h>
 
@@ -207,6 +208,9 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tLanguage: {
+#if VDRVERSNUM >= 10318
+			// TODO !!!
+#else
 			int cur;
 			const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
 			if (tracks) {
@@ -216,6 +220,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 				if (cur < i)
 					return tracks[cur];
 			}
+#endif
 		}
 		return false;
 		
@@ -943,3 +948,28 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return cText2SkinRender::GetTokenData(Token);
 	}
 }
+
+#if VDRVERSNUM >= 10318
+cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title,
+                                                 int NumTracks, const char * const *Tracks):
+		cText2SkinRender(Loader, cxDisplay::audioTracks),
+		mTitle(Title),
+		mItems(),
+		mCurrentItem((uint)-1)
+{
+}
+
+cText2SkinDisplayTracks::~cText2SkinDisplayTracks()
+{
+}
+
+void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
+{
+}
+
+cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
+{
+	return cText2SkinRender::GetTokenData(Token);
+}
+
+#endif

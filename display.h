@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.3 2004/12/21 22:19:58 lordjaxom Exp $
+ * $Id: display.h,v 1.4 2005/01/02 19:55:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -185,5 +185,36 @@ inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
 					 : mItems[Index].tabs[n].length() > 0;
 	return false;
 }
+
+#if VDRVERSNUM >= 10318
+class cText2SkinDisplayTracks: public cSkinDisplayTracks, public cText2SkinRender {
+private:
+	std::string mTitle;
+
+	struct tListItem {
+		std::string text;
+
+		tListItem(const std::string &Text): text(Text) {}
+
+		bool operator!=(const tListItem &b) { return b.text != text; }
+	};
+	typedef std::vector<tListItem> tListItems;
+
+	tListItems  mItems;
+	uint        mCurrentItem;
+	
+protected:
+	virtual cxType GetTokenData(const txToken &Token);
+
+public:
+	cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title, int NumTracks, 
+	                        const char * const *Tracks);
+	virtual ~cText2SkinDisplayTracks();
+
+	virtual void SetTrack(int Index, const char * const *Tracks);
+
+	virtual void Flush(void) { cText2SkinRender::Flush(); }
+};
+#endif
 
 #endif // VDR_TEXT2SKIN_SKIN_H
