@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.6 2005/01/27 17:31:35 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.7 2005/01/28 21:26:34 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -50,15 +50,18 @@ inline bool tBitmapSpec::operator==(const tBitmapSpec &Src) const
 
 class cText2SkinBitmap;
 
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Delete(const tBitmapSpec &Key, 
-                                                    cText2SkinBitmap *&Data);
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Reset(cText2SkinBitmap *&Data);
+class cBitmapCache: public cxCache<tBitmapSpec,cText2SkinBitmap*> {
+protected:
+	virtual void DeleteObject(const tBitmapSpec &Key, cText2SkinBitmap *&Data);
+	virtual void ResetObject(cText2SkinBitmap *&Data);
+
+public:
+	cBitmapCache(uint MaxItems): cxCache<tBitmapSpec,cText2SkinBitmap*>(MaxItems) {}
+};
 
 class cText2SkinBitmap {
 private:
-	static cxCache<tBitmapSpec,cText2SkinBitmap*> mCache;
+	static cBitmapCache mCache;
 
 	std::vector<cBitmap*> mBitmaps;
 	int                   mCurrent;
@@ -94,18 +97,6 @@ public:
 
 inline void cText2SkinBitmap::SetColor(int Index, tColor Color) {
 	mBitmaps[mCurrent]->SetColor(Index, Color);
-}
-
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Delete(const tBitmapSpec &Key, cText2SkinBitmap *&Data)
-{
-	delete Data;
-}
-
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Reset(cText2SkinBitmap *&Data)
-{
-	Data->Reset();
 }
 
 #endif // VDR_TEXT2SKIN_BITMAP_H

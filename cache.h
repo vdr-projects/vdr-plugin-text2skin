@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.4 2005/01/27 10:53:07 lordjaxom Exp $
+ * $Id: cache.h,v 1.5 2005/01/28 21:26:34 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -22,12 +22,12 @@ private:
 	uint       mMaxItems;
 
 protected:
-	void Delete(const key_type &Key, data_type &Data) {}
-	void Reset(data_type &Data) {}
+	virtual void DeleteObject(const key_type &Key, data_type &Data) = 0;
+	virtual void ResetObject(data_type &Data) = 0;
 
 public:
 	cxCache(uint MaxItems);
-	~cxCache();
+	virtual ~cxCache();
 
 	void Reset(void);
 	void Flush(void);
@@ -54,20 +54,12 @@ cxCache<key_type, data_type>::~cxCache()
 	Flush();
 }
 
-/*XXX move
-template<class key_type, class data_type>
-void cxCache<key_type, data_type>::Delete(const key_type &Key, data_type &Data) 
-{
-	delete Data;
-}
-*/
-
 template<class key_type, class data_type>
 void cxCache<key_type, data_type>::Flush(void) 
 {
 	item_iterator it = mItems.begin();
 	for (; it != mItems.end(); ++it)
-		Delete(it->first, it->second);
+		DeleteObject(it->first, it->second);
 
 	mUsage.clear();
 	mItems.clear();
@@ -78,7 +70,7 @@ void cxCache<key_type, data_type>::Reset(void)
 {
 	item_iterator it = mItems.begin();
 	for (; it != mItems.end(); ++it)
-		Reset(it->second);
+		ResetObject(it->second);
 }
 
 template<class key_type, class data_type>
@@ -99,7 +91,7 @@ data_type &cxCache<key_type, data_type>::operator[](const key_type &Key)
 
 	if (mUsage.size() == mMaxItems) {
 		item_iterator it = mItems.find(*mUsage.begin());
-		Delete(it->first, it->second);
+		DeleteObject(it->first, it->second);
 		mUsage.erase(mUsage.begin());
 		mItems.erase(it);
 	}
