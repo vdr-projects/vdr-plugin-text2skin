@@ -1,12 +1,12 @@
 /*
- *  $Id: string.c,v 1.7 2005/01/07 21:48:28 lordjaxom Exp $
+ *  $Id: string.c,v 1.8 2005/01/11 18:18:31 lordjaxom Exp $
  */
 
 #include "xml/string.h"
 #include "render.h"
 
 static const char *Tokens[__COUNT_TOKEN__] = {
-	"DateTime", "FreeDiskSpace",
+	"DateTime", "FreeDiskSpace", "AudioTrack", "AudioChannel",
 
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
@@ -28,12 +28,13 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	// Replay Display
 	"ReplayTitle", "ReplayPositionIndex", "ReplayDurationIndex", "ReplayPrompt", "IsPlaying", 
 	"IsFastForward", "IsFastRewind", "IsSlowForward", "IsSlowRewind", "IsPausing",
-	"ReplayPosition", "ReplayDuration", "ReplayRemaining", "ReplayMode",
+	"ReplayPosition", "ReplayDuration", "ReplayRemaining", "ReplayMode", "ReplayIsShuffle",
+	"ReplayIsLoop",
 
 	// Menu Page
-	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", "IsMenuCurrent",
-	"MenuText", "ButtonRed", "ButtonGreen", "ButtonYellow", "ButtonBlue", "CanScrollUp", 
-	"CanScrollDown"
+	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", 
+	"IsMenuCurrent", "MenuText", "ButtonRed", "ButtonGreen", "ButtonYellow", "ButtonBlue", 
+	"CanScrollUp", "CanScrollDown"
 };
 
 std::string txToken::Token(const txToken &Token) 

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.8 2005/01/07 21:48:51 lordjaxom Exp $
+ *  $Id: string.h,v 1.9 2005/01/11 18:18:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -12,6 +12,8 @@
 enum exToken {
 	tDateTime,
 	tFreeDiskSpace,
+	tAudioTrack,
+	tAudioChannel,
 
 	// Channel Display
 	tChannelNumber,
@@ -78,6 +80,8 @@ enum exToken {
 	tReplayDuration,
 	tReplayRemaining,
 	tReplayMode,
+	tReplayIsShuffle,
+	tReplayIsLoop,
 
 	// Menu Page
 	tMenuTitle,
