@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.7 2005/01/28 21:26:34 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.8 2005/01/31 14:40:29 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -57,11 +57,12 @@ protected:
 
 public:
 	cBitmapCache(uint MaxItems): cxCache<tBitmapSpec,cText2SkinBitmap*>(MaxItems) {}
+	virtual ~cBitmapCache() { Flush(); }
 };
 
 class cText2SkinBitmap {
 private:
-	static cBitmapCache mCache;
+	static cBitmapCache   mCache;
 
 	std::vector<cBitmap*> mBitmaps;
 	int                   mCurrent;

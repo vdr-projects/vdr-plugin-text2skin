@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.6 2005/01/28 23:46:05 lordjaxom Exp $
+ * $Id: cache.h,v 1.7 2005/01/31 14:40:29 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -51,7 +51,6 @@ cxCache<key_type, data_type>::cxCache(uint MaxItems)
 template<class key_type, class data_type>
 cxCache<key_type, data_type>::~cxCache() 
 {
-	Flush();
 }
 
 template<class key_type, class data_type>
