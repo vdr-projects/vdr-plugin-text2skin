@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: common.h,v 1.3 2005/01/02 19:54:22 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -8,15 +8,24 @@
 #include "xml/string.h"
 #include <string>
 #include <vdr/osd.h>
+#include <vdr/config.h>
 
 #ifdef DEBUG
 #	define Dprintf(x...) fprintf(stderr, x);
-#	define Dbench(x) time_t bench_##x = time_ms();
+#	define Dbench(x) uint64 bench_##x = time_ms();
 #	define Ddiff(x) time_ms() - bench_##x
 #else
 #	define Dprintf(x...)
 #	define Dbench(x)
 #	define Ddiff(x)
+#endif
+
+#if VDRVERSNUM >= 10318
+#	define time_ms() cTimeMs().Now()
+#	define Apid1() Apid(0)
+#	define Apid2() Apid(1)
+#	define Dpid1() Dpid(0)
+#	define Dpid2() Dpid(1)
 #endif
 
 /* Check if a channel is a radio station. */
