@@ -1,10 +1,11 @@
 /*
- *  $Id: screen.c,v 1.2 2005/01/25 20:27:12 lordjaxom Exp $
+ *  $Id: screen.c,v 1.3 2005/01/26 20:42:21 lordjaxom Exp $
  */
 
 #include "screen.h"
 
-cText2SkinScreen::cText2SkinScreen(bool OffScreen) {
+cText2SkinScreen::cText2SkinScreen(bool OffScreen) 
+{
 	mOsd       = NULL;
 	mScreen    = NULL;
 	mOffScreen = OffScreen;
@@ -15,12 +16,14 @@ cText2SkinScreen::cText2SkinScreen(bool OffScreen) {
 		mOsd = cOsdProvider::NewOsd(0, 0);
 }
 
-cText2SkinScreen::~cText2SkinScreen() {
+cText2SkinScreen::~cText2SkinScreen() 
+{
 	delete mScreen;
 	delete mOsd;
 } 
 
-eOsdError cText2SkinScreen::SetAreas(const tArea *Areas, int NumAreas) {
+eOsdError cText2SkinScreen::SetAreas(const tArea *Areas, int NumAreas) 
+{
 	if (!mOffScreen) {
 		eOsdError result = mOsd->CanHandleAreas(Areas, NumAreas);
 		if (result == oeOk)
@@ -39,7 +42,8 @@ eOsdError cText2SkinScreen::SetAreas(const tArea *Areas, int NumAreas) {
 	return oeOk;
 }
 
-void cText2SkinScreen::Clear(void) {
+void cText2SkinScreen::Clear(void) 
+{
 	for (int i = 0; i < mNumRegions; ++i) {
 #ifndef DIRECTBLIT
 		mRegions[i]->Reset();
@@ -56,17 +60,19 @@ void cText2SkinScreen::Clear(void) {
 	}
 }
 
-void cText2SkinScreen::DrawBitmap(int x, int y, const cBitmap &Bitmap, tColor ColorFg, tColor ColorBg) {
+void cText2SkinScreen::DrawBitmap(int x, int y, const cBitmap &Bitmap, const tColor *ColorMask)
+{
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
-		DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorFg, ColorBg);
+		DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorMask);
 		//mRegions[i]->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
 #else
 	mOsd->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
 #endif
 }
 
-void cText2SkinScreen::DrawRectangle(int x1, int y1, int x2, int y2, tColor Color) {
+void cText2SkinScreen::DrawRectangle(int x1, int y1, int x2, int y2, tColor Color) 
+{
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
 		mRegions[i]->DrawRectangle(x1, y1, x2, y2, Color);
@@ -75,7 +81,9 @@ void cText2SkinScreen::DrawRectangle(int x1, int y1, int x2, int y2, tColor Colo
 #endif
 }
 
-void cText2SkinScreen::DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, int Width, int Height, int Alignment) {
+void cText2SkinScreen::DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg, 
+                                const cFont *Font, int Width, int Height, int Alignment) 
+{
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
 		mRegions[i]->DrawText(x, y, s, ColorFg, ColorBg, Font, Width, Height, Alignment);
@@ -84,7 +92,8 @@ void cText2SkinScreen::DrawText(int x, int y, const char *s, tColor ColorFg, tCo
 #endif
 }
 
-void cText2SkinScreen::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quadrants) {
+void cText2SkinScreen::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quadrants) 
+{
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
 		mRegions[i]->DrawEllipse(x1, y1, x2, y2, Color, Quadrants);
@@ -93,7 +102,8 @@ void cText2SkinScreen::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color,
 #endif
 }
 
-void cText2SkinScreen::DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type) {
+void cText2SkinScreen::DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type) 
+{
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
 		mRegions[i]->DrawSlope(x1, y1, x2, y2, Color, Type);
@@ -102,7 +112,8 @@ void cText2SkinScreen::DrawSlope(int x1, int y1, int x2, int y2, tColor Color, i
 #endif
 }
 
-void cText2SkinScreen::Flush(void) {
+void cText2SkinScreen::Flush(void) 
+{
 	for (int i = 0; i < mNumRegions; ++i) {
 		if (mOffScreen)
 			mScreen->DrawBitmap(mRegions[i]->X0(), mRegions[i]->Y0(), *mRegions[i]);
@@ -115,8 +126,8 @@ void cText2SkinScreen::Flush(void) {
 		mOsd->Flush();
 }
 
-void cText2SkinScreen::DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &Bitmap, tColor ColorFg,
-                                         tColor ColorBg, tColor *ColorMask)
+void cText2SkinScreen::DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &Bitmap, 
+                                         const tColor *ColorMask)
 {
 	const tIndex *bitmap = Dest.Data(0, 0);
 	if (bitmap && Bitmap.Data(0, 0) && Dest.Intersects(x, y, x + Bitmap.Width() - 1, y + Bitmap.Height() - 1)) {
@@ -125,10 +136,15 @@ void cText2SkinScreen::DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &B
 		x -= Dest.X0();
 		y -= Dest.Y0();
 		tIndex Indexes[MAXNUMCOLORS];
-		Dest.Take(Bitmap, &Indexes, ColorFg, ColorBg);
+		Dest.Take(Bitmap, &Indexes);
+		tIndex Mask, *indexMask = NULL;
+		if (ColorMask != NULL) {
+			Mask = Dest.Index(*ColorMask);
+			indexMask = &Mask;
+		}
 		for (int ix = 0; ix < Bitmap.Width(); ix++) {
 			for (int iy = 0; iy < Bitmap.Height(); iy++) {
-				if (ColorMask == NULL || *ColorMask != *Bitmap.Data(ix, iy))
+				if (indexMask == NULL || *indexMask != Indexes[int(*Bitmap.Data(ix, iy))])
 					Dest.SetIndex(x + ix, y + iy, Indexes[int(*Bitmap.Data(ix, iy))]);
 			}
 		}
