@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.19 2005/01/07 23:57:17 lordjaxom Exp $
+ * $Id: render.c,v 1.20 2005/01/11 18:02:11 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -9,6 +9,7 @@
 #include "bitmap.h"
 #include "status.h"
 #include "screen.h"
+#include "display.h"
 #include "scroller.h"
 #include "xml/display.h"
 #include <vdr/channels.h>
@@ -555,6 +556,13 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				}
 				Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
 			}
+			else if (Token.Type == tReplayTitle) {
+				if (Text2SkinStatus.ReplayMode() == cText2SkinStatus::replayMP3) {
+					str.erase(0, 4);
+					res = str;
+				}
+				Dprintf("ReplayTitle result: |%s|\n", res.String().c_str());
+			}
 		}
 		if (res.UpdateIn() > 0) {
 			Dprintf("Passing token without cacheing\n");
@@ -590,9 +598,17 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
 
-	//default:             return txToken::Token(Token); // return literal token
-	default:             break;
-	}
+	case tAudioTrack:    {
+			cDevice *dev = cDevice::PrimaryDevice();
+			const tTrackId *Track = dev->GetTrack(dev->GetCurrentAudioTrack());
+			return Track
+			       ? (cxType)Track->description
+			       : (cxType)false;
+		}
 
-	return Text2SkinStatus.GetTokenData(Token);
+	case tAudioChannel:
+		return cText2SkinDisplayTracks::ChannelName(cDevice::PrimaryDevice()->GetAudioChannel());
+
+	default:             return Text2SkinStatus.GetTokenData(Token);
+	}
 }
