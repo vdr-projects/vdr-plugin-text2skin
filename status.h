@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: status.h,v 1.3 2005/01/02 16:54:41 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H
@@ -40,10 +40,12 @@ private:
 	tRecordings       mRecordings;
 	uint              mCurrentRecording;
 	uint              mNextRecording;
+	int               mLastLanguage;
 
 protected:
 	virtual void Replaying(const cControl *Control, const char *Name);
 	virtual void Recording(const cDevice *Device, const char *Name);
+	virtual void OsdClear(void);
 
 public:
 	cText2SkinStatus(void);

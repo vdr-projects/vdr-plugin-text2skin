@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
+ * $Id: status.c,v 1.4 2005/01/02 16:54:41 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -16,7 +16,8 @@ cText2SkinStatus::cText2SkinStatus(void):
 		mReplayMode(replayNone),
 		mRecordings(),
 		mCurrentRecording(0),
-		mNextRecording(0)
+		mNextRecording(0),
+		mLastLanguage(Setup.OSDLanguage)
 {
 	mStatus = this;
 }
@@ -138,4 +139,11 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 	};
 
 	return cxType::False;
+}
+
+void cText2SkinStatus::OsdClear(void) {
+	if (Setup.OSDLanguage != mLastLanguage) {
+		mLastLanguage = Setup.OSDLanguage;
+		cxString::Reparse();
+	}
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.4 2005/01/01 23:44:36 lordjaxom Exp $
+ *  $Id: string.c,v 1.5 2005/01/02 16:54:41 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -49,6 +49,25 @@ std::string txToken::Token(const txToken &Token)
 cxString::cxString(cxSkin *Skin):
 		mSkin(Skin)
 {
+	mStrings.push_back(this);
+}
+
+cxString::~cxString()
+{
+	tStringList::iterator it = mStrings.begin();
+	while (it != mStrings.end()) {
+		if ((*it) == this) {
+			mStrings.erase(it);
+			break;
+		}
+	}
+}
+
+void cxString::Reparse(void)
+{
+	tStringList::iterator it = mStrings.begin();
+	while (it != mStrings.end())
+		(*it)->Parse();
 }
 
 bool cxString::Parse(const std::string &Text) 

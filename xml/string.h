@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.5 2005/01/01 23:44:36 lordjaxom Exp $
+ *  $Id: string.h,v 1.6 2005/01/02 16:54:41 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -168,13 +168,19 @@ class cxSkin;
 
 class cxString {
 private:
+	typedef std::vector<cxString*> tStringList;
+	static tStringList mStrings;
+
 	std::string          mText;
 	std::string          mOriginal;
 	std::vector<txToken> mTokens;
 	cxSkin              *mSkin;
 
 public:
+	static void Reparse(void);
+
 	cxString(cxSkin *Skin);
+	~cxString();
 
 	bool Parse(const std::string &Text);
 	bool Parse(void) { return Parse(mOriginal); }
