@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.17 2005/01/23 19:55:25 lordjaxom Exp $
+ * $Id: display.c,v 1.18 2005/01/23 20:29:52 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -947,8 +947,8 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		if (Token.Index < 0) {
 			if (mItems.size() > mCurrentItem)
 				return Token.Attrib.Type == aNumber
-				       ? (cxType)mItems[Token.Index].tabs[Token.Attrib.Number]
-				       : (cxType)mItems[Token.Index].text;
+				       ? (cxType)mItems[mCurrentItem].tabs[Token.Attrib.Number]
+				       : (cxType)mItems[mCurrentItem].text;
 			else
 				return false;
 		}
