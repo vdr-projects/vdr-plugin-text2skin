@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.33 2004/06/18 16:41:08 lordjaxom Exp $
+ * $Id: render.c,v 1.36 2004/06/25 17:51:34 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -12,6 +12,8 @@
 #include <vdr/epg.h>
 #include <vdr/menu.h>
 
+cText2SkinRender *cText2SkinRender::mRender = NULL;
+
 cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Section) {
 	tArea areas[MAXOSDAREAS];
 	int numAreas = 0;
@@ -22,13 +24,14 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 	mI18n              = Loader->I18n();
 	mTheme             = Loader->Theme();
 	mSection           = Section;
-	mOsd               = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
+	mOsd               = NULL;
 	mScroller          = NULL;
 	mChannel           = NULL;
 	mChannelNumber     = 0;
 	mVolumeCurrent     = -1;
 	mVolumeTotal       = -1;
 	mVolumeMute        = false;
+	mReplayInfo        = false;
 	mReplayPlay        = false;
 	mReplayForward     = false;
 	mReplaySpeed       = 0;
@@ -47,26 +50,60 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 	mMenuScrollPage    = false;
 	mActive            = false;
 	mUpdateIn          = 0;
+	mBase              = baseRelative;
 
-	cText2SkinData::tIterator it = mData->First(mSection);
-	for (; it != mData->Last(mSection); ++it) {
-		if ((*it)->Item() == itemBackground) {
-			if (numAreas < MAXOSDAREAS) {
-				areas[numAreas].x1 = (*it)->Pos().x;
-				areas[numAreas].y1 = (*it)->Pos().y;
-				areas[numAreas].x2 = (*it)->Pos().x + (*it)->Size().w - 1;
-				areas[numAreas].y2 = (*it)->Pos().y + (*it)->Size().h - 1;
-				areas[numAreas].bpp = (*it)->Bpp();
-				++numAreas;
-			} else
-				esyslog("ERROR: text2skin: too many background areas\n");
-		}
+	mRender            = this;
+
+	cText2SkinItem *item = mData->Get(sectionSkin, itemSkin);
+	switch (mBase = item->Base()) {
+	case baseRelative:
+		mOsd = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
+		mBaseSize = SIZE(Setup.OSDWidth, Setup.OSDHeight);
+		break;
+	case baseAbsolute:
+		mOsd = cOsdProvider::NewOsd(0, 0);
+		mBaseSize = SIZE(720, 576); //XXX
+		break;
+	default:
+		break;
 	}
 
-	eOsdError res;
-	if ((res = mOsd->CanHandleAreas(areas, numAreas)) == oeOk) 
-		mOsd->SetAreas(areas, numAreas);
-	else {
+	Dprintf("base: %d\n", item->Base());
+
+	eOsdError res = oeOk;
+	areas[0].x1 = 0; 
+	areas[0].y1 = 0;
+	areas[0].x2 = mBaseSize.w - 1;
+	areas[0].y2 = mBaseSize.h - 1;
+	areas[0].bpp = 8;
+	Dprintf("trying big area %d:%d:%d:%d\n", areas[0].x1, areas[0].y1, areas[0].x2, areas[0].y2, areas[0].bpp);
+	if ((res = mOsd->CanHandleAreas(areas, 1)) == oeOk) {
+		mOsd->SetAreas(areas, 1);
+		mOsd->DrawRectangle(areas[0].x1, areas[0].y1, areas[0].x2, areas[0].y2, areas[0].bpp);
+	} else {
+		Dprintf("failed, chunking\n");
+		cText2SkinData::tIterator it = mData->First(mSection);
+		for (; it != mData->Last(mSection); ++it) {
+			if ((*it)->Item() == itemBackground) {
+				if (numAreas < MAXOSDAREAS) {
+					POINT p = (*it)->Pos();
+					SIZE  s = (*it)->Size();
+					areas[numAreas].x1 = p.x;
+					areas[numAreas].y1 = p.y;
+					areas[numAreas].x2 = p.x + s.w - 1;
+					areas[numAreas].y2 = p.y + s.h - 1;
+					areas[numAreas].bpp = (*it)->Bpp();
+					++numAreas;
+				} else
+					esyslog("ERROR: text2skin: too many background areas\n");
+			}
+		}
+	
+		if ((res = mOsd->CanHandleAreas(areas, numAreas)) == oeOk) 
+			mOsd->SetAreas(areas, numAreas);
+	}
+
+	if (res != oeOk) {
 		const char *emsg = NULL;
 		switch (res) {
 		case oeTooManyAreas:
@@ -100,6 +137,7 @@ cText2SkinRender::~cText2SkinRender() {
 	delete mScroller;
 	delete mOsd; 
 	cText2SkinBitmap::ResetCache();
+	mRender = NULL;
 }
 
 void cText2SkinRender::Action(void) {
@@ -118,6 +156,8 @@ void cText2SkinRender::Action(void) {
 }
 
 void cText2SkinRender::Update(void) {
+	Dbench(update);
+
 	if (mScroller && !mMenuScroll)
 		mOsd->SaveRegion(mScroller->Left(), mScroller->Top(), mScroller->Left() + mScroller->Width() - 1, mScroller->Top() + mScroller->Height() - 1);
 
@@ -154,6 +194,7 @@ void cText2SkinRender::Update(void) {
 		case displayPresentTitle:
 		case displayPresentShortText:
 		case displayPresentDescription:
+		case displayPresentTextDescription:
 			DisplayPresentText(*it);
 			break;
 		case displayFollowingStartTime:
@@ -239,7 +280,10 @@ void cText2SkinRender::Update(void) {
 			break;
 		}
 	}
+	Dbench(flush);
 	mOsd->Flush();
+	Dprintf("flush only took %d ms\n", Ddiff(flush));
+	Dprintf("complete flush took %d ms\n", Ddiff(update));
 }
 
 void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, int Alpha, const string &Path) {
@@ -247,7 +291,6 @@ void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const 
 	if (Path != "") {
 		char *p;
 		asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
-		Dprintf("Trying to load image: %s\n", p);
 		if ((bmp = cText2SkinBitmap::Load(p, Alpha)) != NULL) {
 			if (Bg) bmp->SetColor(0, *Bg);
 			if (Fg) bmp->SetColor(1, *Fg);
@@ -296,41 +339,35 @@ void cText2SkinRender::DrawProgressbar(const POINT &Pos, const SIZE &Size, int C
 	if (Current > Total)
 		Current = Total;
 	if (Size.w > Size.h) {
-		SIZE size = { Size.w * Current / Total, Size.h };
-		DrawRectangle(Pos, size, Fg);
+		DrawRectangle(Pos, SIZE(Size.w * Current / Total, Size.h), Fg);
 
 		if (Marks) {
-			bool Start = true;
+			bool start = true;
 			for (const cMark *m = Marks->First(); m; m = Marks->Next(m)) {
-				POINT p1 = { Pos.x + m->position * Size.w / Total, Pos.y };
-				if (Start) {
+				POINT pt(Pos.x + m->position * Size.w / Total, Pos.y);
+				if (start) {
 					const cMark *m2 = Marks->Next(m);
 					tColor col = clrRed;
-					POINT p2 = { p1.x, Pos.y + Size.h / 3 };
-					SIZE s = { ((m2 ? m2->position : Total) - m->position) * Size.w / Total, Size.h / 3 };
-					DrawRectangle(p2, s, &col);
+					DrawRectangle(POINT(pt.x, Pos.y + Size.h / 3), SIZE(((m2 ? m2->position : Total) - m->position) * Size.w / Total, Size.h / 3), &col);
 				}
-				DrawMark(p1, Size, Start, m->position == Current, false);
-				Start = !Start;
+				DrawMark(pt, Size, start, m->position == Current, false);
+				start = !start;
 			}
 		}
 	} else {
-		SIZE size = { Size.w, Size.h * Current / Total };
-		DrawRectangle(Pos, size, Fg);
+		DrawRectangle(Pos, SIZE(Size.w, Size.h * Current / Total), Fg);
 		
 		if (Marks) {
-			bool Start = true;
+			bool start = true;
 			for (const cMark *m = Marks->First(); m; m = Marks->Next(m)) {
-				POINT p1 = { Pos.x, Pos.y + m->position * Size.h / Total };
-				if (Start) {
+				POINT pt(Pos.x, Pos.y + m->position * Size.h / Total);
+				if (start) {
 					const cMark *m2 = Marks->Next(m);
 					tColor col = clrRed;
-					POINT p2 = { Pos.x + Size.w / 3, p1.y };
-					SIZE s = { Size.w / 3, ((m2 ? m2->position : Total) - m->position) * Size.h / Total };
-					DrawRectangle(p2, s, &col);
+					DrawRectangle(POINT(Pos.x + Size.w / 3, pt.y), SIZE(Size.w / 3, ((m2 ? m2->position : Total) - m->position) * Size.h / Total), &col);
 				}
-				DrawMark(p1, Size, Start, m->position == Current, true);
-				Start = !Start;
+				DrawMark(pt, Size, start, m->position == Current, true);
+				start = !start;
 			}
 		}
 	}
@@ -339,26 +376,20 @@ void cText2SkinRender::DrawProgressbar(const POINT &Pos, const SIZE &Size, int C
 void cText2SkinRender::DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal) {
 	tColor mark = clrBlack;
 	tColor current = clrRed;
-	POINT p1 = { Pos.x, Pos.y };
+	POINT p1 = Pos;
 	if (Horizontal) {
-		SIZE s1 = { Size.w, 1 };
-		DrawRectangle(p1, s1, &mark);
+		DrawRectangle(p1, SIZE(Size.w, 1), &mark);
 		const int d = Size.w / (Current ? 3 : 9);
 		for (int i = 0; i < d; i++) {
 			int h = Start ? i : Size.w - 1 - i;
-			POINT p2 = { Pos.x + h, Pos.y - d + i };
-			SIZE s2 = { 1, (d - i) * 2 };
-			DrawRectangle(p2, s2, Current ? &current : &mark);
+			DrawRectangle(POINT(Pos.x + h, Pos.y - d + i), SIZE(1, (d - i) * 2), Current ? &current : &mark);
 		}
 	} else {
-		SIZE s1 = { 1, Size.h };
-		DrawRectangle(p1, s1, &mark);
+		DrawRectangle(p1, SIZE(1, Size.h), &mark);
 		const int d = Size.h / (Current ? 3 : 9);
 		for (int i = 0; i < d; i++) {
 			int h = Start ? i : Size.h - 1 - i;
-			POINT p2 = { Pos.x - d + i, Pos.y + h };
-			SIZE s2 = { (d - i) * 2, 1 };
-			DrawRectangle(p2, s2, Current ? &current : &mark);
+			DrawRectangle(POINT(Pos.x - d + i, Pos.y + h), SIZE((d - i) * 2, 1), Current ? &current : &mark);
 		}
 	}
 }
@@ -379,13 +410,13 @@ void cText2SkinRender::DrawScrollbar(const POINT &Pos, const SIZE &Size, int Off
 		POINT sp = Pos;
 		SIZE ss = Size;
 		sp.y += Size.h * Offset / Total;
-		ss.h = Size.h * Shown / Total;
+		ss.h = Size.h * Shown / Total + 1;
 		DrawRectangle(sp, ss, Fg);
 	} else {
 		POINT sp = Pos;
 		SIZE ss = Size;
 		sp.x += Size.w * Offset / Total;
-		ss.w = Size.w * Shown / Total;
+		ss.w = Size.w * Shown / Total + 1;
 		DrawRectangle(sp, ss, Fg);
 	}
 }
@@ -588,22 +619,27 @@ void cText2SkinRender::DisplayPresentText(cText2SkinItem *Item) {
 	}
 	
 	if (event) {
-		const char *text = NULL;
+		string text;
 		switch (Item->Display()) {
 		case displayPresentTitle:
-			text = event->Title();
+			text = event->Title() ? event->Title() : "";
 			break;
 		case displayPresentShortText:
-			text = event->ShortText();
+			text = event->ShortText() ? event->ShortText() : "";
 			break;
 		case displayPresentDescription:
-			text = event->Description();
+			text = event->Description() ? event->Description() : "";
 			break;
+		case displayPresentTextDescription:
+			if (event->ShortText())
+				text += (string)event->ShortText() + "\n\n";
+			if (event->Description())
+				text += event->Description();
 		default:
 			break;
 		}
 
-		if (text) {
+		if (text != "") {
 			ItemData data;
 			data.text = text;
 			DisplayItem(Item, &data);
@@ -775,30 +811,32 @@ void cText2SkinRender::DisplayReplayPrompt(cText2SkinItem *Item) {
 }
 
 void cText2SkinRender::DisplayReplaySymbol(cText2SkinItem *Item) {
-	ItemData data;
-	switch (Item->Display()) {
-	case displayPlay:
-		data.path = (mReplaySpeed == -1 && mReplayPlay) ? Item->Path() : Item->AltPath(); 
-		break;
-	case displayPause:
-		data.path = (mReplaySpeed == -1 && !mReplayPlay) ? Item->Path() : Item->AltPath(); 
-		break;
-	case displayFastFwd:
-		data.path = (mReplaySpeed != -1 && mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); 
-		break;
-	case displayFastRew:
-		data.path = (mReplaySpeed != -1 && mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); 
-		break;
-	case displaySlowFwd:
-		data.path = (mReplaySpeed != -1 && !mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); 
-		break;
-	case displaySlowRew:
-		data.path = (mReplaySpeed != -1 && !mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); 
-		break;
-	default:
-		break;
+	if (mReplayInfo) {
+		ItemData data;
+		switch (Item->Display()) {
+		case displayPlay:
+			data.path = (mReplaySpeed == -1 && mReplayPlay) ? Item->Path() : Item->AltPath(); 
+			break;
+		case displayPause:
+			data.path = (mReplaySpeed == -1 && !mReplayPlay) ? Item->Path() : Item->AltPath(); 
+			break;
+		case displayFastFwd:
+			data.path = (mReplaySpeed != -1 && mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); 
+			break;
+		case displayFastRew:
+			data.path = (mReplaySpeed != -1 && mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); 
+			break;
+		case displaySlowFwd:
+			data.path = (mReplaySpeed != -1 && !mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); 
+			break;
+		case displaySlowRew:
+			data.path = (mReplaySpeed != -1 && !mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); 
+			break;
+		default:
+			break;
+		}
+		DisplayItem(Item, &data);
 	}
-	DisplayItem(Item, &data);
 }
 
 void cText2SkinRender::DisplayReplayMode(cText2SkinItem *Item) {
@@ -896,7 +934,7 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 	cText2SkinItem *item = mData->Get(sectionMenu, itemMenuItem);
 
 	if (item && area) {
-		POINT pos = area->Pos();
+		POINT pos = area->Pos1();
 		
 		int max = area->Size().h / item->Size().h;
 		for (int i = 0; i < min((int)mMenuItems.size(), max); ++i) {
@@ -919,19 +957,15 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 		
 			POINT itempos = pos;
 			itempos.y += i * item->Size().h;
-			itempos += Item->Pos();
+			itempos += Item->Pos1();
 			if (Item->Item() == itemText) { // draw tabs
 				for (int t = 0; t < cSkinDisplayMenu::MaxTabs; ++t) {
 					if (mMenuItems[i].tabs[t] != "") {
 						ItemData data;
 						cText2SkinItem cur = *Item;
-						cur.mPos = itempos;
-						cur.mPos.x += mMenuTabs[t];
-						cur.mSize.w -= mMenuTabs[t];
-						/*if (t == cSkinDisplayMenu::MaxTabs || !mMenuTabs[t + 1])
-							cur.mSize.w -= mMenuTabs[t];
-						else
-							cur.mSize.w = mMenuTabs[t + 1] - mMenuTabs[t];*/
+						cur.Pos1() = itempos;
+						cur.Pos1().x += mMenuTabs[t];
+						cur.Pos2() += itempos;
 						data.text = mMenuItems[i].tabs[t];
 						DisplayItem(&cur, &data);
 					}
@@ -941,7 +975,8 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 			} else {
 				ItemData data;
 				cText2SkinItem cur = *Item;
-				cur.mPos = itempos;
+				cur.Pos1() = itempos;
+				cur.Pos2() += itempos;
 				DisplayItem(&cur, &data);
 			}
 		}
@@ -953,15 +988,14 @@ string cText2SkinRender::ItemText(cText2SkinItem *Item) {
 }
 
 string cText2SkinRender::ItemText(cText2SkinItem *Item, const string &Content) {
-	string s;
 	if (Item->Text() != "") {
-		s = mI18n ? mI18n->Translate(Item->Text()) : Item->Text();
+		string s = mI18n ? mI18n->Translate(Item->Text()) : Item->Text();
 		int pos;
-		while ((pos = s.find('$')) != -1)
-			s.replace(pos, 1, Content);
-	} else
-		s = Content;
-	return s;
+		while ((pos = s.find("{*}")) != -1)
+			s.replace(pos, 3, Content);
+		return s;
+	}
+	return Content;
 }
 
 tColor *cText2SkinRender::ItemFg(cText2SkinItem *Item) {
@@ -993,3 +1027,9 @@ int cText2SkinRender::GetEditableWidth(MenuItem Item, bool Current) {
 	item = mData->Get(sectionMenu, itemMenuItem);
 	return item->Size().w - mMenuTabs[1];
 }
+	
+POINT cText2SkinRender::Transform(const POINT &Pos) {
+	SIZE base = mRender->mBaseSize;
+	return POINT(Pos.x < 0 ? base.w + Pos.x : Pos.x, Pos.y < 0 ? base.h + Pos.y : Pos.y);
+}
+

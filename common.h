@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.10 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: common.h,v 1.12 2004/06/25 17:51:34 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -16,8 +16,12 @@ using std::map;
 
 #ifdef DEBUG
 #	define Dprintf(x...) fprintf(stderr, x);
+#	define Dbench(x) time_t bench_##x = time_ms();
+#	define Ddiff(x) time_ms() - bench_##x
 #else
 #	define Dprintf(x...)
+#	define Dbench(x)
+#	define Ddiff(x)
 #endif
 
 // sections and items known by skin files
@@ -117,6 +121,7 @@ enum eSkinDisplay {
 	displayMenuCurrent,                // exc: text (TODO: logo?)
 	displayMenuGroups,                 // exc: text (TODO: logo?)
 	displayReplayMode,                 // exc: text, logo
+	displayPresentTextDescription,     // exc: text
 	__DISPLAY_COUNT__
 };
 
@@ -129,21 +134,30 @@ enum eReplayMode {
 	replayVCD,
 	__REPLAY_COUNT__
 };
+
+enum eBaseCoordinate {
+	baseRelative,
+	baseAbsolute,
+	__BASE_COUNT__
+};
 	
 extern const string SectionNames[__SECTION_COUNT__];
 extern const string ItemNames[__ITEM_COUNT__];
 extern const string DisplayNames[__DISPLAY_COUNT__];
 extern const string ReplayNames[__REPLAY_COUNT__];
+extern const string BaseNames[__BASE_COUNT__];
 
 // geometrical structures
 
 struct POINT {
 	int x, y;
+	POINT(int _x = 0, int _y = 0) { x = _x; y = _y; }
 	POINT &operator+=(const POINT &pt) { x += pt.x; y += pt.y; return *this; }
 };
 
 struct SIZE {
 	int w, h;
+	SIZE(int _w = 0, int _h = 0) { w = _w; h = _h; }
 };
 
 // class forwards
@@ -164,5 +178,8 @@ bool ParseVar(const char *Text, const char *Name, const cFont **Value);
 bool ParseVar(const char *Text, const char *Name, string &Value);
 bool ParseVar(const char *Text, const char *Name, tColor *Value);
 bool ParseVar(const char *Text, const char *Name, eTextAlignment *Value);
+bool ParseVar(const char *Text, const char *Name, eBaseCoordinate *Value);
+
+void SkipQuotes(string &Value);
 
 #endif // VDR_TEXT2SKIN_COMMON_H

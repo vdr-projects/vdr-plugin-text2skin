@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.8 2004/06/18 16:08:11 lordjaxom Exp $
+ * $Id: i18n.c,v 1.9 2004/06/22 16:48:03 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -145,9 +145,4 @@ bool cText2SkinI18n::Load(const string &Filename) {
 		return true;
 	}
 	return false;
-}
-
-string cText2SkinI18n::Translate(const string &Text) {
-	string s = I18nTranslate(Text.c_str(), mIdentity.c_str());
-	return s != "" ? s : Text;
 }

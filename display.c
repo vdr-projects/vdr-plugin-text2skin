@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.17 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: display.c,v 1.18 2004/06/24 18:37:30 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -109,8 +109,10 @@ void cText2SkinDisplayReplay::SetTitle(const char *Title) {
 }
 
 void cText2SkinDisplayReplay::SetMode(bool Play, bool Forward, int Speed) {
+	Dprintf("speed: Play = %s, Forward = %s, Speed = %d\n", Play ? "true" : "false", Forward ? "true" : "false", Speed);
 	mRender->Lock();
-	if (mRender->mReplayPlay != Play || mRender->mReplayForward != Forward || mRender->mReplaySpeed != Speed) {
+	if (mRender->mReplayInfo == false || mRender->mReplayPlay != Play || mRender->mReplayForward != Forward || mRender->mReplaySpeed != Speed) {
+		mRender->mReplayInfo = true;
 		mRender->mReplayPlay = Play;
 		mRender->mReplayForward = Forward;
 		mRender->mReplaySpeed = Speed;

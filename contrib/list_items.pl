@@ -160,12 +160,40 @@ while (defined($_ = <DAT>)) {
 		next if /mItem;\s*$/;
 		/m([\w]+);\s*$/ and do {
 			$what = lc($1);
-			printo i18n("Parameter:"), 15;
-			print "$what\n";
-			printo i18n("Description:"), 15;
-			print "\n";
-			printo i18n("Default:"), 15;
-			print "\n\n";
+			if ($what eq "pos1") {
+				printo i18n("Parameter:"), 15;
+				print "x1\n";
+				printo i18n("Description:"), 15;
+				print "\n";
+				printo i18n("Default:"), 15;
+				print "\n\n";
+				printo i18n("Parameter:"), 15;
+				print "y1\n";
+				printo i18n("Description:"), 15;
+				print "\n";
+				printo i18n("Default:"), 15;
+				print "\n\n";
+			} elsif ($what eq "pos2") {
+				printo i18n("Parameter:"), 15;
+				print "x2\n";
+				printo i18n("Description:"), 15;
+				print "\n";
+				printo i18n("Default:"), 15;
+				print "\n\n";
+				printo i18n("Parameter:"), 15;
+				print "y2\n";
+				printo i18n("Description:"), 15;
+				print "\n";
+				printo i18n("Default:"), 15;
+				print "\n\n";
+			} else {
+				printo i18n("Parameter:"), 15;
+				print "$what\n";
+				printo i18n("Description:"), 15;
+				print "\n";
+				printo i18n("Default:"), 15;
+				print "\n\n";
+			}
 		};
 	}
 }

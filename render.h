@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.22 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: render.h,v 1.24 2004/06/24 18:37:30 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -26,6 +26,8 @@ class cText2SkinRender: public cThread {
 	friend class cText2SkinDisplayMenu;
 
 private:
+	static cText2SkinRender *mRender;
+
 	cText2SkinData   *mData;
 	cText2SkinI18n   *mI18n;
 	cText2SkinTheme  *mTheme;
@@ -56,6 +58,7 @@ private:
 
 	// replay display
 	string            mReplayTitle;
+	bool              mReplayInfo;
 	bool              mReplayPlay;
 	bool              mReplayForward;
 	int               mReplaySpeed;
@@ -98,6 +101,10 @@ private:
 	cCondVar          mDoUpdate;
 	cMutex            mMutex;
 	int               mUpdateIn;
+
+	// coordinate transformation
+	eBaseCoordinate   mBase;
+	SIZE              mBaseSize;
 	
 protected:
 	// Update thread
@@ -156,6 +163,8 @@ protected:
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Section);
 	virtual ~cText2SkinRender();
+
+	static POINT Transform(const POINT &Pos);
 
 	void Flush(void) { Lock(); mDoUpdate.Broadcast(); Unlock(); }
 };

@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.16 2004/06/12 18:00:05 lordjaxom Exp $
+ * $Id: data.h,v 1.17 2004/06/22 16:48:03 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -12,13 +12,11 @@
 #include <vdr/config.h>
 
 class cText2SkinItem {
-	friend class cText2SkinRender;
-
 private:
 	eSkinItem       mItem;
 	eSkinDisplay    mDisplay;
-	POINT           mPos;
-	SIZE            mSize;
+	POINT           mPos1;
+	POINT           mPos2;
 	int             mBpp;
 	int             mArc;
 	int             mAlpha;
@@ -33,6 +31,7 @@ private:
 	string          mType;
 	string          mFormat;
 	eTextAlignment  mAlign;
+	eBaseCoordinate mBase;
 
 protected:
 	bool ParseItem(const char *Text);
@@ -43,10 +42,16 @@ public:
 
 	bool Parse(const char *Text);
 
+	// writeables
+	POINT          &Pos1(void)          { return mPos1; }
+	POINT          &Pos2(void)          { return mPos2; }
+
+	// readables
 	eSkinItem       Item(void)    const { return mItem; }
 	eSkinDisplay    Display(void) const { return mDisplay; }
-	const POINT    &Pos(void)     const { return mPos; }
-	const SIZE     &Size(void)    const { return mSize; }
+	eBaseCoordinate Base(void)    const { return mBase; }
+	const POINT    &Pos1(void)    const { return mPos1; }
+	const POINT    &Pos2(void)    const { return mPos2; }
 	int             Bpp(void)     const { return mBpp; }
 	int             Arc(void)     const { return mArc; }
 	int             Alpha(void)   const { return mAlpha; }
@@ -61,6 +66,10 @@ public:
 	const string   &Type(void)    const { return mType; }
 	const string   &Format(void)  const { return mFormat; }
 	eTextAlignment  Align(void)   const { return mAlign; }
+
+	// auto-conversion
+	const POINT     Pos(void)     const;
+	const SIZE      Size(void)    const;
 };
 
 class cText2SkinData: public cText2SkinFile {

@@ -1,6 +1,26 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-25: Version 0.0.7
+
+- on devices capable of full-color OSD, bpp's have no meaning anymore
+  (but will still work like usual). On such devices, a full-screen 8-bit
+  OSD will be used
+- new display-item "PresentTextDescription" displays combined 
+  ShortText/Description
+- displaying replay symbols only if information is actually available
+- exchanged x, y, width, height with x1, y1, x2, y2 coordinates
+  (skin version is now 0.0.3)
+- coordinates may be negative to respect dynamic OSD settings
+  (negative coordinates give pixels from the right or bottom edge)
+- added base parameter to Skin item to be able to use full screen in absolute
+  mode
+- added a script to convert 0.0.2 skins to 0.0.3
+- added parsing quoted texts (path="Bla.jpg" etc. will work correctly now)
+- fixed translator to escape the dollar sign
+- fixed display of scrollbar (REALLY!)
+- fixed linkage of libMagick++
+
 2004-06-18: Version 0.0.6
 
 - reimplemented image cache (fixes segfaults and speeds up image loading)

@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.11 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: loader.c,v 1.12 2004/06/22 16:48:03 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -53,10 +53,10 @@ void cText2SkinLoader::Load(const char *Skin) {
 					new cText2SkinLoader(data, translations, theme, Skin, skin->Name());
 					return;
 				} else
-					esyslog("ERROR: text2skin: Skin %s is version %s, expecting %s", Skin, skin->Version().c_str(), cText2SkinPlugin::ThemeVersion());
+					esyslog("ERROR: text2skin: Skin is version %s, expecting %s", skin->Version().c_str(), cText2SkinPlugin::ThemeVersion());
 				return;
 			} else
-				esyslog("ERROR: text2skin: Item=Skin is missing in Skin %s", Skin);
+				esyslog("ERROR: text2skin: Item=Skin is missing in Skin");
 		}
 		delete data;
 	} else

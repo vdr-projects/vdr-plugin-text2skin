@@ -85,7 +85,7 @@ folder.
 Inside that "plugins" folder, create a subfolder called "text2skin". Inside
 "text2skin", create one folder for each skin. These skin-folders must have the
 same names as the skins residing in them.  Each skin must at least have a file
-carrying the same name, but ending in ".skin". Example:
+carrying the same name, but ending in ".skin".
 
 Example (the Skin is called myskin):
 /video0/plugins/text2skin/

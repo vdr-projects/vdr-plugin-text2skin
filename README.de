@@ -87,11 +87,13 @@ Innerhalb dieses "plugins" Ordners erstellen Sie einen Ordner namens
 "text2skin". In "text2skin" erstellen Sie einen weiteren Ordner pro Skin. Diese
 Skin-Ordner müssen den gleichen Namen tragen wie die Skins in ihnen. Jedes 
 Skin muss mindestens eine Datei enthalten, die denselben Namen trägt, aber mit
-der Endung ".skin". Beispiel:
+der Endung ".skin".
 
-/video0/plugins/text2skin/demo/demo.skin
-/video0/plugins/text2skin/skin2/skin2.skin
-...
+Beispiel (das Skin heisst myskin):
+/video0/plugins/text2skin/
+/video0/plugins/text2skin/myskin/
+/video0/plugins/text2skin/msykin/msykin.skin
+/video0/plugins/text2skin/myskin/channeldisplay.png
 
 Die anderen Dateien in dem Skin-Ordner sind weitere Beschreibungsdateien (für
 Farben und Übersetzungen) sowie Bilder, Logos und Symbole.

@@ -24,6 +24,14 @@ This is the documentation to the Text2Skin file-format (version 0.0.2).
 How To create text-based skins
 ------------------------------
 
+If you are using an output driver capable of displaying a full-screen 256 color
+OSD (i.e. an upgraded DVB-card, or plugins like SoftDevice), the plugin will
+detect this and make use of the full-screen area. If you intend to write a skin
+that will only work on such a device, you can skip the section concerning 
+backgrounds. However, if you plan to make the skin usable on a usual DVB-card,
+even if you don't use one yourself, you should read the following sections
+carefully.
+
 It is important that you understand the limitations of the OSD memory. If there
 are too many objects with too many colors defined, VDR will throw an error and
 some areas will not be displayed. For other output devices this limitations may
@@ -89,6 +97,8 @@ Item=Skin,name=Test,version=0.0.2;
 # Background area to draw on (a background MUST be specified to make items
 # drawn on it actually visible!!!), with background picture. Bpp=4 equals 16 
 # colors
+# APPENDIX: Bpp is useless ff the plugin detects a fullscreen-capable Output 
+# device. In that case, this item just draws the background image
 Item=Background,path=channeltop.xpm,x=42,y=350,width=540,height=32,bpp=4;
 # A second area below the first one, again with 16 colors (make 32 colors
 # alltogether)
@@ -112,6 +122,15 @@ END_EN
 
 Wie man textbasierte Skins erstellt
 -----------------------------------
+
+Wenn Sie einen Ausgabetreiber nutzen, der fähig ist, ein 256-Farben Vollbild
+als OSD darzustellen (z.B. eine aufgerüstete DVB-Karte oder Plugins wie
+SoftDevice), wird das Plugin dies erkennen und die volle Bildfläche nutzen. 
+Wenn Sie beabsichtigen, ein Skin zu schreiben, welches nur auf solchen Geräten
+funktionieren soll, können Sie die folgenden Sektionen, die die Backgrounds 
+betreffen überspringen. Wenn Sie jedoch planen Ihr Skin auch auf normalen
+DVB-Karten nutzbar zu machen, auch wenn Sie selbst eine solche nicht nutzen,
+sollten Sie die folgenden Abschnitte aufmerksam lesen.
 
 Es ist wichtig, dass sie die Limitierungen des OSD Speichers verstehen. Wenn 
 zuviele Objekte mit zuvielen Farben definiert werden, dann wird VDR einen 
@@ -182,6 +201,9 @@ Item=Skin,name=Test,version=0.0.2;
 # Hintergrundbereich wo wir drauf zeichnen (so etwas MUSS angegeben werden, 
 # damit Objekte die darauf gezeichnet werden überhaupt sichtbar werden), mit
 # Bild. Bpp=4 entspricht 16 Farben
+# ERGÄNZUNG: Wenn das Plugin eine Fullscreen fähige Ausgabeschnittstelle 
+# erkennt, ist bpp bedeutungslos, und der Background wird nur fürs Bild 
+# gebraucht
 Item=Background,path=channeltop.xpm,x=42,y=350,width=540,height=32,bpp=4;
 # Ein zweiter Bereich unter dem ersten, wieder mit 16 Farben (macht 32 Farben 
 # insgesamt)

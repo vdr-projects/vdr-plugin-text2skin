@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.10 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: common.c,v 1.12 2004/06/25 17:51:34 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -29,10 +29,13 @@ const string DisplayNames[__DISPLAY_COUNT__] =
 	  "MessageStatus", "MessageInfo", "MessageWarning", "MessageError", 
 	  "MenuTitle", "MenuRed", "MenuGreen", "MenuYellow", "MenuBlue", "MenuText", 
 	  "MenuRecording", "MenuScrollUp", "MenuScrollDown", "MenuItems", 
-		"MenuCurrent", "MenuGroups", "ReplayMode" };
+		"MenuCurrent", "MenuGroups", "ReplayMode", "PresentTextDescription" };
 
 const string ReplayNames[__REPLAY_COUNT__] =
 	{ "", "normal", "mp3", "mplayer", "dvd", "vcd" };
+
+const string BaseNames[__BASE_COUNT__] =
+	{ "rel", "abs" };
 	
 const char *SkinPath(void) {
 	return cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
@@ -123,8 +126,13 @@ bool ParseVar(const char *Text, const char *Name, string &Value){
 			--ptr1;
 		ptr1 += strlen(str);
 		if ((ptr2 = strchr(ptr1, ',')) || (ptr2 = strchr(ptr1, ';'))) {
+			int pos;
 			Value = ptr1;
 			Value.erase(ptr2 - ptr1);
+			if (Value[0] == '"')
+				SkipQuotes(Value);
+			while ((pos = Value.find('$')) != -1)
+				Value.replace(pos, 1, "{*}");
 			res = true;
 		}
 	}
@@ -166,3 +174,32 @@ bool ParseVar(const char *Text, const char *Name, const cFont **Value) {
 	return false;
 }
 
+bool ParseVar(const char *Text, const char *Name, eBaseCoordinate *Value) {
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		int i;
+		for (i = 0; i < __BASE_COUNT__; ++i) {
+			if (BaseNames[i] == value) {
+				*Value = (eBaseCoordinate)i;
+				return true;
+			}
+			if (i == __BASE_COUNT__)
+				esyslog("ERROR: text2skin: unknown coordinate base %s", value.c_str());
+		}
+	}
+	return false;
+}
+
+void SkipQuotes(string &Value) {
+	char quote = Value[0];
+	int i;
+	Value.erase(0, 1);
+	for (i = 0; i < (int)Value.length() && Value[i] != quote; ++i) {
+		if (Value[i] == '\\')
+			Value.erase(i, 1);
+	}
+	if (Value[i] == quote)
+		Value.erase(i, 1);
+	else
+		esyslog("ERROR: text2skin: missing closing %c", quote);
+}

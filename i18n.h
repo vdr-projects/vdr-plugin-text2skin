@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.h,v 1.2 2004/06/07 18:23:11 lordjaxom Exp $
+ * $Id: i18n.h,v 1.3 2004/06/22 16:48:03 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_I18N_H
@@ -25,7 +25,7 @@ public:
 	virtual ~cText2SkinI18n();
 
 	virtual bool Load(const string &Filename);
-	string Translate(const string &Text);
+	string Translate(const string &Text) { return I18nTranslate(Text.c_str(), mIdentity.c_str()); }
 };
 
 #endif // VDR_TEXT2SKIN_I18N_H

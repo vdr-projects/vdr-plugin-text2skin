@@ -1,22 +1,20 @@
 /*
- * $Id: data.c,v 1.19 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: data.c,v 1.20 2004/06/22 16:48:03 lordjaxom Exp $
  */
 
 #include "data.h"
 #include "common.h"
+#include "render.h"
 
 cText2SkinItem::cText2SkinItem(void) {
 	mItem    = itemUnknown;
 	mDisplay = displayAlways;
-	mPos.x   = 0;
-	mPos.y   = 0;
-	mSize.w  = 0;
-	mSize.h  = 0;
 	mBpp     = 4;
 	mArc     = 0;
 	mAlpha   = 0;
 	mFont    = cFont::GetFont(fontOsd);
 	mAlign   = taDefault;
+	mBase    = baseRelative;
 }
 
 cText2SkinItem::~cText2SkinItem() {
@@ -28,24 +26,27 @@ bool cText2SkinItem::Parse(const char *Text) {
 	bool res = false;
 
 	// check if this is an item
-	if (ParseVar(ptr, "Item", &mItem)) {
-		if (mItem == itemSkin && (!ParseVar(ptr, "name", mName) || !ParseVar(ptr, "version", mVersion)))
+	if (ParseVar(ptr, "Item", &mItem) && mItem != itemUnknown) {
+		ParseItem(ptr);
+
+		if (mItem == itemSkin && (mName == "" || mVersion == ""))
 			esyslog("ERROR: text2skin: Item=Skin is missing the name and/or version parameter(s)");
-		else if (mItem != itemUnknown) {
-			ParseItem(ptr);
+		else
 			res = true;
-		}
 	} else 
 		esyslog("ERROR: text2skin: unknown item in skin");
 	return res;
 }
 
 bool cText2SkinItem::ParseItem(const char *Text) {
+	ParseVar(Text, "name",     mName);
+	ParseVar(Text, "version",  mVersion);
+	ParseVar(Text, "base",    &mBase);
 	ParseVar(Text, "display", &mDisplay);
-	ParseVar(Text, "x",       &mPos.x);
-	ParseVar(Text, "y",       &mPos.y);
-	ParseVar(Text, "width",   &mSize.w);
-	ParseVar(Text, "height",  &mSize.h);
+	ParseVar(Text, "x1",      &mPos1.x);
+	ParseVar(Text, "y1",      &mPos1.y);
+	ParseVar(Text, "x2",      &mPos2.x);
+	ParseVar(Text, "y2",      &mPos2.y);
 	ParseVar(Text, "bpp",     &mBpp);
 	ParseVar(Text, "arc",     &mArc);
 	ParseVar(Text, "alpha",   &mAlpha);
@@ -59,6 +60,16 @@ bool cText2SkinItem::ParseItem(const char *Text) {
 	ParseVar(Text, "format",   mFormat);
 	ParseVar(Text, "align",   &mAlign);
 	return true;
+}
+
+const POINT cText2SkinItem::Pos(void) const {
+	return cText2SkinRender::Transform(mPos1);
+}
+
+const SIZE cText2SkinItem::Size(void) const {
+	POINT p1 = cText2SkinRender::Transform(mPos1);
+	POINT p2 = cText2SkinRender::Transform(mPos2);
+	return SIZE(p2.x - p1.x + 1, p2.y - p1.y + 1);
 }
 
 // --- cText2SkinData ---------------------------------------------------------

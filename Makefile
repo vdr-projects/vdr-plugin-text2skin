@@ -9,7 +9,7 @@ HAVE_IMAGEMAGICK=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.12 2004/06/18 16:08:11 lordjaxom Exp $
+# $Id: Makefile,v 1.14 2004/06/24 18:37:30 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -34,10 +34,6 @@ VDRDIR = ../../..
 LIBDIR = ../../lib
 TMPDIR = /tmp
 
-### Allow user defined options to overwrite defaults:
-
--include $(VDRDIR)/Make.config
-
 ### The version number of VDR (taken from VDR's "config.h"):
 
 VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
@@ -49,6 +45,8 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
 
+-include $(VDRDIR)/Make.config
+
 ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2
 	LIBS += -lImlib2
@@ -56,7 +54,8 @@ endif
 
 ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
-	LIBS += -lMagick -lMagick++
+#	LIBS += -lMagick -lMagick++
+	LIBS += $(shell Magick++-config --ldflags --libs)
 endif
 
 ifdef DEBUG
@@ -66,6 +65,10 @@ endif
 INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+
+### Allow user defined options to overwrite defaults:
+
+-include $(VDRDIR)/Make.config
 
 ### The object files (add further files here):
 
