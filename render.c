@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.26 2005/01/21 18:28:04 lordjaxom Exp $
+ * $Id: render.c,v 1.27 2005/01/23 12:27:15 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -255,7 +255,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 								nexttab = GetTab(n);
 							}
 							
-							if (t >= 0 && nexttab > 0 && nexttab < obj.mPos2.x)
+							if (t >= 0 && nexttab > 0 && nexttab < obj.mPos1.x + obj.Size().w - 1)
 								// there is a "next tab" with text
 								obj.mPos2.x = Object->mPos1.x + o->mPos1.x + nexttab;
 							else {
@@ -281,7 +281,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 							}
 
 							if (isprogress) {
-								Dprintf("detected progress bar tab\n");
+								//Dprintf("detected progress bar tab\n");
 								if (obj.Condition() == NULL || obj.Condition()->Evaluate()) {
 									int total = text.length() - 2;
 									int current = 0;
