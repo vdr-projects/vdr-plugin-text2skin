@@ -13,7 +13,7 @@ HAVE_FREETYPE=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.3 2005/01/05 19:33:27 lordjaxom Exp $
+# $Id: Makefile,v 1.4 2005/01/27 17:32:07 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -89,7 +89,10 @@ ifdef DEBUG
 	CXXFLAGS += -g -fno-inline
 	DEFINES += -DDEBUG
 else
-	CXXFLAGS += -O2
+	CXXFLAGS += -O2 -g
+ifdef BENCH
+	DEFINES += -DBENCH
+endif
 endif
 
 INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/linux/include -I$(DVBDIR)/include -I.
@@ -117,6 +120,9 @@ all: libvdr-$(PLUGIN).so
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
+ifndef DEBUG
+	strip $(LIBDIR)/$@.$(VDRVERSION)
+endif
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
