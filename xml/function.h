@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.7 2005/01/08 00:08:21 lordjaxom Exp $
+ *  $Id: function.h,v 1.8 2005/01/11 18:17:46 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -33,6 +33,7 @@ public:
 		fun_lt     = INTERNAL +  9,
 		fun_ge     = INTERNAL + 10,
 		fun_le     = INTERNAL + 11,
+		fun_ne     = INTERNAL + 12,
 	};
 
 private:

@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.8 2005/01/07 21:49:55 lordjaxom Exp $
+ *  $Id: function.c,v 1.9 2005/01/11 18:17:46 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -10,7 +10,7 @@
 #include <vdr/tools.h>
 
 static const char *Internals[] = {
-	"not", "and", "or", "equal", "file", "trans", "plugin", "gt",  "lt", "ge", "le", NULL
+	"not", "and", "or", "equal", "file", "trans", "plugin", "gt",  "lt", "ge", "le", "ne", NULL
 };
 
 cxFunction::cxFunction(cxSkin *Skin):
@@ -144,6 +144,7 @@ bool cxFunction::Parse(const std::string &Text)
 						case fun_or:   params = -1; break;
 
 						case fun_eq:   
+						case fun_ne:   
 						case fun_gt:
 						case fun_lt:
 						case fun_ge:
@@ -224,6 +225,9 @@ cxType cxFunction::Evaluate(void) const
 
 	case fun_eq:
 		return mParams[0]->Evaluate() == mParams[1]->Evaluate();
+
+	case fun_ne:
+		return mParams[0]->Evaluate() != mParams[1]->Evaluate();
 
 	case fun_gt:
 		return mParams[0]->Evaluate() >  mParams[1]->Evaluate();
