@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.11 2005/01/15 20:53:22 lordjaxom Exp $
+ *  $Id: function.c,v 1.12 2005/01/21 21:39:12 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -245,9 +245,7 @@ cxType cxFunction::Evaluate(void) const
 		return FunFile(mParams[0]->Evaluate());
 
 	case fun_trans:
-		Dprintf("|%s| translates to |%s|\n", mParams[0]->Evaluate().String().c_str(), mSkin->Translate(mParams[0]->Evaluate()).c_str());
 		return mSkin->Translate(mParams[0]->Evaluate());
-		//return mParams[0]->Evaluate();
 	
 	case fun_plugin:
 		return FunPlugin(mParams[0]->Evaluate());
@@ -259,14 +257,3 @@ cxType cxFunction::Evaluate(void) const
 	}
 	return false;
 }
-
-#if 0
-bool cxFunction::EvaluateToBool(void) 
-{
-	cxType result = Evaluate();
-	if (result == False/* || result == "0"*/)
-		return false;
-	return true;
-}
-#endif
-
