@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.12 2005/01/21 21:39:12 lordjaxom Exp $
+ *  $Id: function.c,v 1.13 2005/01/23 19:44:09 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -194,7 +194,7 @@ cxType cxFunction::FunPlugin(const cxType &Param) const
 		if (entry)
 			return entry;
 	}
-	return false;
+	return Param;
 }
 
 cxType cxFunction::Evaluate(void) const
