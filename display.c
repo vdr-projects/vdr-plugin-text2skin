@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.6 2005/01/07 22:56:08 lordjaxom Exp $
+ * $Id: display.c,v 1.7 2005/01/09 18:43:00 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -977,6 +977,11 @@ void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
 		SetDirty();
 	}
 	UpdateUnlock();
+}
+
+void cText2SkinDisplayTracks::SetAudioChannel(int AudioChannel)
+{
+	//XXX
 }
 
 cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)

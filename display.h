@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.5 2005/01/05 19:28:52 lordjaxom Exp $
+ * $Id: display.h,v 1.6 2005/01/09 18:43:00 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -214,6 +214,7 @@ public:
 	virtual ~cText2SkinDisplayTracks();
 
 	virtual void SetTrack(int Index, const char * const *Tracks);
+	virtual void SetAudioChannel(int AudioChannel);
 
 	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
