@@ -22,7 +22,7 @@ private:
 	cText2SkinBitmap(void);
 
 public:
-	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0);
+	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0, int height = 0, int width = 0, int colors = 0);
 	static void ResetCache(void) { mCache.Reset(); }
 	static void FlushCache(void) { mCache.Flush(); }
 	
@@ -35,10 +35,10 @@ public:
 
 	bool LoadXpm(const char *Filename);
 #ifdef HAVE_IMLIB2
-	bool LoadImlib(const char *Filename);
+	bool LoadImlib(const char *Filename,int height = 0, int width = 0, int colors = 0);
 #endif
 #ifdef HAVE_IMAGEMAGICK
-	bool LoadMagick(const char *Filename);
+	bool LoadMagick(const char *Filename,int height = 0, int width = 0, int colors = 0);
 #endif
 };
 

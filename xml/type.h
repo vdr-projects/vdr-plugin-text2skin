@@ -5,6 +5,7 @@
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
 #define VDR_TEXT2SKIN_XML_TYPE_H
 
+#include <stdio.h>
 #include <string>
 
 class cxType {
@@ -26,6 +27,7 @@ public:
 	cxType(int Number): mType(number), mNumber(Number) {}
 	cxType(time_t Number): mType(number), mNumber(Number) {}
 	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0) {}
+	cxType(const cxType &Src): mType(Src.mType), mString(Src.mString), mNumber(Src.mNumber) {}
 
 	const std::string &String(void);
 	int                Number(void) const;

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.5 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: render.h,v 1.6 2004/12/10 21:46:46 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -45,8 +45,11 @@ private:
 	
 	// update thread
 	bool                mActive;
+	
 	cCondVar            mDoUpdate;
-	cMutex              mMutex;
+	cMutex              mDoUpdateMutex;
+	//cCondVar            mDoneUpdate;
+	//cMutex              mDoneUpdateMutex;
 	cCondVar            mStarted;
 	int                 mUpdateIn;
 
@@ -55,8 +58,8 @@ private:
 	
 protected:
 	// Update thread
-	void Lock(void) { mMutex.Lock(); }
-	void Unlock(void) { mMutex.Unlock(); }
+	//void Lock(void) { mMutex.Lock(); }
+	//void Unlock(void) { mMutex.Unlock(); }
 	virtual void Action(void);
 
 	// Drawing operations
@@ -115,9 +118,19 @@ public:
 
 inline void cText2SkinRender::Flush(bool Force) {
 	if (mDirty || Force) {
-		Lock();
+		//mDoneUpdateMutex.Lock();
+
+		mDoUpdateMutex.Lock();
 		mDoUpdate.Broadcast();
-		Unlock();
+		mDoUpdateMutex.Unlock();
+
+		//if (mActive) {
+			//Dprintf("flush wait\n");
+			//mDoneUpdate.Wait(mDoneUpdateMutex);
+			//Dprintf("flush wait done\n");
+		//}
+		//mDoneUpdateMutex.Unlock();
+		
 		mDirty = false;
 	}
 }

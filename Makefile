@@ -55,7 +55,7 @@ PACKAGE = vdr-$(ARCHIVE)
 
 OBJS = $(PLUGIN).o loader.o display.o render.o common.o bitmap.o \
        file.o i18n.o theme.o cache.o setup.o status.o scroller.o screen.o \
-       menu.o font.o \
+       menu.o font.o quantize.o \
        \
        xml/skin.o xml/parser.o xml/string.o xml/object.o xml/function.o \
        xml/type.o xml/display.o xml/xml.o
@@ -86,13 +86,13 @@ ifdef HAVE_FREETYPE
 endif
 
 ifdef DEBUG
-	CXXFLAGS += -O2 -g
+	CXXFLAGS += -g -fno-inline
 	DEFINES += -DDEBUG
 else
 	CXXFLAGS += -O2
 endif
 
-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include -I.
+INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/linux/include -I$(DVBDIR)/include -I.
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.4 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: parser.c,v 1.5 2004/12/10 21:46:46 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -10,49 +10,6 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
-
-#define STR_SKIN      "skin"
-#define STR_DISPLAY   "display"
-#define STR_ID        "id"
-#define STR_WINDOW    "window"
-#define STR_X1        "x1"
-#define STR_Y1        "y1"
-#define STR_X         "x"
-#define STR_Y         "y"
-#define STR_X2        "x2"
-#define STR_Y2        "y2"
-#define STR_BPP       "bpp"
-#define STR_IMAGE     "image"
-#define STR_PATH      "path"
-#define STR_ALPHA     "alpha"
-#define STR_TEXT      "text"
-#define STR_CONDITION "condition"
-#define STR_NOT       "not"
-#define STR_FILE      "file"
-#define STR_COLOR     "color"
-#define STR_ALIGN     "align"
-#define STR_RECTANGLE "rectangle"
-#define STR_ELLIPSE   "ellipse"
-#define STR_SLOPE     "slope"
-#define STR_PROGRESS  "progress"
-#define STR_BGCOLOR   "bgcolor"
-#define STR_CURRENT   "current"
-#define STR_TOTAL     "total"
-#define STR_VERSION   "version"
-#define STR_NAME      "name"
-#define STR_SCREENBASE "screenBase"
-#define STR_FONT      "font"
-#define STR_ARC       "arc"
-
-#define MSG_BADTAG    "ERROR: The tag %s was not expected in this context"
-#define MSG_BADENDTAG "ERROR: The tag %s was not expected in this context"
-#define MSG_BADATTR   "ERROR: The attribute %s was not expected in tag %s"
-#define MSG_MISSATTR  "ERROR: The tag %s lacks the attribute %s"
-#define MSG_BADVALUE  "ERROR: %s is not allowed for attribute %s"
-#define MSG_PARSERR   "ERROR: Parser error in %s:%d: %s"
-#define MSG_BADCDATA  "ERROR: Bad character data"
-#define MSG_NOFILE    "ERROR: Couldn't read %s: %m"
-#define MSG_MANYWINS  "ERROR: Too many windows"
 
 #define TAG_ERR_REMAIN(_context) do { \
 		esyslog("ERROR: Text2Skin: Unexpected tag %s within %s", \
@@ -132,7 +89,7 @@ static cxObject  *parent  = NULL;
 static cxObject  *object  = NULL;
 
 bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs) {
-	Dprintf("start element: %s\n", name.c_str());
+	//Dprintf("start element: %s\n", name.c_str());
 
 	if      (context.size() == 0) {
 		if (name == "skin") {
@@ -227,7 +184,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 bool xCharData(const std::string &text) {
 	int start = 0, end = text.length() - 1;
 
-	Dprintf("char data before: %s\n", text.c_str());
+	//Dprintf("char data before: %s\n", text.c_str());
 
 	while (text[start] == '\012' || text[start] == '\015' || text[start] == ' ' || text[start] == '\t')
 		++start;
@@ -235,22 +192,22 @@ bool xCharData(const std::string &text) {
 	while (text[end] == '\012' || text[end] == '\015' || text[end] == ' ' || text[end] == '\t')
 		--end;
 	
-	Dprintf("char data after: %s\n", text.substr(start, end - start + 1).c_str());
+	//Dprintf("char data after: %s\n", text.substr(start, end - start + 1).c_str());
 
 	if (end - start + 1 > 0) {
-		Dprintf("context: %s\n", context[context.size() - 1].c_str());
+		//Dprintf("context: %s\n", context[context.size() - 1].c_str());
 		if      (context[context.size() - 1] == "text"
 		      || context[context.size() - 1] == "scrolltext") {
 			if (!object->mText.Parse(text.substr(start, end - start + 1)))
 				return false;
 		} else
-			esyslog(MSG_BADCDATA);
+			esyslog("ERROR: Bad character data");
 	}
 	return true;
 }
 
 bool xEndElem(const std::string &name) {
-	Dprintf("end element: %s\n", name.c_str());
+	//Dprintf("end element: %s\n", name.c_str());
 	if (context[context.size() - 1] == name) {
 		if      (name == "display") {
 			skin->mDisplays[display->Type()] = display;
@@ -258,7 +215,7 @@ bool xEndElem(const std::string &name) {
 		}
 		else if (object != NULL || parent != NULL) {
 			if (object == NULL) {
-				Dprintf("rotating parent to object\n");
+				//Dprintf("rotating parent to object\n");
 				object = parent;
 				parent = NULL;
 			}
@@ -275,7 +232,7 @@ bool xEndElem(const std::string &name) {
 			}
 
 			if (parent != NULL) {
-				Dprintf("pushing to parent\n");
+				//Dprintf("pushing to parent\n");
 				if (parent->mObjects == NULL)
 					parent->mObjects = new cxObjects();
 				parent->mObjects->push_back(object);

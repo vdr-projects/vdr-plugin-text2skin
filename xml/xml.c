@@ -16,6 +16,9 @@ enum {
 	LOOK4START,     // looking for first element start
 	LOOK4TAG,       // looking for element tag
 	INTAG,          // reading tag
+	INCOMMENT,      // reading comment
+	LOOK4CEND1,     // looking for second '-' in -->
+	LOOK4CEND2,     // looking for '>' in -->
 	LOOK4ATTRN,     // looking for attr name, > or /
 	INATTRN,        // reading attr name
 	LOOK4ATTRV,     // looking for attr value
@@ -149,7 +152,7 @@ XML::readChar(int c) {
 				}
 				break;
 			} else {
-				if (c == '?' || c == '!') {
+				if (c == '?') {
 					skipping = true;
 					break;
 				}
@@ -159,6 +162,8 @@ XML::readChar(int c) {
 				state = INTAG;
 			} else if (c == '/') {
 				state = LOOK4CLOSETAG;
+			} else if (c == '!') {
+				state = INCOMMENT;
 			} else if (!isspace(c)) {
 				if (parseerrorcb) {
 					parseerrorcb(linenr, "Bogus tag char", c);
@@ -180,6 +185,31 @@ XML::readChar(int c) {
 				state = SAWSLASH;
 			} else {
 				state = LOOK4ATTRN;
+			}
+		break;
+
+		// reading comment
+		case INCOMMENT:
+			if (c == '-') {
+				state = LOOK4CEND1;
+			}
+		break;
+
+		// looking for second '-' in "-->"
+		case LOOK4CEND1:
+			if (c == '-') {
+				state = LOOK4CEND2;
+			} else {
+				state = INCOMMENT;
+			}
+		break;
+
+		// looking for '>' in "-->"
+		case LOOK4CEND2:
+			if (c == '>') {
+				state = LOOK4START;
+			} else if (c != '-') {
+				state = INCOMMENT;
 			}
 		break;
 

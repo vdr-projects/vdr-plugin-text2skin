@@ -1,5 +1,5 @@
 /*
- * $Id: cache.c,v 1.2 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: cache.c,v 1.2 2004/06/18 16:08:11 lordjaxom Exp $
  */
 
 #include "cache.h"
@@ -13,7 +13,7 @@ cText2SkinCache::~cText2SkinCache() {
 	Flush();
 }
 
-void cText2SkinCache::Delete(const key_type &/*Key*/, data_type &Data) {
+void cText2SkinCache::Delete(const key_type &Key, data_type &Data) {
 	delete Data;
 }
 

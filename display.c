@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.5 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: display.c,v 1.6 2004/12/10 21:46:46 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -23,6 +23,7 @@ cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinLoader *Loader, boo
 }
 
 cText2SkinDisplayChannel::~cText2SkinDisplayChannel() {
+	Dprintf("~cTe...\n");
 }
 
 void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number) {
@@ -49,6 +50,10 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) {
 		mText = Text;
 		SetDirty();
 	}
+}
+	
+void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue) {
+	Dprintf("SetButtons(%s, %s, %s, %s)\n", Red, Green, Yellow, Blue);
 }
 
 void cText2SkinDisplayChannel::Flush(void) {
@@ -100,7 +105,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token) {
 	case tPresentDuration:
 		return mPresent != NULL 
 		       ? (cxType)TimeType(mPresent->Duration(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentTitle:
 		return mPresent != NULL 
@@ -535,6 +540,7 @@ cText2SkinDisplayMenu::~cText2SkinDisplayMenu() {
 
 void cText2SkinDisplayMenu::Clear(void) {
 	mItems.clear();
+	mCurrentItem = (uint)-1;
 	mEvent = NULL;
 	mRecording = NULL;
 	mText = "";
@@ -576,32 +582,35 @@ void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
 void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) {
 	if (Text == NULL)
 		return;
+	Dprintf("SetItem(%s)\n", Text);
 
-	tListItem item;
-	item.text = Text;
-	item.sel = Selectable;
+	tListItem *item = new tListItem(Text, Selectable);
+	//item.text = Text;
+	//item.sel = Selectable;
 
 	for (int i = 0; i < MaxTabs; ++i) {
 		const char *tab = GetTabbedText(Text, i);
 		if (tab)
-			item.tabs[i] = tab;
+			item->tabs[i] = tab;
 		if (!Tab(i + 1))
 			break;
 	}
 
 	if (mItems.size() <= (uint)Index) {
-		mItems.push_back(item);
+		mItems.push_back(*item);
 		SetDirty();
 	}
-	else if (mItems[Index] != item) {
-		mItems[Index] = item;
+	else if (mItems[Index] != *item) {
+		mItems[Index] = *item;
 		SetDirty();
 	}
+	delete item;
 
-	if (Current && mCurrentItem != Index) {
+	if (Current && mCurrentItem != (uint)Index) {
 		mCurrentItem = Index;
 		SetDirty();
 	}
+	Dprintf("end SetItem()\n");
 }
 
 void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) {
@@ -664,26 +673,28 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) {
 
 	case tMenuItem:
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel 
-		       && mCurrentItem != Token.Index 
+		       && mCurrentItem != (uint)Token.Index 
 		       ? (cxType)mItems[Token.Index].tabs[Token.Tab]
 					 : (cxType)false;
 
 	case tIsMenuItem:
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel 
-		       && mCurrentItem != Token.Index;
+		       && mCurrentItem != (uint)Token.Index;
 	
 	case tMenuCurrent:
 		if (Token.Index < 0)
-			return mItems[mCurrentItem].text;
+			return mItems.size() > mCurrentItem
+			       ? (cxType)mItems[mCurrentItem].text
+			       : (cxType)false;
 
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel 
-		       && mCurrentItem == Token.Index 
+		       && mCurrentItem == (uint)Token.Index 
 		       ? (cxType)mItems[Token.Index].tabs[Token.Tab]
 					 : (cxType)false;
 
 	case tIsMenuCurrent:
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel 
-		       && mCurrentItem == Token.Index;
+		       && mCurrentItem == (uint)Token.Index;
 
 	case tMenuGroup:
 		return mItems.size() > (uint)Token.Index && !mItems[Token.Index].sel 

@@ -27,7 +27,8 @@ public:
 		fun_or     = INTERNAL + 3,
 		fun_eq     = INTERNAL + 4,
 		fun_file   = INTERNAL + 5,
-		fun_trans  = INTERNAL + 6
+		fun_trans  = INTERNAL + 6,
+		fun_plugin = INTERNAL + 7
 	};
 
 	static const std::string False;
@@ -42,6 +43,7 @@ private:
 	
 protected:
 	const std::string &FunFile(const std::string &Param) const;
+	std::string FunPlugin(const std::string &Param) const;
 
 public:
 	cxFunction(void);

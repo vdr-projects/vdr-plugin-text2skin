@@ -3,6 +3,7 @@
  */
 
 #include "bitmap.h"
+#include "quantize.h"
 #include "setup.h"
 #include <vdr/tools.h>
 #define X_DISPLAY_MISSING
@@ -16,7 +17,7 @@ using namespace Magick;
 
 cText2SkinCache cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
 
-cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha) {
+cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height, int width, int colors) {
 	if (mCache.Contains(Filename))
 		return mCache[Filename];
 	else {
@@ -28,10 +29,10 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha)
 				result = bmp->LoadXpm(Filename.c_str());
 			else {
 #ifdef HAVE_IMLIB2
-				result = bmp->LoadImlib(Filename.c_str());
+				result = bmp->LoadImlib(Filename.c_str(),height,width,colors);
 #else
 #	ifdef HAVE_IMAGEMAGICK
-				result = bmp->LoadMagick(Filename.c_str());
+				result = bmp->LoadMagick(Filename.c_str(),height,width,colors);
 #	else
 				esyslog("ERROR: text2skin: unknown file format for %s", Filename);
 #	endif
@@ -109,34 +110,52 @@ bool cText2SkinBitmap::LoadXpm(const char *Filename) {
 }
 
 #ifdef HAVE_IMLIB2
-bool cText2SkinBitmap::LoadImlib(const char *Filename) {
+bool cText2SkinBitmap::LoadImlib(const char *Filename, int height, int width, int colors) {
 	Imlib_Image image;
+        unsigned char * outputImage = NULL;
+	unsigned int * outputPalette = NULL;
+	cQuantizeWu* quantizer = new cQuantizeWu();
 	cBitmap *bmp = NULL;
 	image = imlib_load_image(Filename);
 	if (!image)
 		return false;
 	Imlib_Context ctx = imlib_context_new();
 	imlib_context_push(ctx);
+	if (height != 0 || width != 0){
+		imlib_context_set_image(image);
+		image = imlib_create_cropped_scaled_image(0,0,imlib_image_get_width(), imlib_image_get_height() ,width , height);
+	}
 	imlib_context_set_image(image);
 	bmp = new cBitmap(imlib_image_get_width(), imlib_image_get_height(), 8);
 	uint8_t *data = (uint8_t*)imlib_image_get_data_for_reading_only();
-	int pal = 0, pos = 0;
+	if ( colors != 0 ){
+        	quantizer->Quantize(data, imlib_image_get_width()* imlib_image_get_height(), colors);
+		outputImage = quantizer->OutputImage();
+		outputPalette = quantizer->OutputPalette();
+	}
+	int pos = 0;
 	for (int y = 0; y < bmp->Height(); ++y) {
 		for (int x = 0; x < bmp->Width(); ++x) {
-			tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
-			bmp->DrawPixel(x, y, col);
-			pos += 4;
+			if ( colors != 0 ){
+				bmp->DrawPixel(x, y ,  outputPalette[outputImage[y * bmp->Width() + x]] | 0xFF000000 );
+			}else{	
+				tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
+				bmp->DrawPixel(x, y, col);
+				pos += 4;
+			}
 		}
 	}
+	
 	imlib_free_image();
 	imlib_context_free(ctx);
 	mBitmaps.push_back(bmp);
+	delete(quantizer);
 	return true;
 }
 #endif
 
 #ifdef HAVE_IMAGEMAGICK
-bool cText2SkinBitmap::LoadMagick(const char *Filename) {
+bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, int colors) {
 	std::vector<Image> images;
 	cBitmap *bmp = NULL;
 	try {
@@ -149,6 +168,15 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename) {
 		}
 		mDelay = images[0].animationDelay() * 10;
 		for (it = images.begin(); it != images.end(); ++it) {
+			if (colors != 0){
+				(*it).opacity(OpaqueOpacity);
+				(*it).backgroundColor( Color ( 0,0,0,0) );
+				(*it).quantizeColorSpace( RGBColorspace );
+				(*it).quantizeColors( colors );
+				(*it).quantize();
+			}
+			 if (height != 0 || width != 0)
+				(*it).sample(Geometry(width,height));
 			w = (*it).columns();
 			h = (*it).rows();
 			if ((*it).depth() > 8) {
@@ -156,7 +184,7 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename) {
 				return false;
 			}
 			bmp = new cBitmap(w, h, (*it).depth());
-			Dprintf("this image has %d colors\n", (*it).totalColors());
+			//Dprintf("this image has %d colors\n", (*it).totalColors());
 
 			const PixelPacket *pix = (*it).getConstPixels(0, 0, w, h);
 			for (int iy = 0; iy < h; ++iy) {

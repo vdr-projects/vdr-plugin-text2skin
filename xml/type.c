@@ -7,11 +7,12 @@
 #include <stdio.h>
 
 const std::string &cxType::String(void) {
-	static char buffer[50];
 	if (mType == number) {
-		snprintf(buffer, sizeof(buffer), "%d", mNumber);
+		char *buffer;
+		asprintf(&buffer, "%d", mNumber);
 		mString = buffer;
 		mType = string;
+		free(buffer);
 	} else if (mType == boolean) {
 		mString = mNumber ? cxFunction::True : cxFunction::False;
 		mType = string;

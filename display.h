@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.4 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: display.h,v 1.5 2004/12/10 21:46:46 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -34,14 +34,15 @@ public:
 	virtual void SetChannel(const cChannel *Channel, int Number);
 	virtual void SetEvents(const cEvent *Present, const cEvent *Following);
 	virtual void SetMessage(eMessageType Type, const char *Text);
+	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
 	virtual void Flush(void);
 };
 
 class cText2SkinDisplayVolume: public cSkinDisplayVolume, public cText2SkinRender {
 private:
-	int mCurrent;
-	int mTotal;
-	int mMute;
+	int  mCurrent;
+	int  mTotal;
+	bool mMute;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
@@ -128,11 +129,13 @@ private:
 		std::string     tabs[MaxTabs];
 		bool            sel;
 
+		tListItem(const std::string &Text, bool Sel): text(Text), sel(Sel) {}
+
 		bool operator!=(const tListItem &b) { return b.text != text || b.sel != sel; }
 	};
 
 	std::vector<tListItem> mItems;
-	int                    mCurrentItem;
+	uint                   mCurrentItem;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);

@@ -91,6 +91,7 @@ bool cxString::Parse(const std::string &Text) {
 
 				int pos = -1;
 				txToken &lastToken = mTokens[mTokens.size() - 1];
+				Dprintf("assigning attrib: %.*s\n", ptr-last, last);
 				lastToken.Attrib.assign(last, ptr - last);
 				while ((pos = lastToken.Attrib.find('\\', pos + 1)) != -1) {
 					switch (lastToken.Attrib[pos + 1]) {

@@ -1,15 +1,16 @@
 /*
- *  $Id: function.c,v 1.4 2004/12/08 18:47:37 lordjaxom Exp $
+ *  $Id: function.c,v 1.5 2004/12/10 21:46:46 lordjaxom Exp $
  */
 
 #include "xml/function.h"
 #include "render.h"
 #include "bitmap.h"
 #include "common.h"
+#include <vdr/plugin.h>
 #include <vdr/tools.h>
 
 static const char *Internals[] = {
-	"not", "and", "or", "equal", "file", "trans", NULL
+	"not", "and", "or", "equal", "file", "trans", "plugin", NULL
 };
 
 const std::string cxFunction::False = "";
@@ -129,6 +130,7 @@ bool cxFunction::Parse(const std::string &Text)
 						case fun_eq:   ++params;
 						case fun_not:
 						case fun_trans:
+						case fun_plugin:
 						case fun_file: ++params;
 						default:       break;
 						}
@@ -161,6 +163,19 @@ const std::string &cxFunction::FunFile(const std::string &Param) const
  	return cText2SkinBitmap::Load(path) ? Param : False;
 }
 
+std::string cxFunction::FunPlugin(const std::string &Param) const
+{
+	Dprintf("FunPlugin: Get(%s)\n", Param.c_str());
+	cPlugin *p = cPluginManager::GetPlugin(Param.c_str());
+	if (p) {
+		const char *entry = p->MainMenuEntry();
+		Dprintf("Entry: |%s|\n", entry);
+		if (entry)
+			return entry;
+	}
+	return False;
+}
+
 std::string cxFunction::Evaluate(void) const
 {
 	switch (mType) {
@@ -185,6 +200,7 @@ std::string cxFunction::Evaluate(void) const
 		return False;
 
 	case fun_eq:
+		Dprintf("eq: |%s| <-> |%s|\n", mParams[0]->Evaluate().c_str(), mParams[1]->Evaluate().c_str());
 		return mParams[0]->Evaluate() == mParams[1]->Evaluate() ? True : False;
 
 	case fun_file:
@@ -192,6 +208,9 @@ std::string cxFunction::Evaluate(void) const
 
 	case fun_trans:
 		return tr(mParams[0]->Evaluate().c_str());
+	
+	case fun_plugin:
+		return FunPlugin(mParams[0]->Evaluate());
 
 	default:
 		Dprintf("unknown function code\n");

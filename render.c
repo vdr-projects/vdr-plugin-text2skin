@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.6 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: render.c,v 1.7 2004/12/10 21:46:46 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -28,7 +28,9 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mDirty(true),
 		mActive(false),
 		mDoUpdate(),
-		mMutex(),
+		mDoUpdateMutex(),
+		//mDoneUpdate(),
+		//mDoneUpdateMutex(),
 		mStarted(),
 		mUpdateIn(0),
 		mBaseSize()
@@ -87,10 +89,10 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 	}
 
 	if (!OffScreen) {
-		Lock();
+		mDoUpdateMutex.Lock();
 		Start();
-		mStarted.Wait(mMutex);
-		Unlock();
+		mStarted.Wait(mDoUpdateMutex);
+		mDoUpdateMutex.Unlock();
 	}
 }
 
@@ -108,18 +110,22 @@ cText2SkinRender::~cText2SkinRender() {
 
 void cText2SkinRender::Action(void) {
 	mActive = true;
-	Lock();
+	mDoUpdateMutex.Lock();
 	mStarted.Broadcast();
 	while (mActive) {
-		if (mUpdateIn) mDoUpdate.TimedWait(mMutex, mUpdateIn);
-		else           mDoUpdate.Wait(mMutex);
+		if (mUpdateIn) mDoUpdate.TimedWait(mDoUpdateMutex, mUpdateIn);
+		else           mDoUpdate.Wait(mDoUpdateMutex);
 
-		if (!mActive) break; // fall out if thread to be stopped
+		if (!mActive)  break; // fall out if thread to be stopped
 
 		mUpdateIn = 0; // has to be re-set within Update();
 		Update();
+
+		//mDoneUpdateMutex.Lock();
+		//mDoneUpdate.Broadcast();
+		//mDoneUpdateMutex.Unlock();
 	}
-	Unlock();
+	mDoUpdateMutex.Unlock();
 }
 
 void cText2SkinRender::Update(void) {
@@ -243,7 +249,7 @@ void cText2SkinRender::DrawImage(const txPoint &Pos, const tColor *Bg, const tCo
                                  const std::string &Path)
 {
 	cText2SkinBitmap *bmp;
-	//Dprintf("trying to draw image %s to %dx%d\n", ImagePath(Path).c_str(), Pos.x, Pos.y);
+	Dprintf("trying to draw image %s to %dx%d - alpha %d\n", ImagePath(Path).c_str(), Pos.x, Pos.y, Alpha);
 	if ((bmp = cText2SkinBitmap::Load(ImagePath(Path), Alpha)) != NULL) {
 		//Dprintf("success loading image\n");
 		if (Bg) bmp->SetColor(0, *Bg);

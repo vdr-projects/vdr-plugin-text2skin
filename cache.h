@@ -1,14 +1,15 @@
 /*
- * $Id: cache.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
+ * $Id: cache.h,v 1.5 2004/06/18 16:08:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
 #define VDR_TEXT2SKIN_CACHE_HPP
 
 #include "common.h"
+#include <vdr/tools.h>
 #include <map>
 #include <vector>
-#include <vdr/tools.h>
+#include <string>
 
 class cText2SkinBitmap;
 
