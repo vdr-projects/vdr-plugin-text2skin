@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
+ * $Id: cache.h,v 1.2 2004/12/21 18:24:28 anoncvs Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 
-class cText2SkinBitmap;
+class cText2SkinBitmap; //XXX
 
 struct tBitmapSpec {
 	std::string Filename;
