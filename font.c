@@ -1,5 +1,5 @@
 /*
- * $Id: font.c,v 1.6 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: font.c,v 1.1 2004/12/19 22:03:13 lordjaxom Exp $
  */
 
 #include "font.h"

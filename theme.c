@@ -1,5 +1,5 @@
 /*
- * $Id: theme.c,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
+ * $Id: theme.c,v 1.1 2004/12/19 22:03:19 lordjaxom Exp $
  */
 #include "theme.h"
 #include <vdr/osd.h>

@@ -3,7 +3,7 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.5 2004/12/17 19:56:16 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.1 2004/12/19 22:03:19 lordjaxom Exp $
  */
 
 #include "text2skin.h"

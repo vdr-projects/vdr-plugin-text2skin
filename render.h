@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.9 2004/12/17 19:56:16 lordjaxom Exp $
+ * $Id: render.h,v 1.1 2004/12/19 22:03:17 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "scroller.h"
+#include "marquee.h"
 #include "xml/skin.h"
 #include "xml/type.h"
 #include <vdr/osd.h>
@@ -32,6 +33,7 @@ class cText2SkinRender: public cThread {
 
 private:
 	typedef std::map<txToken,cxType> tTokenCache;
+	typedef std::vector<cText2SkinMarquee> tMarquees;
 
 	static cText2SkinRender *mRender;
 
@@ -41,6 +43,7 @@ private:
 	cText2SkinTheme    *mTheme;
 	cText2SkinScreen   *mScreen;
 	cText2SkinScroller *mScroller;
+	tMarquees           mMarquees;
 	tTokenCache         mTokenCache;
 
 	std::string         mBasePath;
@@ -71,6 +74,8 @@ protected:
 	               int Alpha, int Colors, const std::string &Path);
 	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const std::string &Text,
 	              const cFont *Font, int Align);
+	void DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
+	                 const std::string &Text, const cFont *Font, int Align, uint Index);
 	void DrawRectangle(const txPoint &Pos, const txSize &Size, 
 	                   const tColor *Fg);
 	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
@@ -99,7 +104,7 @@ protected:
 	void Flush(bool Force = false);
 	void SetDirty(void) { mDirty = true; }
 	void Scroll(bool Up, bool Page) { if (mScroller) mScroller->Scroll(Up, Page); }
-	void Clear(void) { DELETENULL(mScroller); }
+	void Clear(void) { DELETENULL(mScroller); mMarquees.clear(); }
 
 public:
 	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, 

@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.10 2004/12/17 19:56:16 lordjaxom Exp $
+ * $Id: display.c,v 1.1 2004/12/19 22:03:12 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -127,33 +127,33 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tPresentStartDateTime:
 		return mPresent != NULL
-		       ? (cxType)TimeType(mPresent->StartTime(), Token.Attrib)
+		       ? (cxType)TimeType(mPresent->StartTime(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentVPSDateTime:
 		return mPresent != NULL
-		       ? (cxType)TimeType(mPresent->Vps(), Token.Attrib)
+		       ? (cxType)TimeType(mPresent->Vps(), Token.Attrib.Text)
 		       : (cxType)false;
 
-	case tPresentEndDateTime:
-		return mPresent != NULL
-		       ? (cxType)TimeType(mPresent->EndTime(), Token.Attrib)
+	case tPresentEndDateTime: return mPresent != NULL
+		       ? (cxType)TimeType(mPresent->EndTime(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentProgress:
 		return mPresent != NULL
-		       ? (cxType)TimeType(time(NULL) - mPresent->StartTime(), Token.Attrib)
+		       ? (cxType)DurationType((time(NULL) - mPresent->StartTime()) * FRAMESPERSEC, 
+		                              Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentDuration:
 		return mPresent != NULL
-		       ? (cxType)TimeType(mPresent->Duration(), Token.Attrib)
+		       ? (cxType)DurationType(mPresent->Duration() * FRAMESPERSEC, Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentRemaining:
 		return mPresent != NULL
-		       ? (cxType)TimeType(mPresent->Duration() - (time(NULL) - mPresent->StartTime()),
-		                          Token.Attrib)
+		       ? (cxType)DurationType((mPresent->Duration() - (time(NULL) - mPresent->StartTime()))
+		                              * FRAMESPERSEC, Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentTitle:
@@ -173,22 +173,22 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tFollowingStartDateTime:
 		return mFollowing != NULL
-		       ? (cxType)TimeType(mFollowing->StartTime(), Token.Attrib)
+		       ? (cxType)TimeType(mFollowing->StartTime(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tFollowingVPSDateTime:
 		return mFollowing != NULL
-		       ? (cxType)TimeType(mFollowing->Vps(), Token.Attrib)
+		       ? (cxType)TimeType(mFollowing->Vps(), Token.Attrib.Text)
 		       : (cxType)false;
 	
 	case tFollowingEndDateTime:
 		return mFollowing != NULL
-		       ? (cxType)TimeType(mFollowing->EndTime(), Token.Attrib)
+		       ? (cxType)TimeType(mFollowing->EndTime(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tFollowingDuration:
 		return mFollowing != NULL
-		       ? (cxType)TimeType(mFollowing->Duration(), Token.Attrib)
+		       ? (cxType)DurationType(mFollowing->Duration() * FRAMESPERSEC, Token.Attrib.Text)
 		       : (cxType)false;
 		
 	case tFollowingTitle:
@@ -281,10 +281,9 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 	case tButtonBlue:
 		return mButtonBlue;
 
-	default:             break;
+	default:
+		return cText2SkinRender::GetTokenData(Token);
 	}
-
-	return cText2SkinRender::GetTokenData(Token);
 }
 
 // --- cText2SkinDisplayVolume ------------------------------------------------
@@ -324,10 +323,9 @@ cxType cText2SkinDisplayVolume::GetTokenData(const txToken &Token) {
 	case tIsMute:
 		return mMute;
 
-	default: break;
+	default:
+		return cText2SkinRender::GetTokenData(Token);
 	}
-
-	return cText2SkinRender::GetTokenData(Token);
 }
 	
 // --- cText2SkinDisplayReplay ------------------------------------------------
@@ -369,6 +367,7 @@ void cText2SkinDisplayReplay::SetTitle(const char *Title)
 
 void cText2SkinDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 {
+	Dprintf("SetMode(%d, %d, %d)\n", Play, Forward, Speed);
 	UpdateLock();
 	if (!mStateInfo || mPlay != Play || mForward != Forward || mSpeed != Speed) {
 		mStateInfo = true;
@@ -472,10 +471,10 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return mTitle;
 
 	case tReplayPositionIndex:
-		return TimeType(mCurrent, Token.Attrib);
+		return DurationType(mCurrent, Token.Attrib.Text);
 
 	case tReplayDurationIndex:
-		return TimeType(mTotal, Token.Attrib);
+		return DurationType(mTotal, Token.Attrib.Text);
 
 	case tReplayPosition:
 		return mPosition;
@@ -484,7 +483,7 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return mDuration;
 
 	case tReplayRemaining:
-		return TimeType(mTotal - mCurrent, Token.Attrib);
+		return DurationType(mTotal - mCurrent, Token.Attrib.Text);
 
 	case tReplayPrompt:
 		return mPrompt;
@@ -497,32 +496,32 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 
 	case tIsFastForward:
 		if (mStateInfo && mSpeed != -1 && mPlay && mForward) {
-			return Token.Attrib.length() > 0
-			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)(mSpeed == Token.Attrib.Number)
 			       : (cxType)true;
 		}
 		return false;
 		
 	case tIsFastRewind:
 		if (mStateInfo && mSpeed != -1 && mPlay && !mForward) {
-			return Token.Attrib.length() > 0
-			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)(mSpeed == Token.Attrib.Number)
 			       : (cxType)true;
 		}
 		return false;
 
 	case tIsSlowForward:
 		if (mStateInfo && mSpeed != -1 && !mPlay && mForward) {
-			return Token.Attrib.length() > 0
-			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)(mSpeed == Token.Attrib.Number)
 			       : (cxType)true;
 		}
 		return false;
 
 	case tIsSlowRewind:
 		if (mStateInfo && mSpeed != -1 && !mPlay && !mForward) {
-			return Token.Attrib.length() > 0
-			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)(mSpeed == Token.Attrib.Number)
 			       : (cxType)true;
 		}
 		return false;
@@ -565,23 +564,25 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 	case tButtonBlue:
 		return mButtonBlue;
 
-	default: break;
+	default:
+		return cText2SkinRender::GetTokenData(Token);
 	}
-
-	return cText2SkinRender::GetTokenData(Token);
 }
 
 // --- cText2SkinDisplayMessage -----------------------------------------------
 
 cText2SkinDisplayMessage::cText2SkinDisplayMessage(cText2SkinLoader *Loader):
 		cText2SkinRender(Loader, cxDisplay::message),
-		mText("") {
+		mText("") 
+{
 }
 
-cText2SkinDisplayMessage::~cText2SkinDisplayMessage() {
+cText2SkinDisplayMessage::~cText2SkinDisplayMessage() 
+{
 }
 
-void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) {
+void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) 
+{
 	UpdateLock();
 	if (Text == NULL) Text = "";
 	if (mType != Type || mText != Text) {
@@ -592,7 +593,8 @@ void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) {
 	UpdateUnlock();
 }
 
-cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token) {
+cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token) 
+{
 	switch (Token.Type) {
 	case tMessage:
 		return mText;
@@ -617,10 +619,9 @@ cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token) {
 		       ? (cxType)mText
 		       : (cxType)false;
 
-	default: break;
+	default:
+		return cText2SkinRender::GetTokenData(Token);
 	}
-
-	return cText2SkinRender::GetTokenData(Token);
 }
 
 // --- cText2SkinDisplayMenu --------------------------------------------------
@@ -703,7 +704,8 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
+void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) 
+{
 	UpdateLock();
 	if (Text == NULL) Text = "";
 	if (mMessageType != Type || mMessageText != Text) {
@@ -714,7 +716,8 @@ void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) {
+void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) 
+{
 	UpdateLock();
 	if (Text == NULL)
 		return;
@@ -748,7 +751,8 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) {
+void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) 
+{
 	UpdateLock();
 	if (mEvent != Event) {
 		mEvent = Event;
@@ -758,7 +762,8 @@ void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) {
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording) {
+void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording) 
+{
 	UpdateLock();
 	// yet unused
 	if (mRecording != Recording) {
@@ -769,7 +774,8 @@ void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording) {
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetText(const char *Text, bool /*FixedFont*/) {
+void cText2SkinDisplayMenu::SetText(const char *Text, bool /*FixedFont*/) 
+{
 	UpdateLock();
 	if (Text == NULL) Text = "";
 	if (mText != Text) {
@@ -779,20 +785,23 @@ void cText2SkinDisplayMenu::SetText(const char *Text, bool /*FixedFont*/) {
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5) {
+void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5) 
+{
 	UpdateLock();
 	cSkinDisplayMenu::SetTabs(Tab1, Tab2, Tab3, Tab4, Tab5);
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::Scroll(bool Up, bool Page) {
+void cText2SkinDisplayMenu::Scroll(bool Up, bool Page) 
+{
 	UpdateLock();
 	cText2SkinRender::Scroll(Up, Page);
 	SetDirty();
 	UpdateUnlock();
 }
 
-cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) {
+cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) 
+{
 	switch (Token.Type) {
 	case tMenuItem:
 	case tMenuGroup:
@@ -880,27 +889,34 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) {
 	
 	case tPresentStartDateTime:
 		return mEvent != NULL
-		       ? (cxType)TimeType(mEvent->StartTime(), Token.Attrib)
+		       ? (cxType)TimeType(mEvent->StartTime(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentVPSDateTime:
 		return mEvent != NULL
-		       ? (cxType)TimeType(mEvent->Vps(), Token.Attrib)
+		       ? (cxType)TimeType(mEvent->Vps(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentEndDateTime:
 		return mEvent != NULL
-		       ? (cxType)TimeType(mEvent->EndTime(), Token.Attrib)
+		       ? (cxType)TimeType(mEvent->EndTime(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentProgress:
 		return mEvent != NULL
-		       ? (cxType)TimeType(time(NULL) - mEvent->StartTime(), Token.Attrib)
+		       ? (cxType)DurationType((time(NULL) - mEvent->StartTime()) * FRAMESPERSEC, 
+		                              Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentDuration:
 		return mEvent != NULL
-		       ? (cxType)TimeType(mEvent->Duration(), Token.Attrib)
+		       ? (cxType)DurationType(mEvent->Duration() * FRAMESPERSEC, Token.Attrib.Text)
+		       : (cxType)false;
+
+	case tPresentRemaining:
+		return mEvent != NULL
+		       ? (cxType)DurationType((mEvent->Duration() - (time(NULL) - mEvent->StartTime()))
+		                              * FRAMESPERSEC, Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentTitle:
@@ -930,8 +946,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) {
 	case tMenuText:
 		return mText;
 
-	default: break;
+	default:
+		return cText2SkinRender::GetTokenData(Token);
 	}
-
-	return cText2SkinRender::GetTokenData(Token);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.4 2004/12/14 13:13:10 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H

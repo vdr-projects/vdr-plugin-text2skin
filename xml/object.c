@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.6 2004/12/17 19:56:16 lordjaxom Exp $
+ *  $Id: object.c,v 1.1 2004/12/19 22:03:27 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -7,8 +7,8 @@
 #include "font.h"
 
 static const std::string ObjectNames[] =
-	{ "image", "text", "rectangle", "ellipse", "slope", "progress", "scrolltext", "scrollbar", 
-	  "block", "list", "item" };
+	{ "image", "text", "marquee", "rectangle", "ellipse", "slope", "progress", "scrolltext", 
+	  "scrollbar", "block", "list", "item" };
 
 cxObject::cxObject(cxDisplay *parent):
 		mType((eType)__COUNT_OBJECT__),

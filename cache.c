@@ -1,5 +1,5 @@
 /*
- * $Id: cache.c,v 1.4 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: cache.c,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
  */
 
 #include "cache.h"

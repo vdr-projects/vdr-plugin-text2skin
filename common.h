@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: common.h,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -36,6 +36,7 @@ const char *ChannelShortName(const cChannel *Channel, int Number);
 //const char *ChannelBouquet(const cChannel *Channel, int Number);
 
 cxType TimeType(time_t Time, const std::string &Format);
+cxType DurationType(uint Index, const std::string &Format);
 
 bool ParseVar(const char *Text, const char *Name, std::string &Value);
 bool ParseVar(const char *Text, const char *Name, tColor *Value);

@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
+ *  $Id: function.c,v 1.1 2004/12/19 22:03:26 lordjaxom Exp $
  */
 
 #include "xml/function.h"

@@ -1,5 +1,5 @@
 /*
- *  $Id: skin.c,v 1.2 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: skin.c,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
  */
 
 #include "xml/skin.h"

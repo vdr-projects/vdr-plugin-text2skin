@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.3 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: status.c,v 1.1 2004/12/19 22:03:19 lordjaxom Exp $
  */
  
 #include "status.h"

@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
+ * $Id: display.h,v 1.1 2004/12/19 22:03:13 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H

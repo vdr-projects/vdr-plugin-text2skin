@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.3 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: cache.h,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP

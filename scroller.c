@@ -1,22 +1,15 @@
 /*
- *  $Id: scroller.c,v 1.3 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: scroller.c,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
  */
 
 #include "scroller.h"
 #include "screen.h"
 #include <vdr/tools.h>
 
-cText2SkinScroller::cText2SkinScroller(void) {
-  mScreen = NULL;
-  mLeft = mTop = mWidth = mHeight = 0;
-  mFont = NULL;
-  mColorFg = 0;
-  mColorBg = 0;
-  mOffset = 0;
-  mShown = 0;
-}
-
-cText2SkinScroller::cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, const char *Text, const cFont *Font, tColor ColorFg, tColor ColorBg) {
+cText2SkinScroller::cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, 
+                                       int Height, const char *Text, const cFont *Font, 
+                                       tColor ColorFg, tColor ColorBg) 
+{
   Set(Screen, Left, Top, Width, Height, Text, Font, ColorFg, ColorBg);
 }
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
+ *  $Id: string.c,v 1.1 2004/12/19 22:03:25 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -40,8 +40,8 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 
 std::string txToken::Token(const txToken &Token) {
 	std::string result = (std::string)"{" + Tokens[Token.Type];
-	if (Token.Attrib.length() > 0)
-		result += ":" + Token.Attrib;
+	//if (Token.Attrib.length() > 0)
+	//	result += ":" + Token.Attrib;
 	result += "}";
 	
 	return result;
@@ -92,19 +92,30 @@ bool cxString::Parse(const std::string &Text) {
 				}
 
 				int pos = -1;
-				txToken &lastToken = mTokens[mTokens.size() - 1];
-				Dprintf("assigning attrib: %.*s\n", ptr-last, last);
-				lastToken.Attrib.assign(last, ptr - last);
-				while ((pos = lastToken.Attrib.find('\\', pos + 1)) != -1) {
-					switch (lastToken.Attrib[pos + 1]) {
+				std::string attr;
+				attr.assign(last, ptr - last);
+				while ((pos = attr.find('\\', pos + 1)) != -1) {
+					switch (attr[pos + 1]) {
 					case 'n':
-						lastToken.Attrib.replace(pos, 2, "\n");
+						attr.replace(pos, 2, "\n");
 						break;
 
 					default:
-						lastToken.Attrib.erase(pos, 1);
+						attr.erase(pos, 1);
 					}
 				}
+
+				txToken &lastToken = mTokens[mTokens.size() - 1];
+				if (attr == "clean")
+					lastToken.Attrib = aClean;
+				else {
+					char *end;
+					int n = strtol(attr.c_str(), &end, 10);
+					if (end != attr.c_str() && end == '\0')
+						lastToken.Attrib = n;
+					else
+						lastToken.Attrib = attr;
+				} 
 
 				inAttrib = false;
 				inToken = false;

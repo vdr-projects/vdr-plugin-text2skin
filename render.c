@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.11 2004/12/17 19:56:16 lordjaxom Exp $
+ * $Id: render.c,v 1.1 2004/12/19 22:03:16 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -10,6 +10,7 @@
 #include "status.h"
 #include "screen.h"
 #include "scroller.h"
+#include "marquee.h"
 #include "xml/display.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>
@@ -105,6 +106,7 @@ cText2SkinRender::~cText2SkinRender()
 		Cancel(3);
 	}
 	delete mScroller;
+	mMarquees.clear();
 	delete mScreen;
 	//cText2SkinBitmap::ResetCache();
 	mRender = NULL;
@@ -154,6 +156,11 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 	case cxObject::text:
 		DrawText(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
 		         Object->Align());
+		break;
+
+	case cxObject::marquee:
+		DrawMarquee(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
+		            Object->Align(), Object->Index());
 		break;
 
 	case cxObject::rectangle:
@@ -272,6 +279,19 @@ void cText2SkinRender::DrawText(const txPoint &Pos, const txSize &Size, const tC
 	//Dprintf("trying to draw text %s to %d,%d size %d,%d, color %x\n", Text.c_str(), Pos.x, Pos.y, 
 	//        Size.w, Size.h, Fg ? *Fg : 0);
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), Fg ? *Fg : 0, 0, Font, Size.w, Size.h, Align);
+}
+
+void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
+                                   const std::string &Text, const cFont *Font, int Align, 
+                                   uint Index) 
+{
+	Dprintf("DrawMarquee %d -> %s\n", Index, Text.c_str());
+	if (Index >= mMarquees.size()) {
+		cText2SkinMarquee marquee(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text, Font, Fg ? *Fg : 0,
+		                          clrTransparent, mUpdateIn);
+		mMarquees.push_back(marquee);
+	} else
+		mMarquees[Index].DrawText(mUpdateIn);
 }
 
 void cText2SkinRender::DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg) 
@@ -447,27 +467,25 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 			return (*it).second;
 
 		cxType res = mRender->GetTokenData(Token);
-		if (Token.Attrib.length() > 0) {
-			if (Token.Attrib == "clean") {
-				std::string str = res.String();
-				int pos = -1;
+		if (Token.Attrib.Type == aClean) {
+			std::string str = res.String();
+			int pos = -1;
 
-				if (Token.Type == tMenuCurrent) {
-					const char *ptr = str.c_str(); 
-					char *end;
-					strtoul(ptr, &end, 10);
-					res = skipspace(end);
+			if (Token.Type == tMenuCurrent) {
+				const char *ptr = str.c_str(); 
+				char *end;
+				strtoul(ptr, &end, 10);
+				res = skipspace(end);
+			}
+			else if (Token.Type == tMenuTitle) {
+				if ((pos = str.find(" - ")) != -1
+						|| (pos = str.find(' ')) != -1) {
+					str.erase(pos);
+					while (str[str.length() - 1] == ' ')
+						str.erase(str.length() - 1);
+					res = str;
 				}
-				else if (Token.Type == tMenuTitle) {
-					if ((pos = str.find(" - ")) != -1
-							|| (pos = str.find(' ')) != -1) {
-						str.erase(pos);
-						while (str[str.length() - 1] == ' ')
-							str.erase(str.length() - 1);
-						res = str;
-					}
-					Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
-				}
+				Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
 			}
 		}
 		return (mRender->mTokenCache[Token] = res);
@@ -478,7 +496,7 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 cxType cText2SkinRender::GetTokenData(const txToken &Token) 
 {
 	switch (Token.Type) {
-	case tDateTime:      return TimeType(time(NULL), Token.Attrib);
+	case tDateTime:      return TimeType(time(NULL), Token.Attrib.Text);
 
 	case tCanScrollUp:   return mScroller != NULL && mScroller->CanScrollUp();
 
@@ -488,5 +506,5 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	default:             break;
 	}
 
-	return false;
+	return cxType::False;
 }

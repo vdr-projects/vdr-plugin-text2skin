@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.6 2004/12/17 19:56:16 lordjaxom Exp $
+ *  $Id: type.h,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H

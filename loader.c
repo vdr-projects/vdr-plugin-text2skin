@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.6 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: loader.c,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
  */
 
 #include "loader.h"

@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
+ * $Id: i18n.c,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
  */
 
 #include "i18n.h"

@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.5 2004/12/17 19:56:16 lordjaxom Exp $
+ * $Id: common.c,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
  */
 
 #include "common.h"
@@ -89,7 +89,8 @@ const char *ChannelBouquet(const cChannel *Channel, int Number) {
 #endif
 }
 */
-cxType TimeType(time_t Time, const std::string &Format) {
+cxType TimeType(time_t Time, const std::string &Format) 
+{
 	static char result[1000];
 	struct tm tm_r, *tm;
 	tm = localtime_r(&Time, &tm_r);
@@ -101,10 +102,78 @@ cxType TimeType(time_t Time, const std::string &Format) {
 		} else
 			return Time;
 	}
-	return false;
+	return cxType::False;
 }
 
-bool ParseVar(const char *Text, const char *Name, std::string &Value) {
+cxType DurationType(uint Index, const std::string &Format) 
+{
+	static char result[1000];
+	if (Index > 0) {
+		if (Format.length() > 0) {
+			const char *ptr = Format.c_str(); 
+			char *res = result;
+			enum { normal, format } state = normal;
+			while (*ptr && res < result + sizeof(result)) {
+				int n = 0;
+				int f = (Index % FRAMESPERSEC) + 1;
+				int s = (Index / FRAMESPERSEC);
+				int m = s / 60 % 60;
+				int h = s / 3600;
+				s %= 60;
+				switch (state) {
+				case normal:
+					if (*ptr == '%')
+						state = format;
+					else
+						*(res++) = *ptr;
+					break;
+
+				case format:
+					switch (*ptr) {
+					case 'H':
+						n = snprintf(res, sizeof(result) - (res - result), "%02d", h);
+						break;
+
+					case 'k':
+						n = snprintf(res, sizeof(result) - (res - result), "% 2d", h);
+						break;
+
+					case 'M':
+						n = snprintf(res, sizeof(result) - (res - result), "%02d", m);
+						break;
+
+					case 'm':
+						n = snprintf(res, sizeof(result) - (res - result), "%d", m + (h * 60));
+						break;
+
+					case 'S':
+						n = snprintf(res, sizeof(result) - (res - result), "%02d", s);
+						break;
+					
+					case 'f':
+						n = snprintf(res, sizeof(result) - (res - result), "%d", f);
+						break;
+
+					case '%':
+						n = 1;
+						*res = '%';
+						break;
+					}
+					res += n;
+					state = normal;
+					break;
+				}
+				++ptr;
+			}
+			return result;
+		} else
+			return (int)Index;
+	}
+	return cxType::False;
+}
+
+bool ParseVar(const char *Text, const char *Name, std::string &Value) 
+{
 	const char *ptr1, *ptr2;
 	char *str;
 	bool res = false;

@@ -1,5 +1,5 @@
 /*
- *  $Id: display.c,v 1.3 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: display.c,v 1.1 2004/12/19 22:03:25 lordjaxom Exp $
  */
 
 #include "xml/display.h"

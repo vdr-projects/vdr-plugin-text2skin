@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.7 2004/12/14 20:02:31 lordjaxom Exp $
+ *  $Id: parser.c,v 1.1 2004/12/19 22:03:27 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -84,6 +84,7 @@ static cxSkin    *skin    = NULL;
 static cxDisplay *display = NULL;
 static cxObject  *parent  = NULL;
 static cxObject  *object  = NULL;
+static uint       mindex  = 0;
 
 bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs) {
 	//Dprintf("start element: %s\n", name.c_str());
@@ -146,10 +147,13 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 					ATTRIB_MAN_FUNC  ("path",    object->mPath.Parse);
 				}
 				else if (name == "text"
+				      || name == "marquee"
 				      || name == "scrolltext") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
 					ATTRIB_OPT_FUNC  ("align",   object->ParseAlignment);
 					ATTRIB_OPT_FUNC  ("font",    object->ParseFontFace);
+
+					object->mIndex = mindex++;
 				}
 				else if (name == "rectangle") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
@@ -197,6 +201,7 @@ bool xCharData(const std::string &text) {
 	if (end - start + 1 > 0) {
 		//Dprintf("context: %s\n", context[context.size() - 1].c_str());
 		if      (context[context.size() - 1] == "text"
+		      || context[context.size() - 1] == "marquee"
 		      || context[context.size() - 1] == "scrolltext") {
 			if (!object->mText.Parse(text.substr(start, end - start + 1)))
 				return false;
@@ -212,6 +217,7 @@ bool xEndElem(const std::string &name) {
 		if      (name == "display") {
 			skin->mDisplays[display->Type()] = display;
 			display = NULL;
+			mindex = 0;
 		}
 		else if (object != NULL || parent != NULL) {
 			if (object == NULL) {

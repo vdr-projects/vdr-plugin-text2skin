@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
+ *  $Id: object.h,v 1.1 2004/12/19 22:03:27 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -48,6 +48,7 @@ public:
 	enum eType {
 		image,
 		text,
+		marquee,
 		rectangle,
 		ellipse,
 		slope,
@@ -80,6 +81,7 @@ private:
 	cxString       mTotal;
 	std::string    mFontFace;
 	int            mFontSize;
+	uint           mIndex;
 	cxObjects     *mObjects; // used for block objects such as <list>
 	cxDisplay     *mDisplay;
 	cxSkin        *mSkin;
@@ -106,6 +108,7 @@ public:
 	std::string        Text(void)            const { return mText.Evaluate(); }
 	int                Current(void)         const { return mCurrent.Evaluate(); }
 	int                Total(void)           const { return mTotal.Evaluate(); }
+	uint               Index(void)           const { return mIndex; }
 	cxDisplay         *Display(void)         const { return mDisplay; }
 	cxSkin            *Skin(void)            const { return mSkin; }
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: screen.c,v 1.2 2004/12/06 15:01:02 lordjaxom Exp $
+ *  $Id: screen.c,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
  */
 
 #include "screen.h"

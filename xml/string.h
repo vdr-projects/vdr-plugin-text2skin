@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
+ *  $Id: string.h,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -96,15 +96,52 @@ enum exToken {
 #define __COUNT_TOKEN__ (tCanScrollDown + 1)
 };
 
+enum exAttrib {
+	aNone,
+	aNumber,
+	aString,
+	aClean
+
+#define __COUNT_ATTRIB__ (aClean + 1)
+};
+
+struct txAttrib {
+	exAttrib    Type;
+	std::string Text;
+	int         Number;
+
+	txAttrib(const std::string &a): Type(aString), Text(a) {}
+	txAttrib(int n): Type(aNumber), Number(0) {}
+	txAttrib(exAttrib t): Type(t), Text(""), Number(0) {}
+	txAttrib(void): Type(aNone) {}
+
+	friend bool operator== (const txAttrib &A, const txAttrib &B);
+	friend bool operator<  (const txAttrib &A, const txAttrib &B);
+};
+
+inline bool operator== (const txAttrib &A, const txAttrib &B)
+{
+	return A.Type == B.Type
+	    && A.Text == B.Text;
+}
+
+inline bool operator<  (const txAttrib &A, const txAttrib &B)
+{
+	return A.Type == B.Type
+	       ? A.Text < B.Text
+	       : A.Type < B.Type;
+}
+
 struct txToken {
-	exToken      Type;
-	uint         Offset;
-	std::string  Attrib;
-	int          Index;
-	int          Tab;
+	exToken     Type;
+	uint        Offset;
+	txAttrib    Attrib;
+	int         Index;
+	int         Tab;
 
 	txToken(void): Index(-1), Tab(-1) {}
-	txToken(exToken t, uint o, const std::string &a): Type(t), Offset(o), Attrib(a), Index(-1), Tab(-1) {}
+	txToken(exToken t, uint o, const std::string &a): 
+		Type(t), Offset(o), Attrib(a), Index(-1), Tab(-1) {}
 
 	friend bool operator< (const txToken &A, const txToken &B);
 
@@ -113,18 +150,13 @@ struct txToken {
 
 inline bool operator< (const txToken &A, const txToken &B) 
 {
-	if (A.Type == B.Type) {
-		if (A.Attrib == B.Attrib) {
-			if (A.Index == B.Index)
-				return A.Tab < B.Tab;
-			else
-				return A.Index < B.Index;
-		}
-		else
-			return A.Attrib < B.Attrib;
-	}
-	else
-		return A.Type < B.Type;
+	return A.Type == B.Type
+	       ? A.Attrib == B.Attrib
+	         ? A.Index == B.Index
+	           ? A.Tab < B.Tab
+	           : A.Index < B.Index
+	         : A.Attrib < B.Attrib
+	       : A.Type < B.Type;
 }
 
 class cxString {

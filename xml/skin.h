@@ -1,5 +1,5 @@
 /*
- *  $Id: skin.h,v 1.3 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: skin.h,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_SKIN_H 

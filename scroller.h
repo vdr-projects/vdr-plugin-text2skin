@@ -1,5 +1,5 @@
 /*
- *  $Id: scroller.h,v 1.2 2004/12/17 19:56:16 lordjaxom Exp $
+ *  $Id: scroller.h,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SCROLLER_H
@@ -12,36 +12,37 @@ class cText2SkinScreen;
 
 class cText2SkinScroller {
 private:
-  cText2SkinScreen *mScreen;
-  const cFont      *mFont;
-  int               mLeft;
+	cText2SkinScreen *mScreen;
+	const cFont      *mFont;
+	int               mLeft;
 	int               mTop;
 	int               mWidth;
 	int               mHeight;
-  int               mOffset;
+	int               mOffset;
 	int               mShown;
-  tColor            mColorFg;
+	tColor            mColorFg;
 	tColor            mColorBg;
-  cTextWrapper      mWrapper;
+	cTextWrapper      mWrapper;
 
 public:
-  cText2SkinScroller(void);
-  cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, const char *Text, const cFont *Font, tColor ColorFg, tColor ColorBg);
+	cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, 
+	                   const char *Text, const cFont *Font, tColor ColorFg, tColor ColorBg);
 
-  void Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, const char *Text, const cFont *Font, tColor ColorFg, tColor ColorBg);
-  void DrawText(void);
-  void Reset(void);
-  int Left(void) { return mLeft; }
-  int Top(void) { return mTop; }
-  int Width(void) { return mWidth; }
-  int Height(void) { return mHeight; }
-  int Total(void) { return mWrapper.Lines(); }
-  int Offset(void) { return mOffset; }
-  int Shown(void) { return mShown; }
-  bool CanScrollUp(void) { return mOffset > 0; }
-  bool CanScrollDown(void) { return mOffset + mShown < Total(); }
-  bool CanScroll(void) { return CanScrollUp() || CanScrollDown(); }
-  void Scroll(bool Up, bool Page);
+	void Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, const char *Text, 
+	         const cFont *Font, tColor ColorFg, tColor ColorBg);
+	void DrawText(void);
+	void Reset(void);
+	int Left(void) { return mLeft; }
+	int Top(void) { return mTop; }
+	int Width(void) { return mWidth; }
+	int Height(void) { return mHeight; }
+	int Total(void) { return mWrapper.Lines(); }
+	int Offset(void) { return mOffset; }
+	int Shown(void) { return mShown; }
+	bool CanScrollUp(void) { return mOffset > 0; }
+	bool CanScrollDown(void) { return mOffset + mShown < Total(); }
+	bool CanScroll(void) { return CanScrollUp() || CanScrollDown(); }
+	void Scroll(bool Up, bool Page);
 };
 
 #endif // VDR_TEXT2SKIN_SCROLLER_H
