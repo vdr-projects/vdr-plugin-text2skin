@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.4 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: common.c,v 1.5 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #include "common.h"
@@ -101,7 +101,7 @@ cxType TimeType(time_t Time, const std::string &Format) {
 		} else
 			return Time;
 	}
-	return "";
+	return false;
 }
 
 bool ParseVar(const char *Text, const char *Name, std::string &Value) {

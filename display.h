@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.7 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: display.h,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -23,6 +23,10 @@ private:
 	const cEvent   *mFollowing;
 	eMessageType    mType;
 	std::string     mText;
+	std::string     mButtonRed;
+	std::string     mButtonGreen;
+	std::string     mButtonYellow;
+	std::string     mButtonBlue;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
@@ -71,6 +75,10 @@ private:
 	std::string   mPrompt;
 	eMessageType  mType;
 	std::string   mText;
+	std::string   mButtonRed;
+	std::string   mButtonGreen;
+	std::string   mButtonYellow;
+	std::string   mButtonBlue;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
@@ -87,6 +95,7 @@ public:
 	virtual void SetTotal(const char *Total);
 	virtual void SetJump(const char *Jump);
 	virtual void SetMessage(eMessageType Type, const char *Text);
+	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
 
 	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };

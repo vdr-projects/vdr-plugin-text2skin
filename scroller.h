@@ -1,5 +1,5 @@
 /*
- *  $Id: scroller.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
+ *  $Id: scroller.h,v 1.2 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SCROLLER_H
@@ -38,9 +38,9 @@ public:
   int Total(void) { return mWrapper.Lines(); }
   int Offset(void) { return mOffset; }
   int Shown(void) { return mShown; }
-  bool CanScroll(void) { return CanScrollUp() || CanScrollDown(); }
   bool CanScrollUp(void) { return mOffset > 0; }
   bool CanScrollDown(void) { return mOffset + mShown < Total(); }
+  bool CanScroll(void) { return CanScrollUp() || CanScrollDown(); }
   void Scroll(bool Up, bool Page);
 };
 

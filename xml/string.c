@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.7 2004/12/14 13:13:10 lordjaxom Exp $
+ *  $Id: string.c,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -13,6 +13,7 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
 	"ChannelSource", "PresentStartDateTime", 
 	"PresentVPSDateTime", "PresentEndDateTime", "PresentDuration", "PresentProgress", 
+	"PresentRemaining",
 	"PresentTitle", "PresentShortText", "PresentDescription", "FollowingStartDateTime", 
 	"FollowingVPSDateTime", "FollowingEndDateTime", "FollowingDuration",
 	"FollowingTitle", "FollowingShortText", "FollowingDescription", "Language",
@@ -29,7 +30,7 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	// Replay Display
 	"ReplayTitle", "ReplayPositionIndex", "ReplayDurationIndex", "ReplayPrompt", "IsPlaying", 
 	"IsFastForward", "IsFastRewind", "IsSlowForward", "IsSlowRewind", "IsPausing",
-	"ReplayPosition", "ReplayDuration", "ReplayMode",
+	"ReplayPosition", "ReplayDuration", "ReplayRemaining", "ReplayMode",
 
 	// Menu Page
 	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", "IsMenuCurrent",

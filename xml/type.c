@@ -1,10 +1,13 @@
 /*
- *  $Id: type.c,v 1.3 2004/12/12 20:26:25 lordjaxom Exp $
+ *  $Id: type.c,v 1.4 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #include "xml/type.h"
 #include "xml/function.h"
 #include <stdio.h>
+
+cxType cxType::False(false);
+cxType cxType::True(true);
 
 const std::string &cxType::String(void) {
 	if (mType == number) {

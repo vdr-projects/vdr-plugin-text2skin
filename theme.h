@@ -1,5 +1,5 @@
 /*
- * $Id: theme.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
+ * $Id: theme.h,v 1.2 2004/12/17 19:56:16 lordjaxom Exp $
  */ 
 
 #ifndef VDR_TEXT2SKIN_THEME_H
@@ -12,8 +12,10 @@
 
 class cText2SkinTheme: public cText2SkinFile {
 private:
-	cTheme                    mTheme;
-	std::map<std::string,int> mMap;
+	typedef std::map<std::string,int> tThemeMap;
+
+	cTheme    mTheme;
+	tThemeMap mMap;
 
 protected:
 	bool Parse(const char *Text);
@@ -27,8 +29,9 @@ public:
 };
 
 inline tColor cText2SkinTheme::Color(const std::string &Name) {
-	if (mMap.find(Name) != mMap.end())
-		return mTheme.Color(mMap[Name]);
+	tThemeMap::iterator it = mMap.find(Name);
+	if (it != mMap.end())
+		return mTheme.Color((*it).second);
 	else
 		return 0x00000000;
 }

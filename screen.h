@@ -1,5 +1,5 @@
 /*
- *  $Id: screen.h,v 1.2 2004/12/06 15:01:02 lordjaxom Exp $
+ *  $Id: screen.h,v 1.3 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SCREEN_H
@@ -35,6 +35,8 @@ public:
 	void DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type);
 
 	void Flush(void);
+
+	bool IsOpen(void) const { return mOsd != NULL; }
 };
 
 #endif // VDR_TEXT2SKIN_SCREEN_H

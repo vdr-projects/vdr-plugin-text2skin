@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
+ *  $Id: type.h,v 1.6 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
@@ -22,6 +22,9 @@ private:
 	int         mNumber;
 
 public:
+	static cxType True;
+	static cxType False;
+
 	cxType(void): mType(boolean), mNumber(0) {}
 	cxType(const char *String): mType(string), mString(String ?: "") {}
 	cxType(std::string String): mType(string), mString(String) {}
@@ -30,15 +33,11 @@ public:
 	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0) {}
 
 	const std::string &String(void);
-	int                Number(void) const;
+	int Number(void) const { return mType == number ? mNumber : 0; }
 
 	operator std::string () { return String(); }
 	operator int         () { return Number(); }
 	operator bool        () { return Number(); }
 };
-
-inline int cxType::Number(void) const { 
-	return mType == number ? mNumber : 0;
-}
 
 #endif // VDR_TEXT2SKIN_XML_TYPE_H

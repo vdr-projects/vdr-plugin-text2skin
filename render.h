@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.8 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: render.h,v 1.9 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -31,6 +31,8 @@ class cText2SkinRender: public cThread {
 	friend class VSkinnerScreen;
 
 private:
+	typedef std::map<txToken,cxType> tTokenCache;
+
 	static cText2SkinRender *mRender;
 
 	cxSkin             *mSkin;
@@ -39,6 +41,7 @@ private:
 	cText2SkinTheme    *mTheme;
 	cText2SkinScreen   *mScreen;
 	cText2SkinScroller *mScroller;
+	tTokenCache         mTokenCache;
 
 	std::string         mBasePath;
 	bool                mDirty;
@@ -56,8 +59,8 @@ private:
 	
 protected:
 	// Update thread
-	//void Lock(void) { mMutex.Lock(); }
-	//void Unlock(void) { mMutex.Unlock(); }
+	void UpdateLock(void) { mDoUpdateMutex.Lock(); }
+	void UpdateUnlock(void) { mDoUpdateMutex.Unlock(); }
 	virtual void Action(void);
 
 	// Drawing operations
@@ -65,24 +68,20 @@ protected:
 	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
 	                    int Alpha, const std::string &Path);
 	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
-			       int Alpha, int Colors, const std::string &Path);
+	               int Alpha, int Colors, const std::string &Path);
 	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const std::string &Text,
-			      const cFont *Font, int Align);
+	              const cFont *Font, int Align);
 	void DrawRectangle(const txPoint &Pos, const txSize &Size, 
-			const tColor *Fg);
-	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-			int Arc);
-	void DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-			int Arc);
-	void DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, 
-			int Total, const tColor *Fg, const tColor *Bg, 
-			const tColor *Selected, const tColor *Mark, const tColor *Cur, 
-			const cMarks *Marks = NULL);
- 	void DrawMark(const txPoint &Pos, const txSize &Size, bool Start, 
-			bool Current, bool Horizontal, const tColor *Mark, 
-			const tColor *Cur);
-	void DrawScrolltext(const txPoint &Pos, const txSize &Size, 
-			const tColor *Fg, const std::string &Text, const cFont *Font, int Align);
+	                   const tColor *Fg);
+	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
+	void DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
+	void DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, int Total, 
+	                     const tColor *Fg, const tColor *Bg, const tColor *Selected, 
+	                     const tColor *Mark, const tColor *Cur, const cMarks *Marks = NULL);
+	void DrawMark(const txPoint &Pos, const txSize &Size, bool Start, bool Current, bool Horizontal,
+	              const tColor *Mark, const tColor *Cur);
+	void DrawScrolltext(const txPoint &Pos, const txSize &Size, const tColor *Fg,
+	                    const std::string &Text, const cFont *Font, int Align);
 	void DrawScrollbar(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg);
 
 	void Update(void);
@@ -103,8 +102,8 @@ protected:
 	void Clear(void) { DELETENULL(mScroller); }
 
 public:
-	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, const std::string &BasePath = "", 
-			bool OffScreen = false);
+	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, 
+	                 const std::string &BasePath = "", bool OffScreen = false);
 	virtual ~cText2SkinRender();
 
 	// functions for object classes to obtain dynamic item information
@@ -114,11 +113,14 @@ public:
 	static cxType GetToken(const txToken &Token);
 };
 
-inline void cText2SkinRender::Flush(bool Force) {
+inline void cText2SkinRender::Flush(bool Force) 
+{
 	if (mDirty || Force) {
-		mDoUpdateMutex.Lock();
+		mTokenCache.clear();
+
+		UpdateLock();
 		mDoUpdate.Broadcast();
-		mDoUpdateMutex.Unlock();
+		UpdateUnlock();
 		
 		mDirty = false;
 	}

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.7 2004/12/14 20:02:31 lordjaxom Exp $
+ *  $Id: string.h,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -25,6 +25,7 @@ enum exToken {
 	tPresentEndDateTime,
 	tPresentDuration,
 	tPresentProgress,
+	tPresentRemaining,
 	tPresentTitle,
 	tPresentShortText,
 	tPresentDescription,
@@ -52,7 +53,7 @@ enum exToken {
 	tVolumeTotal,
 	tIsMute,
 
-	// Message Display
+	// Message Display (also in all other displays)
 	tMessage,
 	tMessageStatus,
 	tMessageInfo,
@@ -72,6 +73,7 @@ enum exToken {
 	tIsPausing,
 	tReplayPosition,
 	tReplayDuration,
+	tReplayRemaining,
 	tReplayMode,
 
 	// Menu Page
@@ -83,6 +85,7 @@ enum exToken {
 	tMenuCurrent,
 	tIsMenuCurrent,
 	tMenuText,
+	// next four also in Channel and Replay display (if supported by vdr/plugin)
 	tButtonRed,
 	tButtonGreen,
 	tButtonYellow,
@@ -103,8 +106,26 @@ struct txToken {
 	txToken(void): Index(-1), Tab(-1) {}
 	txToken(exToken t, uint o, const std::string &a): Type(t), Offset(o), Attrib(a), Index(-1), Tab(-1) {}
 
+	friend bool operator< (const txToken &A, const txToken &B);
+
 	static std::string Token(const txToken &Token);
 };
+
+inline bool operator< (const txToken &A, const txToken &B) 
+{
+	if (A.Type == B.Type) {
+		if (A.Attrib == B.Attrib) {
+			if (A.Index == B.Index)
+				return A.Tab < B.Tab;
+			else
+				return A.Index < B.Index;
+		}
+		else
+			return A.Attrib < B.Attrib;
+	}
+	else
+		return A.Type < B.Type;
+}
 
 class cxString {
 private:

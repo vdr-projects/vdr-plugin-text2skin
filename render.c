@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.10 2004/12/14 20:02:31 lordjaxom Exp $
+ * $Id: render.c,v 1.11 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -17,7 +17,8 @@
 
 cText2SkinRender *cText2SkinRender::mRender = NULL;
 
-cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Display, const std::string &BasePath, bool OffScreen):
+cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Display, 
+                                   const std::string &BasePath, bool OffScreen):
 		mSkin(Loader->Data()),
 		mDisplay(mSkin->Get(Display)),
 		mI18n(Loader->I18n()),
@@ -44,6 +45,9 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		return;
 
 	mScreen = new cText2SkinScreen(OffScreen);
+	if (!mScreen->IsOpen())
+		return;
+
 	mBaseSize = mSkin->BaseSize();
 
 	eOsdError res;
@@ -56,9 +60,8 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		areas[i].x2 = mSkin->BaseOffset().x + pos2.x;
 		areas[i].y2 = mSkin->BaseOffset().y + pos2.y;
 		areas[i].bpp = mDisplay->Windows()[i].bpp;
-		Dprintf("setting area: %d, %d, %d, %d, %d\n",
-				areas[i].x1, areas[i].y1, areas[i].x2, areas[i].y2,
-				areas[i].bpp);
+		Dprintf("setting area: %d, %d, %d, %d, %d\n", areas[i].x1, areas[i].y1, areas[i].x2, 
+		        areas[i].y2, areas[i].bpp);
 	}
 	res = mScreen->SetAreas(areas, mDisplay->NumWindows());
 
@@ -87,10 +90,10 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 	}
 
 	if (!OffScreen) {
-		mDoUpdateMutex.Lock();
+		UpdateLock();
 		Start();
 		mStarted.Wait(mDoUpdateMutex);
-		mDoUpdateMutex.Unlock();
+		UpdateUnlock();
 	}
 }
 
@@ -110,7 +113,7 @@ cText2SkinRender::~cText2SkinRender()
 void cText2SkinRender::Action(void) 
 {
 	mActive = true;
-	mDoUpdateMutex.Lock();
+	UpdateLock();
 	mStarted.Broadcast();
 	while (mActive) {
 		if (mUpdateIn) mDoUpdate.TimedWait(mDoUpdateMutex, mUpdateIn);
@@ -121,7 +124,7 @@ void cText2SkinRender::Action(void)
 		mUpdateIn = 0; // has to be re-set within Update();
 		Update();
 	}
-	mDoUpdateMutex.Unlock();
+	UpdateUnlock();
 }
 
 void cText2SkinRender::Update(void) 
@@ -149,7 +152,8 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 		break;
 
 	case cxObject::text:
-		DrawText(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), Object->Align());
+		DrawText(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
+		         Object->Align());
 		break;
 
 	case cxObject::rectangle:
@@ -165,11 +169,14 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 		break;
 
 	case cxObject::progress:
-		DrawProgressbar(Object->Pos(), Object->Size(), Object->Current(), Object->Total(), Object->Bg(), Object->Fg(), Object->Keep(), Object->Mark(), Object->Active(), GetMarks());
+		DrawProgressbar(Object->Pos(), Object->Size(), Object->Current(), Object->Total(), 
+		                Object->Bg(), Object->Fg(), Object->Keep(), Object->Mark(), 
+		                Object->Active(), GetMarks());
 		break;
 
 	case cxObject::scrolltext:
-		DrawScrolltext(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), Object->Align());
+		DrawScrolltext(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
+		               Object->Align());
 		break;
 
 	case cxObject::scrollbar:
@@ -244,10 +251,11 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 }
 
 void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, 
-		                         const tColor *Fg, int Alpha, int Colors, const std::string &Path)
+                                const tColor *Fg, int Alpha, int Colors, const std::string &Path)
 {
 	cText2SkinBitmap *bmp;
-	Dprintf("trying to draw image %s to %dx%d - alpha %d\n", ImagePath(Path).c_str(), Pos.x, Pos.y, Alpha);
+	Dprintf("trying to draw image %s to %dx%d - alpha %d\n", ImagePath(Path).c_str(), Pos.x, 
+	        Pos.y, Alpha);
 
 	if ((bmp = cText2SkinBitmap::Load(ImagePath(Path), Alpha, Size.h > 1 ? Size.h : 0, 
 	                                  Size.w > 1 ? Size.w : 0, Colors)) != NULL) {
@@ -261,7 +269,8 @@ void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const t
 void cText2SkinRender::DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
                                 const std::string &Text, const cFont *Font, int Align) 
 {
-	//Dprintf("trying to draw text %s to %d,%d size %d,%d, color %x\n", Text.c_str(), Pos.x, Pos.y, Size.w, Size.h, Fg ? *Fg : 0);
+	//Dprintf("trying to draw text %s to %d,%d size %d,%d, color %x\n", Text.c_str(), Pos.x, Pos.y, 
+	//        Size.w, Size.h, Fg ? *Fg : 0);
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), Fg ? *Fg : 0, 0, Font, Size.w, Size.h, Align);
 }
 
@@ -282,10 +291,11 @@ void cText2SkinRender::DrawSlope(const txPoint &Pos, const txSize &Size, const t
 
 void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, 
                                        int Total, const tColor *Bg, const tColor *Fg, 
-																			 const tColor *Selected, const tColor *Mark, 
-																			 const tColor *Cur, const cMarks *Marks) 
+                                       const tColor *Selected, const tColor *Mark, 
+                                       const tColor *Cur, const cMarks *Marks) 
 {
-	//Dprintf("trying to draw Progressbar, Current = %d, Total = %d, bg = %x, marks = %p\n", Current, Total, Bg ? *Bg : 0, Marks);
+	//Dprintf("trying to draw Progressbar, Current = %d, Total = %d, bg = %x, marks = %p\n", 
+	//        Current, Total, Bg ? *Bg : 0, Marks);
 	if (Bg)
 		DrawRectangle(Pos, Size, Bg);
 	if (Total == 0)
@@ -301,7 +311,9 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 				txPoint pt(Pos.x + m->position * Size.w / Total, Pos.y);
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
-					DrawRectangle(txPoint(pt.x, Pos.y + Size.h / 3), txSize(((m2 ? m2->position : Total) - m->position) * Size.w / Total, Size.h / 3), Selected);
+					DrawRectangle(txPoint(pt.x, Pos.y + Size.h / 3), 
+					              txSize(((m2 ? m2->position : Total) - m->position) 
+					              * Size.w / Total, Size.h / 3), Selected);
 				}
 				DrawMark(pt, Size, start, m->position == Current, false, Mark, Cur);
 				start = !start;
@@ -316,7 +328,9 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 				txPoint pt(Pos.x, Pos.y + m->position * Size.h / Total);
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
-					DrawRectangle(txPoint(Pos.x + Size.w / 3, pt.y), txSize(Size.w / 3, ((m2 ? m2->position : Total) - m->position) * Size.h / Total), Selected);
+					DrawRectangle(txPoint(Pos.x + Size.w / 3, pt.y), 
+					              txSize(Size.w / 3, ((m2 ? m2->position : Total) - m->position) 
+					              * Size.h / Total), Selected);
 				}
 				DrawMark(pt, Size, start, m->position == Current, true, Mark, Cur);
 				start = !start;
@@ -428,21 +442,37 @@ string cText2SkinRender::Translate(const string &Text) {
 cxType cText2SkinRender::GetToken(const txToken &Token) 
 {
 	if (mRender != NULL) {
+		tTokenCache::iterator it = mRender->mTokenCache.find(Token);
+		if (it != mRender->mTokenCache.end())
+			return (*it).second;
+
 		cxType res = mRender->GetTokenData(Token);
 		if (Token.Attrib.length() > 0) {
 			if (Token.Attrib == "clean") {
 				std::string str = res.String();
 				int pos = -1;
-				
-				if (Token.Type == tMenuCurrent && (pos = str.rfind(' ')) != -1)
-					res = str.substr(pos + 1);
-				else if (Token.Type == tMenuTitle && (pos = str.find(' ')) != -1)
-					res = str.substr(0, pos);
+
+				if (Token.Type == tMenuCurrent) {
+					const char *ptr = str.c_str(); 
+					char *end;
+					strtoul(ptr, &end, 10);
+					res = skipspace(end);
+				}
+				else if (Token.Type == tMenuTitle) {
+					if ((pos = str.find(" - ")) != -1
+							|| (pos = str.find(' ')) != -1) {
+						str.erase(pos);
+						while (str[str.length() - 1] == ' ')
+							str.erase(str.length() - 1);
+						res = str;
+					}
+					Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
+				}
 			}
 		}
-		return res;
+		return (mRender->mTokenCache[Token] = res);
 	}
-	return false;
+	return cxType::False;
 }
 
 cxType cText2SkinRender::GetTokenData(const txToken &Token) 
@@ -453,7 +483,7 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	case tCanScrollUp:   return mScroller != NULL && mScroller->CanScrollUp();
 
 	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
-			  
+
 	//default:             return txToken::Token(Token); // return literal token
 	default:             break;
 	}

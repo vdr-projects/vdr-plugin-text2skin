@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
+ *  $Id: object.c,v 1.6 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -118,11 +118,9 @@ const cFont *cxObject::Font(void) const
 {
 	const cFont *font;
 
-	Dprintf("trying: %s %d\n", (SkinPath() + "/fonts/" + mFontFace).c_str(), mFontSize);
 	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize)) != NULL)
 		return font;
 	
-	Dprintf("trying: %s %d\n", (SkinPath() + "/" + mSkin->Name() + "/" + mFontFace).c_str(), mFontSize);
 	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize)) != NULL)
 		return font;
 	

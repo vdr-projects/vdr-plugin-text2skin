@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.7 2004/12/14 13:13:10 lordjaxom Exp $
+ *  $Id: function.c,v 1.8 2004/12/17 19:56:16 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -165,11 +165,9 @@ const std::string &cxFunction::FunFile(const std::string &Param) const
 
 std::string cxFunction::FunPlugin(const std::string &Param) const
 {
-	Dprintf("FunPlugin: Get(%s)\n", Param.c_str());
 	cPlugin *p = cPluginManager::GetPlugin(Param.c_str());
 	if (p) {
 		const char *entry = p->MainMenuEntry();
-		Dprintf("Entry: |%s|\n", entry);
 		if (entry)
 			return entry;
 	}
@@ -200,7 +198,6 @@ std::string cxFunction::Evaluate(void) const
 		return False;
 
 	case fun_eq:
-		Dprintf("eq: |%s| <-> |%s|\n", mParams[0]->Evaluate().c_str(), mParams[1]->Evaluate().c_str());
 		return mParams[0]->Evaluate() == mParams[1]->Evaluate() ? True : False;
 
 	case fun_file:
