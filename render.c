@@ -1,22 +1,21 @@
 /*
- * $Id: render.c,v 1.15 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: render.c,v 1.16 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #include "render.h"
-#define __STL_CONFIG_H
+#include "data.h"
+#include "bitmap.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>
 #include <vdr/menu.h>
-#undef __STL_CONFIG_H
-#include "data.h"
-#include "bitmap.h"
-#include "common.h"
 
-cText2SkinRender::cText2SkinRender(cText2SkinData *Data, eSkinSection Section) {
+cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, eSkinSection Section) {
 	tArea areas[MAXOSDAREAS];
 	int numAreas = 0;
 
 	mData              = Data;
+	mI18n              = I18n;
+	mTheme             = Theme;
 	mSection           = Section;
 	mOsd               = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
 	mChannel           = NULL;
@@ -38,9 +37,10 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, eSkinSection Section) {
 	mMenuRecording     = NULL;
 	mMenuTextFixedFont = false;
 
-	cText2SkinItem *item;
-	for (item = Data->First(); item; item = Data->Next(item)) {
-		if (item->Section() == Section && item->Item() == itemBackground) {
+	cText2SkinData::tIterator it = Data->First(mSection);
+	for (; it != Data->Last(mSection); ++it) {
+		cText2SkinItem *item = (*it);
+		if (item->Item() == itemBackground) {
 			if (numAreas < MAXOSDAREAS) {
 				areas[numAreas].x1 = item->Pos().x;
 				areas[numAreas].y1 = item->Pos().y;
@@ -85,96 +85,95 @@ cText2SkinRender::~cText2SkinRender() {
 }
 
 void cText2SkinRender::Flush(void) {
-	cText2SkinItem *item;
-	for (item = mData->First(); item; item = mData->Next(item)) {
-		if (item->Section() == mSection) {
-			switch (item->Item()) {
-			case itemBackground:
-				DisplayBackground(item); break;
-			case itemChannelLogo:
-				DisplayChannelLogo(item); break;
-			case itemLanguage:
-				DisplayLanguage(item); break;
-			case itemText:
-				DisplayText(item); break;
-			case itemImage:
-				DisplayImage(item); break;
-			case itemDateTime:
-				DisplayDateTime(item); break;
-			case itemDate:
-				DisplayDate(item); break;
-			case itemTime:
-				DisplayTime(item); break;
-			case itemChannelNumberName:
-				DisplayChannelNumberName(item); break;
-			case itemChannelNumber:
-				DisplayChannelNumber(item); break;
-			case itemChannelName:
-				DisplayChannelName(item); break;
-			case itemRectangle:
-				DisplayRectangle(item); break;
-			case itemEllipse:
-				DisplayEllipse(item); break;
-			case itemSlope:
-				DisplaySlope(item); break;
-			case itemTimebar:
-				DisplayTimebar(item); break;
-			case itemPresentTime:
-				DisplayPresentTime(item); break;
-			case itemPresentTitle:
-				DisplayPresentTitle(item); break;
-			case itemPresentShortText:
-				DisplayPresentShortText(item); break;
-			case itemFollowingTime:
-				DisplayFollowingTime(item); break;
-			case itemFollowingTitle:
-				DisplayFollowingTitle(item); break;
-			case itemFollowingShortText:
-				DisplayFollowingShortText(item); break;
-			case itemSymbolTeletext:
-			case itemSymbolAudio:
-			case itemSymbolDolby:
-			case itemSymbolEncrypted:
-			case itemSymbolRecording:
-			case itemSymbolRadio:
-			case itemSymbolPlay:
-			case itemSymbolPause:
-			case itemSymbolFastFwd:
-			case itemSymbolFastRew:
-			case itemSymbolSlowFwd:
-			case itemSymbolSlowRew:
-				DisplaySymbol(item); break;
-			case itemVolumebar:
-				DisplayVolumebar(item); break;
-			case itemMute:
-				DisplayMute(item); break;
-			case itemReplaybar:
-				DisplayReplaybar(item); break;
-			case itemReplayTitle:
-				DisplayReplayTitle(item); break;
-			case itemReplayCurrent:
-				DisplayReplayCurrent(item); break;
-			case itemReplayTotal:
-				DisplayReplayTotal(item); break;
-			case itemReplayJump:
-				DisplayReplayJump(item); break;
-			case itemMessageInfo:
-			case itemMessageStatus:
-			case itemMessageWarning:
-			case itemMessageError:
-				DisplayMessage(item); break;
-			case itemMenuItem:
-				DisplayMenuItems(item); break;
-			case itemMenuTitle:
-				DisplayMenuTitle(item); break;
-			case itemMenuRed:
-			case itemMenuGreen:
-			case itemMenuYellow:
-			case itemMenuBlue:
-				DisplayMenuColorbutton(item); break;
-			default:
-				break;
-			}
+	cText2SkinData::tIterator it = mData->First(mSection);
+	for (; it != mData->Last(mSection); ++it) {
+		cText2SkinItem *item = (*it);
+		switch (item->Item()) {
+		case itemBackground:
+			DisplayBackground(item); break;
+		case itemChannelLogo:
+			DisplayChannelLogo(item); break;
+		case itemLanguage:
+			DisplayLanguage(item); break;
+		case itemText:
+			DisplayText(item); break;
+		case itemImage:
+			DisplayImage(item); break;
+		case itemDateTime:
+			DisplayDateTime(item); break;
+		case itemDate:
+			DisplayDate(item); break;
+		case itemTime:
+			DisplayTime(item); break;
+		case itemChannelNumberName:
+			DisplayChannelNumberName(item); break;
+		case itemChannelNumber:
+			DisplayChannelNumber(item); break;
+		case itemChannelName:
+			DisplayChannelName(item); break;
+		case itemRectangle:
+			DisplayRectangle(item); break;
+		case itemEllipse:
+			DisplayEllipse(item); break;
+		case itemSlope:
+			DisplaySlope(item); break;
+		case itemTimebar:
+			DisplayTimebar(item); break;
+		case itemPresentTime:
+			DisplayPresentTime(item); break;
+		case itemPresentTitle:
+			DisplayPresentTitle(item); break;
+		case itemPresentShortText:
+			DisplayPresentShortText(item); break;
+		case itemFollowingTime:
+			DisplayFollowingTime(item); break;
+		case itemFollowingTitle:
+			DisplayFollowingTitle(item); break;
+		case itemFollowingShortText:
+			DisplayFollowingShortText(item); break;
+		case itemSymbolTeletext:
+		case itemSymbolAudio:
+		case itemSymbolDolby:
+		case itemSymbolEncrypted:
+		case itemSymbolRecording:
+		case itemSymbolRadio:
+		case itemSymbolPlay:
+		case itemSymbolPause:
+		case itemSymbolFastFwd:
+		case itemSymbolFastRew:
+		case itemSymbolSlowFwd:
+		case itemSymbolSlowRew:
+			DisplaySymbol(item); break;
+		case itemVolumebar:
+			DisplayVolumebar(item); break;
+		case itemMute:
+			DisplayMute(item); break;
+		case itemReplaybar:
+			DisplayReplaybar(item); break;
+		case itemReplayTitle:
+			DisplayReplayTitle(item); break;
+		case itemReplayCurrent:
+			DisplayReplayCurrent(item); break;
+		case itemReplayTotal:
+			DisplayReplayTotal(item); break;
+		case itemReplayJump:
+			DisplayReplayJump(item); break;
+		case itemMessageInfo:
+		case itemMessageStatus:
+		case itemMessageWarning:
+		case itemMessageError:
+			DisplayMessage(item); break;
+		case itemMenuItem:
+			DisplayMenuItems(item); break;
+		case itemMenuTitle:
+			DisplayMenuTitle(item); break;
+		case itemMenuRed:
+		case itemMenuGreen:
+		case itemMenuYellow:
+		case itemMenuBlue:
+			DisplayMenuColorbutton(item); break;
+		default:
+			break;
 		}
 	}
 	mOsd->Flush();
@@ -185,7 +184,7 @@ void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const 
 	cText2SkinBitmap bm;
 	if (Path != "") {
 		char *p;
-		asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin(), Path.c_str());
+		asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
 		if (bm.Load(p)) {
 			if (Bg) bm.SetColor(0, *Bg);
 			if (Fg) bm.SetColor(1, *Fg);
@@ -203,7 +202,7 @@ void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const 
 void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path) {
 	cText2SkinBitmap bm;
 	char *p;
-	asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin(), Path.c_str());
+	asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
 	printf("Trying to load image: %s\n", p);
 	if (bm.Load(p)) {
 		if (Bg) bm.SetColor(0, *Bg);
@@ -302,13 +301,13 @@ void cText2SkinRender::DrawMark(const POINT &Pos, const SIZE &Size, bool Start, 
 }
 
 void cText2SkinRender::DisplayBackground(cText2SkinItem *Item) {
-	DrawBackground(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), Item->Path());
+	DrawBackground(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Path());
 }
 
 void cText2SkinRender::DisplayChannelLogo(cText2SkinItem *Item) {
 	if (Item->Type() != "" && mChannel) {
 		string path = Item->Path() + "/" + ChannelName(mChannel, mChannelNumber) + "." + Item->Type();
-		DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), path);
+		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), path);
 	}
 }
 
@@ -325,62 +324,62 @@ void cText2SkinRender::DisplayLanguage(cText2SkinItem *Item) {
 		printf("\n");
 		if (current < i) {
 			string path = Item->Path() + "/" + tracks[current] + "." + Item->Type();
-			DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), path);
+			DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), path);
 		}
 	}
 }
 
 void cText2SkinRender::DisplayText(cText2SkinItem *Item) {
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), Item->Text(), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayImage(cText2SkinItem *Item) {
-	DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), Item->Path());
+	DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Path());
 }
 
 void cText2SkinRender::DisplayDateTime(cText2SkinItem *Item) {
 	const char *text = DayDateTime(time(NULL));
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayDate(cText2SkinItem *Item) {
 	char *text = strdup(DayDateTime(time(NULL)));
 	text[9] = '.';
 	text[10] = '\0';
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text + 4), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 4), Item->Font(), Item->Align());
 	free(text);
 }
 
 void cText2SkinRender::DisplayTime(cText2SkinItem *Item) {
 	char *text = strdup(DayDateTime(time(NULL)));
 	text[18] = '\0'; 
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text + 13), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 13), Item->Font(), Item->Align());
 	free(text);
 }
 
 void cText2SkinRender::DisplayChannelNumberName(cText2SkinItem *Item) {
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, ChannelString(mChannel, mChannelNumber)), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, ChannelString(mChannel, mChannelNumber)), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayChannelNumber(cText2SkinItem *Item) {
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, ChannelNumber(mChannel, mChannelNumber)), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, ChannelNumber(mChannel, mChannelNumber)), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayChannelName(cText2SkinItem *Item) {
-	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, ChannelName(mChannel, mChannelNumber)), Item->Font(), Item->Align());
+	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, ChannelName(mChannel, mChannelNumber)), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayRectangle(cText2SkinItem *Item) {
-	DrawRectangle(Item->Pos(), Item->Size(), Item->Fg());
+	DrawRectangle(Item->Pos(), Item->Size(), ItemFg(Item));
 
 }
 
 void cText2SkinRender::DisplayEllipse(cText2SkinItem *Item) {
-	DrawEllipse(Item->Pos(), Item->Size(), Item->Fg(), Item->Arc());
+	DrawEllipse(Item->Pos(), Item->Size(), ItemFg(Item), Item->Arc());
 }
 
 void cText2SkinRender::DisplaySlope(cText2SkinItem *Item) {
-	DrawSlope(Item->Pos(), Item->Size(), Item->Fg(), Item->Arc());
+	DrawSlope(Item->Pos(), Item->Size(), ItemFg(Item), Item->Arc());
 }
 
 void cText2SkinRender::DisplayTimebar(cText2SkinItem *Item) {
@@ -388,42 +387,42 @@ void cText2SkinRender::DisplayTimebar(cText2SkinItem *Item) {
 	if (mChannelPresent && mChannelPresent->StartTime() && mChannelPresent->Duration() && now > mChannelPresent->StartTime()) {
 		int total = mChannelPresent->Duration();
 		int current = now - mChannelPresent->StartTime();
-		DrawProgressbar(Item->Pos(), Item->Size(), current, total, Item->Bg(), Item->Fg());
+		DrawProgressbar(Item->Pos(), Item->Size(), current, total, ItemBg(Item), ItemFg(Item));
 	}
 }
 
 void cText2SkinRender::DisplayPresentTime(cText2SkinItem *Item) {
 	if (mChannelPresent) {
 		const char *text = DayDateTime(mChannelPresent->StartTime());
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text + 10), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 10), Item->Font(), Item->Align());
 	}
 }
 
 void cText2SkinRender::DisplayPresentTitle(cText2SkinItem *Item) {
 	if (mChannelPresent && mChannelPresent->Title())
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mChannelPresent->Title()), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mChannelPresent->Title()), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayPresentShortText(cText2SkinItem *Item) {
 	if (mChannelPresent && mChannelPresent->ShortText())
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mChannelPresent->ShortText()), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mChannelPresent->ShortText()), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayFollowingTime(cText2SkinItem *Item) {
 	if (mChannelFollowing) {
 		const char *text = DayDateTime(mChannelFollowing->StartTime());
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text + 10), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 10), Item->Font(), Item->Align());
 	}
 }
 
 void cText2SkinRender::DisplayFollowingTitle(cText2SkinItem *Item) {
 	if (mChannelFollowing && mChannelFollowing->Title())
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mChannelFollowing->Title()), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mChannelFollowing->Title()), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayFollowingShortText(cText2SkinItem *Item) {
 	if (mChannelFollowing && mChannelFollowing->ShortText())
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mChannelFollowing->ShortText()), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mChannelFollowing->ShortText()), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplaySymbol(cText2SkinItem *Item) {
@@ -464,53 +463,53 @@ void cText2SkinRender::DisplaySymbol(cText2SkinItem *Item) {
 		}
 	}
 	if (image != "")
-		DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), image);
+		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), image);
 }
 
 void cText2SkinRender::DisplayVolumebar(cText2SkinItem *Item) {
 	if (mVolumeTotal && mVolumeCurrent <= mVolumeTotal) {
 		int total = mVolumeTotal;
 		int current = mVolumeCurrent;
-		DrawProgressbar(Item->Pos(), Item->Size(), current, total, Item->Bg(), Item->Fg());
+		DrawProgressbar(Item->Pos(), Item->Size(), current, total, ItemBg(Item), ItemFg(Item));
 	}
 }
 
 void cText2SkinRender::DisplayMute(cText2SkinItem *Item) {
 	if (mVolumeMute) {
 		if (Item->Path() != "")
-			DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), Item->Path());
+			DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Path());
 		if (Item->Text() != "")
-			DrawText(Item->Pos(), Item->Size(), Item->Fg(), Item->Text(), Item->Font(), Item->Align());
+			DrawText(Item->Pos(), Item->Size(), ItemFg(Item), Item->Text(), Item->Font(), Item->Align());
 	} else if (Item->Path() != "")
-		DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), Item->AltPath());
+		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->AltPath());
 }
 
 void cText2SkinRender::DisplayReplaybar(cText2SkinItem *Item) {
 	if (mReplayTotal && mReplayCurrent <= mReplayTotal) {
 		int total = mReplayTotal;
 		int current = mReplayCurrent;
-		DrawProgressbar(Item->Pos(), Item->Size(), current, total, Item->Bg(), Item->Fg(), mReplayMarks);
+		DrawProgressbar(Item->Pos(), Item->Size(), current, total, ItemBg(Item), ItemFg(Item), mReplayMarks);
 	}
 }
 				
 void cText2SkinRender::DisplayReplayTitle(cText2SkinItem *Item) {
 	if (mReplayTitle != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mReplayTitle), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mReplayTitle), Item->Font(), Item->Align());
 }
 	
 void cText2SkinRender::DisplayReplayCurrent(cText2SkinItem *Item) {
 	if (mReplayCurrentText != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mReplayCurrentText), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mReplayCurrentText), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayReplayTotal(cText2SkinItem *Item) {
 	if (mReplayTotalText != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mReplayTotalText), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mReplayTotalText), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayReplayJump(cText2SkinItem *Item) {
 	if (mReplayJump != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mReplayJump), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mReplayJump), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayMessage(cText2SkinItem *Item) {
@@ -528,12 +527,12 @@ void cText2SkinRender::DisplayMessage(cText2SkinItem *Item) {
 		break;
 	}
 	if (text != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
-	cText2SkinItem *area = mData->Get(itemMenuArea);
-	cText2SkinItem *current = mData->Get(itemMenuCurrent);
+	cText2SkinItem *area = mData->Get(sectionMenu, itemMenuArea);
+	cText2SkinItem *current = mData->Get(sectionMenu, itemMenuCurrent);
 	int xoffs = area->Pos().x;
 	int yoffs = area->Pos().y;
 
@@ -551,13 +550,13 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 			if (current->Pos().y != -1)
 				pt.y += current->Pos().y;
 			SIZE size = { current->Size().w, current->Size().h };
-			if (current->Bg())
-				DrawRectangle(pt, size, current->Bg());
-			DrawText(pt, size, current->Fg(), mMenuItems[index].name.c_str(), current->Font(), current->Align());
+			if (ItemBg(current))
+				DrawRectangle(pt, size, ItemBg(current));
+			DrawText(pt, size, ItemFg(current), mMenuItems[index].name.c_str(), current->Font(), current->Align());
 		} else {
 			POINT pt = { xoffs + Item->Pos().x, yoffs + Item->Pos().y };
 			SIZE size = { Item->Size().w, Item->Size().h };
-			DrawText(pt, size, Item->Fg(), mMenuItems[index].name.c_str(), Item->Font(), Item->Align());
+			DrawText(pt, size, ItemFg(Item), mMenuItems[index].name.c_str(), Item->Font(), Item->Align());
 		}
 		yoffs += Item->Size().h;
 		++index;
@@ -566,7 +565,7 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 
 void cText2SkinRender::DisplayMenuTitle(cText2SkinItem *Item) {
 	if (mMenuTitle != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, mMenuTitle), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuTitle), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayMenuColorbutton(cText2SkinItem *Item) {
@@ -583,6 +582,45 @@ void cText2SkinRender::DisplayMenuColorbutton(cText2SkinItem *Item) {
 	default: break;
 	}
 	if (text != "")
-		DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text), Item->Font(), Item->Align());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
 }
 
+string cText2SkinRender::ItemText(cText2SkinItem *Item) {
+	return mI18n ? mI18n->Translate(Item->Text()) : Item->Text();
+}
+
+string cText2SkinRender::ItemText(cText2SkinItem *Item, const string &Content) {
+	string s;
+	if (Item->Text() != "") {
+		s = mI18n ? mI18n->Translate(Item->Text()) : Item->Text();
+		int pos;
+		while ((pos = s.find('$')) != -1)
+			s.replace(pos, 1, Content);
+	} else
+		s = Content;
+	return s;
+}
+
+tColor *cText2SkinRender::ItemFg(cText2SkinItem *Item) {
+	static tColor Fg;
+	if (Item->Fg() != "") {
+		if (Item->Fg()[0] == '#')
+			Fg = strtoul(Item->Fg().c_str() + 1, NULL, 16);
+		else
+			Fg = mTheme->Color(Item->Fg());
+	} else
+		return NULL;
+	return &Fg;
+}
+
+tColor *cText2SkinRender::ItemBg(cText2SkinItem *Item) {
+	static tColor Bg;
+	if (Item->Bg() != "") {
+		if (Item->Bg()[0] == '#')
+			Bg = strtoul(Item->Bg().c_str() + 1, NULL, 16);
+		else
+			Bg = mTheme->Color(Item->Bg());
+	} else
+		return NULL;
+	return &Bg;
+}

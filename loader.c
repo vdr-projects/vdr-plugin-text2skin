@@ -1,18 +1,15 @@
 /*
- * $Id: loader.c,v 1.5 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: loader.c,v 1.6 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
-#define __STL_CONFIG_H
-#include <vdr/plugin.h>
-#undef __STL_CONFIG_H
 #include "loader.h"
 #include "data.h"
+#include "i18n.h"
+#include "theme.h"
 #include "display.h"
-#include "common.h"
+#include <vdr/plugin.h>
 #include <sys/types.h>
 #include <dirent.h>
-
-static cTheme Theme;
 
 void cText2SkinLoader::Start(void) {
 	DIR *d = opendir(SkinPath());
@@ -33,14 +30,26 @@ void cText2SkinLoader::Start(void) {
 }
 
 void cText2SkinLoader::Load(const char *Skin) {
-	struct stat buf;
-	string file = (string)SkinPath() + "/" + Skin + "/" + Skin + ".skin";
-	if (stat(file.c_str(), &buf) == 0) {
+	cText2SkinI18n *translations = NULL;
+	string transfile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".trans";
+	if (access(transfile.c_str(), F_OK) == 0) {
+		translations = new cText2SkinI18n(Skin);
+		if (!translations->Load(transfile)) {
+			DELETENULL(translations);
+		}
+	}
+
+	cText2SkinTheme *theme = new cText2SkinTheme(Skin);
+	string themefile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".colors";
+	theme->Load(themefile);
+	
+	string skinfile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".skin";
+	if (access(skinfile.c_str(), F_OK) == 0) {
 		cText2SkinData *data = new cText2SkinData(Skin);
-		if (data->Load(file.c_str())) {
-			cText2SkinItem *skin = data->Get(itemSkin);
+		if (data->Load(skinfile)) {
+			cText2SkinItem *skin = data->Get(sectionSkin, itemSkin);
 			if (skin) {
-				new cText2SkinLoader(data, Skin, skin->Name());
+				new cText2SkinLoader(data, translations, theme, Skin, skin->Name());
 				return;
 			} else
 				esyslog("ERROR: Item=Skin is missing in Skin\n");
@@ -50,32 +59,37 @@ void cText2SkinLoader::Load(const char *Skin) {
 		esyslog("ERROR: text2skin: %s/%s is not a valid skin directory\n", SkinPath(), Skin);
 }
 
-cText2SkinLoader::cText2SkinLoader(cText2SkinData *Data, const string &Skin, const string &Description): cSkin(Skin.c_str(), &::Theme) {
+cText2SkinLoader::cText2SkinLoader(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, const string &Skin, const string &Description): cSkin(Skin.c_str(), Theme->Theme()) {
 	mData = Data;
+	mI18n = I18n;
+	mTheme = Theme;
 	mDescription = Description;
 }
 
 cText2SkinLoader::~cText2SkinLoader() {
 	delete mData;
+	delete mI18n;
+	delete mTheme;
 	// mDescription is part of mData
 }
 
 cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {
 	printf("WithInfo: %d\n", WithInfo);
-	return new cText2SkinDisplayChannel(mData, WithInfo);
+	return new cText2SkinDisplayChannel(mData, mI18n, mTheme, WithInfo);
 }
 
 cSkinDisplayMenu *cText2SkinLoader::DisplayMenu(void) {
-	return new cText2SkinDisplayMenu(mData);
+	return new cText2SkinDisplayMenu(mData, mI18n, mTheme);
 }
 
 cSkinDisplayVolume *cText2SkinLoader::DisplayVolume(void) {
-	return new cText2SkinDisplayVolume(mData);
+	return new cText2SkinDisplayVolume(mData, mI18n, mTheme);
 }
 
 cSkinDisplayReplay *cText2SkinLoader::DisplayReplay(bool ModeOnly) {
-	return new cText2SkinDisplayReplay(mData, ModeOnly);
+	return new cText2SkinDisplayReplay(mData, mI18n, mTheme, ModeOnly);
 }
+
 cSkinDisplayMessage *cText2SkinLoader::DisplayMessage(void) {
-	return new cText2SkinDisplayMessage(mData);
+	return new cText2SkinDisplayMessage(mData, mI18n, mTheme);
 }

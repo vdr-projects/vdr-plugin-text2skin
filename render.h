@@ -1,20 +1,16 @@
 /*
- * $Id: render.h,v 1.11 2004/06/01 14:32:46 lordjaxom Exp $
+ * $Id: render.h,v 1.12 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
 #define VDR_TEXT2SKIN_RENDER_H
 
-#define __STL_CONFIG_H
+#include "common.h"
+#include "data.h"
+#include "i18n.h"
+#include "theme.h"
 #include <vdr/osd.h>
 #include <vdr/skins.h>
-#undef __STL_CONFIG_H
-#include "data.h"
-#include <vector>
-#include <string>
-
-using std::vector;
-using std::string;
 
 class cChannel;
 class cEvent;
@@ -28,6 +24,8 @@ class cText2SkinRender {
 
 private:
 	cText2SkinData   *mData;
+	cText2SkinI18n   *mI18n;
+	cText2SkinTheme  *mTheme;
 	eSkinSection      mSection;
 	cOsd             *mOsd;
 
@@ -87,6 +85,7 @@ protected:
 	void DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Fg, const tColor *Bg, const cMarks *Marks = NULL);
  	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal);
 
+	// High-level operations
 	void DisplayBackground(cText2SkinItem *Item); 
 	void DisplayChannelLogo(cText2SkinItem *Item); 
 	void DisplayLanguage(cText2SkinItem *Item); 
@@ -122,8 +121,14 @@ protected:
 	void DisplayMenuColorbutton(cText2SkinItem *Item);
 	void DisplayMenuMessage(cText2SkinItem *Item);
 
+	// Helpers
+	string ItemText(cText2SkinItem *Item);
+	string ItemText(cText2SkinItem *Item, const string &Content);
+	tColor *ItemFg(cText2SkinItem *Item);
+	tColor *ItemBg(cText2SkinItem *Item);
+
 public:
-	cText2SkinRender(cText2SkinData *Data, eSkinSection Section);
+	cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, eSkinSection Section);
 	~cText2SkinRender();
 
 	void Flush(void);

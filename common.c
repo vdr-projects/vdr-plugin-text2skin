@@ -1,12 +1,10 @@
 /*
- * $Id: common.c,v 1.5 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: common.c,v 1.6 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
-#define __STL_CONFIG_H
-#include <vdr/plugin.h>
-#undef __STL_CONFIG_H
 #include "data.h"
 #include "common.h"
+#include <vdr/plugin.h>
 
 const char *SkinPath(void) {
 	return cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
@@ -111,5 +109,65 @@ string ItemText(cText2SkinItem *Item, const string &Content) {
 	} else
 		s = Content;
 	return s;
+}
+
+bool ParseVar(const char *Text, const char *Name, int *Value) {
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		*Value = atoi(value.c_str());
+		return true;
+	}
+	return false;
+}
+
+bool ParseVar(const char *Text, const char *Name, string &Value){
+	char *ptr1, *ptr2;
+	char *str;
+	bool res = false;
+	asprintf(&str, "%s=", Name);
+	if ((ptr1 = strstr(Text, str))) {
+		ptr1 += strlen(str);
+		if ((ptr2 = strchr(ptr1, ',')) || (ptr2 = strchr(ptr1, ';'))) {
+			Value = ptr1;
+			Value.erase(ptr2 - ptr1);
+			res = true;
+		}
+	}
+	free(str);
+	return res;
+}
+
+bool ParseVar(const char *Text, const char *Name, tColor **Value) {
+	string value;
+	if (ParseVar(Text, Name, value) && value[0] == '#') {
+		*Value = new tColor(strtoul(value.c_str() + 1, NULL, 16));
+		return true;
+	}
+	return false;
+}
+
+bool ParseVar(const char *Text, const char *Name, eTextAlignment *Value) {
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		int v = atoi(value.c_str());
+		if (v == 0)
+			*Value = (eTextAlignment)(taTop|taLeft);
+		else if (v == 1)
+			*Value = (eTextAlignment)(taTop|taCenter);
+		else if (v == 2)
+			*Value = (eTextAlignment)(taTop|taRight);
+		return true;
+	}
+	return false;
+}
+
+bool ParseVar(const char *Text, const char *Name, const cFont **Value) {
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		if      (value == "Sml") *Value = cFont::GetFont(fontSml);
+		else if (value == "Fix") *Value = cFont::GetFont(fontFix);
+		return true;
+	}
+	return false;
 }
 

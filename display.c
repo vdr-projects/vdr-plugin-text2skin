@@ -1,17 +1,17 @@
 /*
- * $Id: display.c,v 1.8 2004/06/01 17:25:38 lordjaxom Exp $
+ * $Id: display.c,v 1.9 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #include "render.h"
 #include "data.h"
+#include "i18n.h"
 #include "display.h"
 
 // --- cText2SkinDisplayChannel -----------------------------------------------
 
-cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinData *Data, bool WithInfo) {
-	mData     = Data;
+cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, bool WithInfo) {
 	mWithInfo = WithInfo;
-	mRender   = new cText2SkinRender(mData, WithInfo ? sectionChannel : sectionChannelSmall);
+	mRender   = new cText2SkinRender(Data, I18n, Theme, WithInfo ? sectionChannel : sectionChannelSmall);
 	mDirty    = false;
 }
 
@@ -53,9 +53,8 @@ void cText2SkinDisplayChannel::Flush(void) {
 
 // --- cText2SkinDisplayVolume ------------------------------------------------
 
-cText2SkinDisplayVolume::cText2SkinDisplayVolume(cText2SkinData *Data) {
-	mData     = Data;
-	mRender   = new cText2SkinRender(mData, sectionVolume);
+cText2SkinDisplayVolume::cText2SkinDisplayVolume(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme) {
+	mRender   = new cText2SkinRender(Data, I18n, Theme, sectionVolume);
 	mDirty    = false;
 }
 
@@ -81,9 +80,8 @@ void cText2SkinDisplayVolume::Flush(void) {
 	
 // --- cText2SkinDisplayReplay ------------------------------------------------
 
-cText2SkinDisplayReplay::cText2SkinDisplayReplay(cText2SkinData *Data, bool ModeOnly) {
-	mData     = Data;
-	mRender   = new cText2SkinRender(mData, ModeOnly ? sectionReplayMode : sectionReplay);
+cText2SkinDisplayReplay::cText2SkinDisplayReplay(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, bool ModeOnly) {
+	mRender   = new cText2SkinRender(Data, I18n, Theme, ModeOnly ? sectionReplayMode : sectionReplay);
 	mDirty    = false;
 }
 
@@ -165,9 +163,8 @@ void cText2SkinDisplayReplay::Flush(void) {
 
 // --- cText2SkinDisplayMessage -----------------------------------------------
 
-cText2SkinDisplayMessage::cText2SkinDisplayMessage(cText2SkinData *Data) {
-	mData     = Data;
-	mRender   = new cText2SkinRender(mData, sectionMessage);
+cText2SkinDisplayMessage::cText2SkinDisplayMessage(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme) {
+	mRender   = new cText2SkinRender(Data, I18n, Theme, sectionMessage);
 	mDirty    = false;
 }
 
@@ -193,14 +190,13 @@ void cText2SkinDisplayMessage::Flush(void) {
 
 // --- cText2SkinDisplayMenu --------------------------------------------------
 
-cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinData *Data) {
-	mData     = Data;
-	mRender   = new cText2SkinRender(mData, sectionMenu);
+cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme) {
+	mRender   = new cText2SkinRender(Data, I18n, Theme, sectionMenu);
 	mDirty    = false;
 	mMaxItems = 0;
 
-	cText2SkinItem *area = mData->Get(itemMenuArea);
-	cText2SkinItem *item = mData->Get(itemMenuItem);
+	cText2SkinItem *area = Data->Get(sectionMenu, itemMenuArea);
+	cText2SkinItem *item = Data->Get(sectionMenu, itemMenuItem);
 	if (area && item)
 		mMaxItems = area->Size().h / item->Size().h;
 	else

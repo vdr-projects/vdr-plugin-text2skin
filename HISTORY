@@ -1,6 +1,14 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-02: Version 0.0.1-rc4
+
+- implemented image loading through ImageMagick (fixes crashes when running 
+  together with GraphTFT)
+- implemented Theme support (see file demo.colors in the demo skin)
+- implemented translations for texts used in skins (see file demo.trans in the
+  demo skin)
+
 2004-06-01: Version 0.0.1-rc3
 
 - fixed possible segfault when showing language logo (happened when channel 

@@ -3,15 +3,13 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.7 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.9 2004/06/02 19:55:55 lordjaxom Exp $
  */
 
-#define __STL_CONFIG_H
-#include <vdr/plugin.h>
-#undef __STL_CONFIG_H
 #include "loader.h"
+#include <vdr/plugin.h>
 
-static const char *VERSION        = "0.0.1-rc3";
+static const char *VERSION        = "0.0.1-rc4";
 static const char *DESCRIPTION    = "Loader for text-based skins";
 
 class cText2SkinPlugin : public cPlugin {

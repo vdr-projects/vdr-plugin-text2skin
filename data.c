@@ -1,13 +1,15 @@
 /*
- * $Id: data.c,v 1.11 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: data.c,v 1.12 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #include "data.h"
+#include "common.h"
 
-eSkinSection cText2SkinItem::mParseSection = sectionUnknown;
+static string SectionNames[__SECTION_COUNT__] =
+	{ "Skin", "ChannelSmall", "Channel", "Volume",
+	  "ReplayMode", "Replay", "Message", "Menu" };
 	
 cText2SkinItem::cText2SkinItem(void) {
-	mSection = sectionUnknown;
 	mItem    = itemUnknown;
 	mPos.x   = -1;
 	mPos.y   = -1;
@@ -15,22 +17,22 @@ cText2SkinItem::cText2SkinItem(void) {
 	mSize.h  = 0;
 	mBpp     = 4;
 	mArc     = 0;
-	mFg      = NULL;
-	mBg      = NULL;
+	//mFg      = NULL;
+	//mBg      = NULL;
 	mFont    = cFont::GetFont(fontOsd);
 	mAlign   = taDefault;
 }
 
 cText2SkinItem::~cText2SkinItem() {
-	delete mBg;
-	delete mFg;
+	//delete mBg;
+	//delete mFg;
 }
 
 bool cText2SkinItem::Parse(const char *Text) {
 	char *text = strdup(Text);
 	char *ptr = text;
 
-	ptr = text + strlen(text) - 1;
+	/*ptr = text + strlen(text) - 1;
 	for (; ptr >= text && *ptr == ' '; --ptr)
 		*ptr = '\0';
 	ptr = skipspace(text);
@@ -47,12 +49,11 @@ bool cText2SkinItem::Parse(const char *Text) {
 		else if (strcmp(ptr, "Replay")       == 0)  mParseSection = sectionReplay;
 		else if (strcmp(ptr, "Message")      == 0)  mParseSection = sectionMessage;
 		return true;
-	}
+	}*/
 
 	// check if this is an item
 	string item;
 	if (ParseVar(ptr, "Item", item)) {
-		mSection = mParseSection;
 		if (item == "Skin") { // the Skin item
 			if (ParseVar(ptr, "name", mName) && ParseVar(ptr, "version", mVersion))
 				mItem = itemSkin;
@@ -133,8 +134,8 @@ bool cText2SkinItem::ParseItem(const char *Text) {
 	ParseVar(Text, "height",  &mSize.h);
 	ParseVar(Text, "bpp",     &mBpp);
 	ParseVar(Text, "arc",     &mArc);
-	ParseVar(Text, "fg",      &mFg);
-	ParseVar(Text, "bg",      &mBg);
+	ParseVar(Text, "fg",       mFg);
+	ParseVar(Text, "bg",       mBg);
 	ParseVar(Text, "font",    &mFont);
 	ParseVar(Text, "path",     mPath);
 	ParseVar(Text, "altpath",  mAltPath);
@@ -144,78 +145,52 @@ bool cText2SkinItem::ParseItem(const char *Text) {
 	return true;
 }
 
-bool cText2SkinItem::ParseVar(const char *Text, const char *Name, int *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		*Value = atoi(value.c_str());
-		return true;
-	}
-	return false;
-}
-
-bool cText2SkinItem::ParseVar(const char *Text, const char *Name, string &Value){
-	char *ptr1, *ptr2;
-	char *str;
-	bool res = false;
-	asprintf(&str, "%s=", Name);
-	if ((ptr1 = strstr(Text, str))) {
-		ptr1 += strlen(str);
-		if ((ptr2 = strchr(ptr1, ',')) || (ptr2 = strchr(ptr1, ';'))) {
-			Value = ptr1;
-			Value.erase(ptr2 - ptr1);
-			res = true;
-		}
-	}
-	free(str);
-	return res;
-}
-
-bool cText2SkinItem::ParseVar(const char *Text, const char *Name, tColor **Value) {
-	string value;
-	if (ParseVar(Text, Name, value) && value[0] == '#') {
-		*Value = new tColor(strtoul(value.c_str() + 1, NULL, 16));
-		return true;
-	}
-	return false;
-}
-
-bool cText2SkinItem::ParseVar(const char *Text, const char *Name, eTextAlignment *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		int v = atoi(value.c_str());
-		if (v == 0)
-			*Value = (eTextAlignment)(taTop|taLeft);
-		else if (v == 1)
-			*Value = (eTextAlignment)(taTop|taCenter);
-		else if (v == 2)
-			*Value = (eTextAlignment)(taTop|taRight);
-		return true;
-	}
-	return false;
-}
-
-bool cText2SkinItem::ParseVar(const char *Text, const char *Name, const cFont **Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		if      (value == "Sml") *Value = cFont::GetFont(fontSml);
-		else if (value == "Fix") *Value = cFont::GetFont(fontFix);
-		return true;
-	}
-	return false;
-}
+// --- cText2SkinData ---------------------------------------------------------
 	
-cText2SkinData::cText2SkinData(const char *Skin) {
-	mSkin = strdup(Skin);
+cText2SkinData::cText2SkinData(const char *Skin): cText2SkinFile(Skin) {
+	mCurrentSection = sectionSkin;
 }
 
 cText2SkinData::~cText2SkinData() {
-	free(mSkin);
 }
 
-cText2SkinItem *cText2SkinData::Get(eSkinItem Item) {
-	for (cText2SkinItem *it = First(); it; it = Next(it)) {
-		if (it->Item() == Item)
-			return it;
+bool cText2SkinData::Parse(const char *Text) {
+	int l = strlen(Text);
+	bool result = false;
+	if (l) {
+		if (Text[0] == '#') // comment
+			result = true;
+		else if (Text[0] == '[' && Text[l - 1] == ']') { // section
+			char *s;
+			int i;
+			asprintf(&s, "%.*s", l - 2, Text + 1);
+			for (i = 0; i < __SECTION_COUNT__; ++i) {
+				if (SectionNames[i] == s) {
+					mCurrentSection = (eSkinSection)i;
+					result = true;
+					break;
+				}
+			}
+			if (i == __SECTION_COUNT__)
+				esyslog("ERROR: text2skin: Unknown section %s", s);
+			free(s);
+		} else {
+			cText2SkinItem *item = new cText2SkinItem;
+			if (item->Parse(Text)) {
+				mSections[mCurrentSection].push_back(item);
+				result = true;
+			} else
+				delete item;
+		}
+	}
+	return result;
+}
+
+cText2SkinItem *cText2SkinData::Get(eSkinSection Section, eSkinItem Item) {
+	vector<cText2SkinItem*>::iterator it = mSections[Section].begin();
+	for (; it != mSections[Section].end(); ++it) {
+		if ((*it)->Item() == Item)
+			return (*it);
 	}
 	return NULL;
 }

@@ -1,16 +1,15 @@
 #
 # Makefile for a Video Disk Recorder plugin
 #
-# $Id: Makefile,v 1.3 2004/06/01 21:02:38 lordjaxom Exp $
+# $Id: Makefile,v 1.5 2004/06/02 20:43:05 lordjaxom Exp $
 
 # disable in case you don't want to install imlib
 # in that case, you will not be able to load other files than simple xpms
-HAVE_IMLIB2=1
+# HAVE_IMLIB2=1
 
-# !!!!THIS DOESN'T WORK YET!!!!
 # disable in case you don't want to install ImageMagick
 # in that case, you will not be able to load other files than simple xpms
-#HAVE_IMAGEMAGICK=1
+HAVE_IMAGEMAGICK=1
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
@@ -51,10 +50,12 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2
+	LIBS += -lImlib2
 endif
 
 ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
+	LIBS += -lMagick++
 endif
 
 INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
@@ -63,7 +64,8 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o loader.o data.o display.o render.o common.o bitmap.o
+OBJS = $(PLUGIN).o loader.o data.o display.o render.o common.o bitmap.o \
+       file.o i18n.o theme.o
 
 ### Implicit rules:
 
@@ -84,7 +86,7 @@ $(DEPFILE): Makefile
 all: libvdr-$(PLUGIN).so
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -lImlib2 -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
 
 dist: clean

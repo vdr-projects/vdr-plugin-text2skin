@@ -1,20 +1,27 @@
 /*
- * $Id: bitmap.c,v 1.6 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.9 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
-#define __STL_CONFIG_H
-#include <vdr/tools.h>
-#undef __STL_CONFIG_H
 #include "bitmap.h"
+#include <vdr/tools.h>
 #define X_DISPLAY_MISSING
+#ifdef HAVE_IMLIB2
 #include <Imlib2.h>
+#endif
+#ifdef HAVE_IMAGEMAGICK
+#include <Magick++.h>
+#endif
 
 cText2SkinBitmap::cText2SkinBitmap(void): cBitmap(1, 1, 1) {
+#ifdef HAVE_IMLIB2
   imlib_set_cache_size(4096 * 1024);
+#endif
 }
 
 cText2SkinBitmap::cText2SkinBitmap(const char *Filename): cBitmap(1, 1, 1) {
+#ifdef HAVE_IMLIB2
   imlib_set_cache_size(4096 * 1024);
+#endif
 	Load(Filename);
 }
 
@@ -29,6 +36,11 @@ bool cText2SkinBitmap::Load(const char *Filename) {
 #ifdef HAVE_IMLIB2
 		else if (strcmp(Filename + len - 4, ".png") == 0)
 			return LoadImlib(Filename);
+#else
+#	ifdef HAVE_IMAGEMAGICK
+		else if (strcmp(Filename + len - 4, ".png") == 0)
+			return LoadMagick(Filename);
+#	endif
 #endif
 		else
 			esyslog("ERROR: text2skin: unknown file format for %s", Filename);
@@ -70,7 +82,27 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 
 #ifdef HAVE_IMAGEMAGICK
 bool cText2SkinBitmap::LoadMagick(const char *Filename) {
-	Image image;
-	image.read(Filename);
+	Magick::Image image;
+	try {
+		int w, h;
+		image.read(Filename);
+		w = image.columns();
+		h = image.rows();
+		SetSize(w, h);
+		SetBpp(8);
+
+		const Magick::PixelPacket *ptr = image.getConstPixels(0, 0, w, h);
+		for (int iy = 0; iy < h; ++iy) {
+			for (int ix = 0; ix < w; ++ix) {
+				tColor col = (((~ptr->opacity & 0xFF00) << 16) | ((ptr->red & 0xFF00) << 8) | (ptr->green & 0xFF00) | ((ptr->blue & 0xFF00) >> 8));
+				DrawPixel(ix, iy, col);
+				++ptr;
+			}
+		}
+	} catch (Magick::Exception &e) {
+		esyslog("ERROR: text2skin: Couldn't load %s: %s", Filename, e.what());
+		return false;
+	}
+	return true;
 }
 #endif

@@ -1,23 +1,20 @@
 /*
- * $Id: data.h,v 1.9 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: data.h,v 1.10 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
 #define VDR_TEXT2SKIN_DATA_H
 
-#define __STL_CONFIG_H
+#include "common.h"
+#include "file.h"
 #include <vdr/tools.h>
 #include <vdr/osd.h>
 #include <vdr/config.h>
-#undef __STL_CONFIG_H
-#include <string>
-
-using std::string;
 
 // sections and items known by skin files
 
 enum eSkinSection {
-	sectionUnknown,
+	sectionSkin,
 	sectionChannelSmall,
 	sectionChannel,
 	sectionVolume,
@@ -25,6 +22,7 @@ enum eSkinSection {
 	sectionReplay,
 	sectionMessage,
 	sectionMenu,
+	__SECTION_COUNT__
 };
 
 enum eSkinItem {
@@ -92,20 +90,17 @@ struct SIZE {
 	int w, h;
 };
 
-class cText2SkinItem: public cListObject {
+class cText2SkinItem {
 	friend class cText2SkinRender;
 
 private:
-	static eSkinSection mParseSection;
-
-	eSkinSection    mSection;
 	eSkinItem       mItem;
 	POINT           mPos;
 	SIZE            mSize;
 	int             mBpp;
 	int             mArc;
-	tColor         *mFg;
-	tColor         *mBg;
+	string          mFg;
+	string          mBg;
 	const cFont    *mFont;
 	string          mName;
 	string          mVersion;
@@ -117,11 +112,6 @@ private:
 
 protected:
 	bool ParseItem(const char *Text);
-	bool ParseVar(const char *Text, const char *Name, int *Value);
-	bool ParseVar(const char *Text, const char *Name, const cFont **Value);
-	bool ParseVar(const char *Text, const char *Name, string &Value);
-	bool ParseVar(const char *Text, const char *Name, tColor **Value);
-	bool ParseVar(const char *Text, const char *Name, eTextAlignment *Value);
 
 public:
 	cText2SkinItem(void);
@@ -129,14 +119,15 @@ public:
 
 	bool Parse(const char *Text);
 
-	eSkinSection    Section(void) const { return mSection; }
 	eSkinItem       Item(void)    const { return mItem; }
 	const POINT    &Pos(void)     const { return mPos; }
 	const SIZE     &Size(void)    const { return mSize; }
 	int             Bpp(void)     const { return mBpp; }
 	int             Arc(void)     const { return mArc; }
-	const tColor   *Fg(void)      const { return mFg; }
-	const tColor   *Bg(void)      const { return mBg; }
+	//const tColor   *Fg(void)      const { return mFg; }
+	//const tColor   *Bg(void)      const { return mBg; }
+	const string   &Fg(void)      const { return mFg; }
+	const string   &Bg(void)      const { return mBg; }
 	const cFont    *Font(void)    const { return mFont; }
 	const string   &Name(void)    const { return mName; }
 	const string   &Version(void) const { return mVersion; }
@@ -147,17 +138,26 @@ public:
 	eTextAlignment  Align(void)   const { return mAlign; }
 };
 
-class cText2SkinData: public cConfig<cText2SkinItem> {
+class cText2SkinData: public cText2SkinFile {
+public:
+	typedef vector<cText2SkinItem*> tSection;
+	typedef tSection::iterator      tIterator;
+
 private:
-	char *mSkin;
+	eSkinSection mCurrentSection;
+	tSection mSections[__SECTION_COUNT__];
+
+protected:
+	virtual bool Parse(const char *Text);
 
 public:
 	cText2SkinData(const char *Skin);
-	~cText2SkinData();
+	virtual ~cText2SkinData();
 
-	cText2SkinItem *Get(eSkinItem Item);
+	tIterator First(eSkinSection Section) { return mSections[Section].begin(); }
+	tIterator Last(eSkinSection Section) { return mSections[Section].end(); }
 
-	const char *Skin(void) const { return mSkin; }
+	cText2SkinItem *Get(eSkinSection Section, eSkinItem Item);
 };
 
 #endif // VDR_TEXT2SKIN_DATA_H

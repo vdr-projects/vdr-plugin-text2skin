@@ -1,13 +1,12 @@
 /*
- * $Id: bitmap.h,v 1.5 2004/06/01 21:02:38 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.6 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
 #define VDR_TEXT2SKIN_BITMAP_H
 
-#define __STL_CONFIG_H
+#include "common.h"
 #include <vdr/osd.h>
-#undef __STL_CONFIG_H
 
 class cText2SkinBitmap: public cBitmap {
 public:

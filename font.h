@@ -1,17 +1,15 @@
 /*
- * $Id: font.h,v 1.3 2004/05/29 00:27:22 lordjaxom Exp $
+ * $Id: font.h,v 1.4 2004/06/02 20:43:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_FREETYPE_H
 #define VDR_TEXT2SKIN_FREETYPE_H
 
+#include "common.h"
+#include "data.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <string>
-using std::string;
-
-#include "data.h"
 
 // kannst noch einbauen, dass er die fonts "fontOsd" "fontSml" und "fontFix" aus VDR statt aus freetype nimmt
 
