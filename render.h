@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.7 2005/01/01 23:44:36 lordjaxom Exp $
+ * $Id: render.h,v 1.8 2005/01/05 19:31:18 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -113,6 +113,7 @@ protected:
 	virtual int GetTab(int n) { return 0; }
 	virtual bool HasTabText(int Index, int n) { return false; }
 	virtual void SetEditableWidth(int Width) {}
+	virtual void SetMaxItems(int MaxItems) {}
 
 	// functions for display renderer to control behaviour
 	void Flush(bool Force = false);
