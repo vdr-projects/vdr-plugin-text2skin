@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.11 2004/06/05 01:39:36 lordjaxom Exp $
+ * $Id: data.h,v 1.14 2004/06/07 19:08:42 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -91,6 +91,11 @@ enum eSkinItem {
 	itemSymbolEventTimer,
 	itemSymbolEventVPS,
 	itemMenuRecording,
+	itemMenuEventEndTime,
+	itemMenuEventVPSTime,
+	itemMenuEventDate,
+	itemMenuEventDateTimeF,
+	itemDateTimeF,
 	__ITEM_COUNT__
 };
 
@@ -120,6 +125,7 @@ private:
 	string          mAltPath;
 	string          mText;
 	string          mType;
+	string          mFormat;
 	eTextAlignment  mAlign;
 
 protected:
@@ -145,6 +151,7 @@ public:
 	const string   &AltPath(void) const { return mAltPath; }
 	const string   &Text(void)    const { return mText; }
 	const string   &Type(void)    const { return mType; }
+	const string   &Format(void)  const { return mFormat; }
 	eTextAlignment  Align(void)   const { return mAlign; }
 };
 
@@ -152,6 +159,9 @@ class cText2SkinData: public cText2SkinFile {
 public:
 	typedef vector<cText2SkinItem*> tSection;
 	typedef tSection::iterator      tIterator;
+
+	static const string SectionNames[__SECTION_COUNT__];
+	static const string ItemNames[__ITEM_COUNT__];
 
 private:
 	eSkinSection mCurrentSection;

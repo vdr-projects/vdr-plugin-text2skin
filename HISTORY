@@ -1,6 +1,15 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-07: Version 0.0.2
+
+- fixed Timebar which sometimes displayed something beyond 100%
+- fixed scrolling in EPG detail display
+- added "MenuEventEndTime", "MenuEventVPSTime" and "MenuEventDate"
+- added "DateTimeF" and "MenuEventDateTimeF" for free formattable dates
+- added parameter format that holds the format string for the above items
+- implemented setup menu to flush image cache
+
 2004-06-05: Version 0.0.1
 
 - added scrollable texts and "SymbolScrollUp" and "SymbolScrollDown"

@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.5 2004/06/05 18:04:29 lordjaxom Exp $
+ * $Id: display.h,v 1.6 2004/06/07 18:23:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -11,6 +11,7 @@
 class cText2SkinData;
 class cText2SkinI18n;
 class cText2SkinRender;
+class cText2SkinLoader;
 
 class cText2SkinDisplayChannel: public cSkinDisplayChannel {
 private:
@@ -19,7 +20,7 @@ private:
 	bool              mDirty;
 
 public:
-	cText2SkinDisplayChannel(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, bool WithInfo);
+	cText2SkinDisplayChannel(cText2SkinLoader *Loader, bool WithInfo);
 	virtual ~cText2SkinDisplayChannel();
 
 	virtual void SetChannel(const cChannel *Channel, int Number);
@@ -34,7 +35,7 @@ private:
 	bool              mDirty;
 
 public:
-	cText2SkinDisplayVolume(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme);
+	cText2SkinDisplayVolume(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayVolume();
 	virtual void SetVolume(int Current, int Total, bool Mute);
 	virtual void Flush(void);
@@ -45,7 +46,7 @@ private:
 	cText2SkinRender *mRender;
 	bool              mDirty;
 public:
-	cText2SkinDisplayReplay(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, bool ModeOnly);
+	cText2SkinDisplayReplay(cText2SkinLoader *Loader, bool ModeOnly);
 	virtual ~cText2SkinDisplayReplay();
 	virtual void SetTitle(const char *Title);
 	virtual void SetMode(bool Play, bool Forward, int Speed);
@@ -64,7 +65,7 @@ private:
 	bool              mDirty;
 
 public:
-	cText2SkinDisplayMessage(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme);
+	cText2SkinDisplayMessage(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayMessage();
 	virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void Flush(void);
@@ -77,7 +78,7 @@ private:
 	int               mMaxItems;
 
 public:
-	cText2SkinDisplayMenu(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme);
+	cText2SkinDisplayMenu(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayMenu();
 
   virtual int MaxItems(void) { return mMaxItems; }

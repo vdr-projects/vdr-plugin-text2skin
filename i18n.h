@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.h,v 1.1 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: i18n.h,v 1.2 2004/06/07 18:23:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_I18N_H
@@ -8,6 +8,8 @@
 #include "common.h"
 #include "file.h"
 #include <vdr/i18n.h>
+
+extern const tI18nPhrase Phrases[];
 
 class cText2SkinI18n: public cText2SkinFile {
 private:

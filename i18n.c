@@ -1,8 +1,50 @@
 /*
- * $Id: i18n.c,v 1.2 2004/06/05 16:52:44 lordjaxom Exp $
+ * $Id: i18n.c,v 1.3 2004/06/07 18:23:11 lordjaxom Exp $
  */
 
 #include "i18n.h"
+
+const tI18nPhrase Phrases[] = {
+  { "Flush image cache",
+    "Bildspeicher leeren",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  },
+  { "Flushing image cache...",
+    "Bildspeicher wird geleert...",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  },
+	{ NULL }
+};
 
 cText2SkinI18n::cText2SkinI18n(const char *Skin): cText2SkinFile(Skin) {
 	mIdentity   = (string)"text2skin_" + Skin;

@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.7 2004/06/05 01:39:36 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.8 2004/06/07 18:23:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -21,6 +21,7 @@ private:
 
 public:
 	static cText2SkinBitmap *Load(const char *Filename);
+	static void FlushCache(void) { mCache.Flush(); }
 	
 	virtual ~cText2SkinBitmap();
 

@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.8 2004/06/05 16:52:44 lordjaxom Exp $
+ * $Id: loader.c,v 1.9 2004/06/07 18:23:11 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -74,21 +74,21 @@ cText2SkinLoader::~cText2SkinLoader() {
 
 cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {
 	Dprintf("WithInfo: %d\n", WithInfo);
-	return new cText2SkinDisplayChannel(mData, mI18n, mTheme, WithInfo);
+	return new cText2SkinDisplayChannel(this, WithInfo);
 }
 
 cSkinDisplayMenu *cText2SkinLoader::DisplayMenu(void) {
-	return new cText2SkinDisplayMenu(mData, mI18n, mTheme);
+	return new cText2SkinDisplayMenu(this);
 }
 
 cSkinDisplayVolume *cText2SkinLoader::DisplayVolume(void) {
-	return new cText2SkinDisplayVolume(mData, mI18n, mTheme);
+	return new cText2SkinDisplayVolume(this);
 }
 
 cSkinDisplayReplay *cText2SkinLoader::DisplayReplay(bool ModeOnly) {
-	return new cText2SkinDisplayReplay(mData, mI18n, mTheme, ModeOnly);
+	return new cText2SkinDisplayReplay(this, ModeOnly);
 }
 
 cSkinDisplayMessage *cText2SkinLoader::DisplayMessage(void) {
-	return new cText2SkinDisplayMessage(mData, mI18n, mTheme);
+	return new cText2SkinDisplayMessage(this);
 }

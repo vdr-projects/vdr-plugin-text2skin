@@ -1,21 +1,25 @@
 /*
- * $Id: render.c,v 1.19 2004/06/05 18:04:29 lordjaxom Exp $
+ * $Id: render.c,v 1.22 2004/06/07 19:08:42 lordjaxom Exp $
  */
 
 #include "render.h"
-#include "data.h"
+#include "loader.h"
+#include "i18n.h"
+#include "theme.h"
 #include "bitmap.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>
 #include <vdr/menu.h>
 
-cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, eSkinSection Section) {
+cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Section) {
 	tArea areas[MAXOSDAREAS];
 	int numAreas = 0;
 
-	mData              = Data;
-	mI18n              = I18n;
-	mTheme             = Theme;
+	SetDescription("Text2Skin: %s display update", cText2SkinData::SectionNames[Section].c_str());
+
+	mData              = Loader->Data();
+	mI18n              = Loader->I18n();
+	mTheme             = Loader->Theme();
 	mSection           = Section;
 	mOsd               = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
 	mScroller          = NULL;
@@ -40,17 +44,17 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, c
 	mMenuScroll        = false;
 	mMenuScrollUp      = false;
 	mMenuScrollPage    = false;
+	mActive            = false;
 
-	cText2SkinData::tIterator it = Data->First(mSection);
-	for (; it != Data->Last(mSection); ++it) {
-		cText2SkinItem *item = (*it);
-		if (item->Item() == itemBackground) {
+	cText2SkinData::tIterator it = mData->First(mSection);
+	for (; it != mData->Last(mSection); ++it) {
+		if ((*it)->Item() == itemBackground) {
 			if (numAreas < MAXOSDAREAS) {
-				areas[numAreas].x1 = item->Pos().x;
-				areas[numAreas].y1 = item->Pos().y;
-				areas[numAreas].x2 = item->Pos().x + item->Size().w - 1;
-				areas[numAreas].y2 = item->Pos().y + item->Size().h - 1;
-				areas[numAreas].bpp = item->Bpp();
+				areas[numAreas].x1 = (*it)->Pos().x;
+				areas[numAreas].y1 = (*it)->Pos().y;
+				areas[numAreas].x2 = (*it)->Pos().x + (*it)->Size().w - 1;
+				areas[numAreas].y2 = (*it)->Pos().y + (*it)->Size().h - 1;
+				areas[numAreas].bpp = (*it)->Bpp();
 				++numAreas;
 			} else
 				esyslog("ERROR: text2skin: too many background areas\n");
@@ -82,11 +86,29 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, c
 		}
 		esyslog("ERROR: text2skin: OSD provider can't handle skin: %s\n", emsg);
 	}
+
+	//Start();
 }
 
 cText2SkinRender::~cText2SkinRender() {
+	if (mActive) {
+		mMutex.Lock();
+		mActive = false;
+		mDoUpdate.Broadcast();
+		mMutex.Unlock();
+		Cancel(3);
+	}
 	delete mScroller;
 	delete mOsd; 
+}
+
+void cText2SkinRender::Action(void) {
+	mActive = true;
+	Lock();
+	while (mActive) {
+		mDoUpdate.Wait(mMutex);
+	}
+	Unlock();
 }
 
 void cText2SkinRender::Flush(void) {
@@ -105,11 +127,10 @@ void cText2SkinRender::Flush(void) {
 		case itemImage:
 			DisplayImage(item); break;
 		case itemDateTime:
-			DisplayDateTime(item); break;
 		case itemDate:
-			DisplayDate(item); break;
 		case itemTime:
-			DisplayTime(item); break;
+		case itemDateTimeF:
+			DisplayDateTime(item); break;
 		case itemChannelNumberName:
 			DisplayChannelNumberName(item); break;
 		case itemChannelNumber:
@@ -191,6 +212,10 @@ void cText2SkinRender::Flush(void) {
 		case itemMenuEventDescription:
 			DisplayMenuEventDescription(item); break;
 		case itemMenuEventTime:
+		case itemMenuEventEndTime:
+		case itemMenuEventVPSTime:
+		case itemMenuEventDate:
+		case itemMenuEventDateTimeF:
 			DisplayMenuEventTime(item); break;
 		case itemMenuRecording:
 			DisplayMenuRecording(item); break;
@@ -227,7 +252,6 @@ void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColo
 	if ((bmp = cText2SkinBitmap::Load(p)) != NULL) {
 		if (Bg) bmp->SetColor(0, *Bg);
 		if (Fg) bmp->SetColor(1, *Fg);
-		//mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, bm.Color(0));
 		mOsd->DrawBitmap(Pos.x, Pos.y, *bmp);
 	}
 	free(p);
@@ -252,6 +276,8 @@ void cText2SkinRender::DrawSlope(const POINT &Pos, const SIZE &Size, const tColo
 void cText2SkinRender::DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Bg, const tColor *Fg, const cMarks *Marks) {
 	if (Bg)
 		DrawRectangle(Pos, Size, Bg);
+	if (Current > Total)
+		Current = Total;
 	if (Size.w > Size.h) {
 		SIZE size = { Size.w * Current / Total, Size.h };
 		DrawRectangle(Pos, size, Fg);
@@ -367,23 +393,31 @@ void cText2SkinRender::DisplayImage(cText2SkinItem *Item) {
 }
 
 void cText2SkinRender::DisplayDateTime(cText2SkinItem *Item) {
-	const char *text = DayDateTime(time(NULL));
-	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
-}
-
-void cText2SkinRender::DisplayDate(cText2SkinItem *Item) {
-	char *text = strdup(DayDateTime(time(NULL)));
-	text[9] = '.';
-	text[10] = '\0';
-	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 4), Item->Font(), Item->Align());
-	free(text);
-}
-
-void cText2SkinRender::DisplayTime(cText2SkinItem *Item) {
-	char *text = strdup(DayDateTime(time(NULL)));
-	text[18] = '\0'; 
-	DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 13), Item->Font(), Item->Align());
-	free(text);
+	char *text = NULL;
+	time_t t;
+	t = time(NULL);
+	switch (Item->Item()) {
+	case itemDateTime:
+		text = strdup(DayDateTime(t)); break;
+	case itemDate:
+		text = strdup(DayDateTime(t) + 4); text[5] = '\0'; break;
+	case itemTime:
+		text = strdup(DayDateTime(t) + 13); text[5] = '\0'; break;
+	case itemDateTimeF:
+		{
+			struct tm tm_r, *tm;
+			tm = localtime_r(&t, &tm_r);
+			text = MALLOC(char, 1000);
+			strftime(text, 1000, Item->Format().c_str(), tm);
+		}
+		break;
+	default:
+		break;
+	}
+	if (text) {
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
+		free(text);
+	}
 }
 
 void cText2SkinRender::DisplayChannelNumberName(cText2SkinItem *Item) {
@@ -645,8 +679,6 @@ void cText2SkinRender::DisplayMenuColorbutton(cText2SkinItem *Item) {
 void cText2SkinRender::DisplayMenuText(cText2SkinItem *Item) {
 	if (mMenuText != "")
 		DrawScrollText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuText), Item->Font(), Item->Align());
-	else
-		DELETENULL(mScroller);
 }
 
 void cText2SkinRender::DisplayMenuEventTitle(cText2SkinItem *Item) {
@@ -666,8 +698,33 @@ void cText2SkinRender::DisplayMenuEventDescription(cText2SkinItem *Item) {
 
 void cText2SkinRender::DisplayMenuEventTime(cText2SkinItem *Item) {
 	if (mMenuEvent) {
-		const char *text = DayDateTime(mMenuEvent->StartTime());
-		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 10), Item->Font(), Item->Align());
+		char *text = NULL;
+		Dprintf("DATE: %s\n", DayDateTime(mMenuEvent->StartTime()));
+		switch (Item->Item()) {
+		case itemMenuEventTime:
+			text = strdup(DayDateTime(mMenuEvent->StartTime()) + 10); break;
+		case itemMenuEventEndTime:
+			text = strdup(DayDateTime(mMenuEvent->EndTime()) + 10); break;
+		case itemMenuEventVPSTime:
+			text = mMenuEvent->Vps() != mMenuEvent->StartTime() ? strdup(DayDateTime(mMenuEvent->Vps()) + 10) : NULL; break;
+		case itemMenuEventDate:
+			text = strdup(DayDateTime(mMenuEvent->StartTime()) + 4); text[5] = '\0'; break;
+		case itemMenuEventDateTimeF: 
+			{
+				time_t t = mMenuEvent->StartTime();
+				struct tm tm_r, *tm;
+				tm = localtime_r(&t, &tm_r);
+				text = MALLOC(char, 1000);
+				strftime(text, 1000, Item->Format().c_str(), tm);
+			}
+			break;
+		default:
+			break;
+		}
+		if (text) {
+			DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
+			free(text);
+		}
 	}
 }
 

@@ -155,6 +155,13 @@ Item:        Item=Time
 Description: Draws a time string into the given area. Otherwise, see Item=Text
 Parameters:  x, y, width, height, fg, font, align, text
 
+Item:        Item=DateTimeF
+Description: Draws a string expressing some details of the current date and  
+             time. What is to be displayed will be decided by the skin author. 
+             The paremeter "format" holds a format string according to the 
+             manpage of strftime.
+Parameters:  x, y, width, height, fg, font, align, text, format
+
 Item:        Item=ChannelLogo
 Description: Draws a logo for the current channel (if present). The logo's 
              filename will be the channel name, and the parameter type 
@@ -445,6 +452,29 @@ Description: Draws the start time of the currently selected event when viewing
              EPG entries.
 Parameters:  x, y, width, height, fg, font, align, text
 
+Item:        Item=MenuEventEndTime
+Description: Draws the end time of the currently selected event when viewing 
+             EPG entries.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuEventVPSTime
+Description: Draws the vps time of the currently selected event when viewing 
+             EPG entries, if that is different from the start time.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuEventDate
+Description: Draws the date of the currently selected event when viewing 
+             EPG entries.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuEventDateTimeF
+Description: Draws a string expressing some details of the start time of the
+             currently selected event when viewing EPG entries. What is to 
+             be displayed will be decided by the skin author. The paremeter 
+             "format" holds a format string according to the manpage of 
+             strftime.
+Parameters:  x, y, width, height, fg, font, align, text, format
+
 Item:        Item=MenuRecording
 Description: Draws the summary of the currently selected recording when 
              browsing recordings in a scrollable text-area. If this item is 
@@ -519,6 +549,10 @@ Example:     Item=ReplayCurrent,text=Current: $; would display for example
 Parameter:   type
 Description: The string giving the file extensions for logos.
 Default:     not given
+
+Parameter:   type
+Description: The format string for a date/time display according to strftime.
+Default:     ""
 
 Parameter:   align
 Description: A number describing the text alignment. Possible values are '0'

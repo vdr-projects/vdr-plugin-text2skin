@@ -1,15 +1,15 @@
 /*
- * $Id: data.c,v 1.13 2004/06/05 01:39:36 lordjaxom Exp $
+ * $Id: data.c,v 1.16 2004/06/07 19:08:42 lordjaxom Exp $
  */
 
 #include "data.h"
 #include "common.h"
 
-static string SectionNames[__SECTION_COUNT__] =
+const string cText2SkinData::SectionNames[__SECTION_COUNT__] =
 	{ "Skin", "ChannelSmall", "Channel", "Volume", "ReplayMode", "Replay", 
 	  "Message", "Menu" };
 
-static string ItemNames[__ITEM_COUNT__] = 
+const string cText2SkinData::ItemNames[__ITEM_COUNT__] = 
 	{ "Unknown", "Skin", "Background", "Text", "Image", "Rectangle", "Ellipse",
 	  "Slope", "DateTime", "Date", "Time", "ChannelLogo", "ChannelNumberName",
 	  "ChannelNumber", "ChannelName", "Language", "Timebar", "PresentTime",
@@ -24,7 +24,8 @@ static string ItemNames[__ITEM_COUNT__] =
 		"SymbolScrollUp", "SymbolScrollDown", "MenuEventTitle", 
 		"MenuEventShortText", "MenuEventDescription", "MenuEventTime", 
 		"SymbolEventRunning", "SymbolEventTimer", "SymbolEventVPS",
-		"MenuRecording" };
+		"MenuRecording", "MenuEventEndTime", "MenuEventVPSTime", "MenuEventDate",
+		"MenuEventDateTimeF", "DateTimeF" };
 	
 cText2SkinItem::cText2SkinItem(void) {
 	mItem    = itemUnknown;
@@ -57,7 +58,7 @@ bool cText2SkinItem::Parse(const char *Text) {
 			int i;
 			// valid items begin at index two
 			for (i = 2; i < __ITEM_COUNT__; ++i) {
-				if (ItemNames[i] == item) {
+				if (cText2SkinData::ItemNames[i] == item) {
 					mItem = (eSkinItem)i;
 					break;
 				}
@@ -92,6 +93,7 @@ bool cText2SkinItem::ParseItem(const char *Text) {
 	ParseVar(Text, "altpath",  mAltPath);
 	ParseVar(Text, "text",     mText);
 	ParseVar(Text, "type",     mType);
+	ParseVar(Text, "format",   mFormat);
 	ParseVar(Text, "align",   &mAlign);
 	return true;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.15 2004/06/05 18:04:29 lordjaxom Exp $
+ * $Id: render.h,v 1.17 2004/06/07 19:08:42 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -7,15 +7,18 @@
 
 #include "common.h"
 #include "data.h"
-#include "i18n.h"
-#include "theme.h"
 #include <vdr/osd.h>
 #include <vdr/skins.h>
+#include <vdr/thread.h>
 
 class cChannel;
 class cEvent;
+class cText2SkinLoader;
+class cText2SkinData;
+class cText2SkinI18n;
+class cText2SkinTheme;
 
-class cText2SkinRender {
+class cText2SkinRender: public cThread {
 	friend class cText2SkinDisplayChannel;
 	friend class cText2SkinDisplayVolume;
 	friend class cText2SkinDisplayReplay;
@@ -80,7 +83,17 @@ private:
 	bool              mMenuScrollPage;
 	int               mMenuTabs[cSkinDisplayMenu::MaxTabs];
 	
+	// update thread
+	bool              mActive;
+	cCondVar          mDoUpdate;
+	cMutex            mMutex;
+	
 protected:
+	// Update thread
+	void Lock(void) { mMutex.Lock(); }
+	void Unlock(void) { mMutex.Unlock(); }
+	virtual void Action(void);
+
 	// Basic operations
 	void DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
 	void DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
@@ -99,8 +112,6 @@ protected:
 	void DisplayText(cText2SkinItem *Item); 
 	void DisplayImage(cText2SkinItem *Item); 
 	void DisplayDateTime(cText2SkinItem *Item); 
-	void DisplayDate(cText2SkinItem *Item); 
-	void DisplayTime(cText2SkinItem *Item); 
 	void DisplayChannelNumberName(cText2SkinItem *Item); 
 	void DisplayChannelNumber(cText2SkinItem *Item); 
 	void DisplayChannelName(cText2SkinItem *Item); 
@@ -141,8 +152,8 @@ protected:
 	int GetEditableWidth(MenuItem Item, bool Current);
 
 public:
-	cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, eSkinSection Section);
-	~cText2SkinRender();
+	cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Section);
+	virtual ~cText2SkinRender();
 
 	void Flush(void);
 };

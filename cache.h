@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.1 2004/06/05 01:40:13 lordjaxom Exp $
+ * $Id: cache.h,v 1.2 2004/06/07 18:23:11 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -29,7 +29,7 @@ private:
 	int     _maxItems;
 	Item   *_first;
 	Item   *_last;
-		
+	
 	void Unlink(Item *item);
 	void Update(Item *item);
 	void Delete(Item *item);
@@ -39,6 +39,7 @@ public:
 	cText2SkinCache(int maxItems);
 	~cText2SkinCache();
 
+	void Flush(void);
 	bool Contains(const K &key);
 	D &operator[](const K &key);
 };
@@ -105,6 +106,19 @@ cText2SkinCache<K,D>::cText2SkinCache(int maxItems) {
 
 template<class K,class D>
 cText2SkinCache<K,D>::~cText2SkinCache() {
+	Flush();
+}
+
+template<class K,class D>
+void cText2SkinCache<K,D>::Flush(void) {
+	Item *cur = _first;
+	while (cur) {
+		Item *tmp = cur->_next;
+		_items.erase(cur->_key);
+		Unlink(cur);
+		Delete(cur);
+		cur = tmp;
+	}
 }
 
 template<class K,class D>
