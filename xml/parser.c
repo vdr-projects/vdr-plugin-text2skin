@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.3 2004/12/28 01:24:35 lordjaxom Exp $
+ *  $Id: parser.c,v 1.4 2004/12/28 14:25:45 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -215,6 +215,7 @@ bool xCharData(const std::string &text) {
 		//Dprintf("context: %s\n", context[context.size() - 1].c_str());
 		if      (context[context.size() - 1] == "text"
 		      || context[context.size() - 1] == "marquee"
+		      || context[context.size() - 1] == "blink"
 		      || context[context.size() - 1] == "scrolltext") {
 			if (!object->mText.Parse(text.substr(start, end - start + 1)))
 				return false;
