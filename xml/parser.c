@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.1 2004/12/19 22:03:27 lordjaxom Exp $
+ *  $Id: parser.c,v 1.2 2004/12/21 20:36:12 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -153,7 +153,8 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 					ATTRIB_OPT_FUNC  ("align",   object->ParseAlignment);
 					ATTRIB_OPT_FUNC  ("font",    object->ParseFontFace);
 
-					object->mIndex = mindex++;
+					if (name == "marquee")
+						object->mIndex = mindex++;
 				}
 				else if (name == "rectangle") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
