@@ -1,5 +1,5 @@
 /*
- *  $Id: screen.c,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
+ *  $Id: screen.c,v 1.2 2005/01/25 20:27:12 lordjaxom Exp $
  */
 
 #include "screen.h"
@@ -59,7 +59,8 @@ void cText2SkinScreen::Clear(void) {
 void cText2SkinScreen::DrawBitmap(int x, int y, const cBitmap &Bitmap, tColor ColorFg, tColor ColorBg) {
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
-		mRegions[i]->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
+		DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorFg, ColorBg);
+		//mRegions[i]->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
 #else
 	mOsd->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
 #endif
@@ -114,3 +115,22 @@ void cText2SkinScreen::Flush(void) {
 		mOsd->Flush();
 }
 
+void cText2SkinScreen::DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &Bitmap, tColor ColorFg,
+                                         tColor ColorBg, tColor *ColorMask)
+{
+	const tIndex *bitmap = Dest.Data(0, 0);
+	if (bitmap && Bitmap.Data(0, 0) && Dest.Intersects(x, y, x + Bitmap.Width() - 1, y + Bitmap.Height() - 1)) {
+		if (Dest.Covers(x, y, x + Bitmap.Width() - 1, y + Bitmap.Height() - 1))
+			Dest.Reset();
+		x -= Dest.X0();
+		y -= Dest.Y0();
+		tIndex Indexes[MAXNUMCOLORS];
+		Dest.Take(Bitmap, &Indexes, ColorFg, ColorBg);
+		for (int ix = 0; ix < Bitmap.Width(); ix++) {
+			for (int iy = 0; iy < Bitmap.Height(); iy++) {
+				if (ColorMask == NULL || *ColorMask != *Bitmap.Data(ix, iy))
+					Dest.SetIndex(x + ix, y + iy, Indexes[int(*Bitmap.Data(ix, iy))]);
+			}
+		}
+	}
+}

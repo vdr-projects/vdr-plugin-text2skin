@@ -1,5 +1,5 @@
 /*
- *  $Id: screen.h,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
+ *  $Id: screen.h,v 1.2 2005/01/25 20:27:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SCREEN_H
@@ -21,6 +21,10 @@ private:
 	bool     mOffScreen;
 	int      mNumRegions;
 
+protected:
+	static void DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &Bitmap, tColor ColorFg = 0,
+	                              tColor ColorBg = 0, tColor *ColorMask = NULL);
+
 public:
 	cText2SkinScreen(bool OffScreen = false);
 	~cText2SkinScreen();
@@ -30,7 +34,8 @@ public:
 	void Clear(void);
 	void DrawBitmap(int x, int y, const cBitmap &Bitmap, tColor ColorFg = 0, tColor ColorBg = 0);
 	void DrawRectangle(int x1, int y1, int x2, int y2, tColor Color);
-	void DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, int Width = 0, int Height = 0, int Alignment = taDefault);
+	void DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, 
+	              int Width = 0, int Height = 0, int Alignment = taDefault);
 	void DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quadrants = 0);
 	void DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type);
 
