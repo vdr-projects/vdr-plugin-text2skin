@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.8 2005/01/05 19:31:18 lordjaxom Exp $
+ * $Id: render.h,v 1.9 2005/01/11 18:02:44 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -118,7 +118,7 @@ protected:
 	// functions for display renderer to control behaviour
 	void Flush(bool Force = false);
 	void SetDirty(void) { mDirty = true; }
-	void Scroll(bool Up, bool Page) { if (mScroller) mScroller->Scroll(Up, Page); }
+	void Scroll(bool Up, bool Page) { if (mScroller != NULL) mScroller->Scroll(Up, Page); }
 	void Clear(void) { DELETENULL(mScroller); }
 
 public:
