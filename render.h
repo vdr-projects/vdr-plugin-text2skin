@@ -1,14 +1,14 @@
 /*
- * $Id: render.h,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: render.h,v 1.3 2004/05/23 19:20:26 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
 #define VDR_TEXT2SKIN_RENDER_H
 
+#include <vector>
 #include <vdr/osd.h>
 #include <vdr/skins.h>
 #include "data.h"
-#include <vector>
 
 using std::vector;
 
@@ -46,6 +46,8 @@ private:
 	int               mReplaySpeed;
 	int               mReplayCurrent;
 	int               mReplayTotal;
+	const char       *mReplayCurrentText;
+	const char       *mReplayTotalText;
 	const char       *mReplayJump;
 
 	// message display
@@ -86,6 +88,13 @@ protected:
 	void DisplayMute(cText2SkinItem *Item); 
 	void DisplayProgressbar(cText2SkinItem *Item); 
 	void DisplayReplayTitle(cText2SkinItem *Item);
+	void DisplayReplayCurrent(cText2SkinItem *Item);
+	void DisplayReplayTotal(cText2SkinItem *Item);
+	void DisplayReplayJump(cText2SkinItem *Item);
+	void DisplayMessageStatus(cText2SkinItem *Item);
+	void DisplayMessageInfo(cText2SkinItem *Item);
+	void DisplayMessageWarning(cText2SkinItem *Item);
+	void DisplayMessageError(cText2SkinItem *Item);
 	void DisplayMenuItems(cText2SkinItem *Item);
 
 public:

@@ -1,5 +1,5 @@
 /*
- * $Id: data.c,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: data.c,v 1.2 2004/05/23 19:20:26 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -49,12 +49,13 @@ bool cText2SkinItem::Parse(const char *Text) {
 	else if (*ptr == '[' && ptr[strlen(ptr)-1] == ']') { // section
 		++ptr;
 		ptr[strlen(ptr)-1] = '\0';
-		if      (strcmp(ptr, "Channel")    == 0)  mParseSection = sectionChannel;
-		else if (strcmp(ptr, "Menu")       == 0)  mParseSection = sectionMenu;
-		else if (strcmp(ptr, "Volume")     == 0)  mParseSection = sectionVolume;
-		else if (strcmp(ptr, "ReplayMode") == 0)  mParseSection = sectionReplayMode;
-		else if (strcmp(ptr, "Replay")     == 0)  mParseSection = sectionReplay;
-		else if (strcmp(ptr, "Message")    == 0)  mParseSection = sectionMessage;
+		if      (strcmp(ptr, "Channel")      == 0)  mParseSection = sectionChannel;
+		else if (strcmp(ptr, "ChannelSmall") == 0)  mParseSection = sectionChannelSmall;
+		else if (strcmp(ptr, "Menu")         == 0)  mParseSection = sectionMenu;
+		else if (strcmp(ptr, "Volume")       == 0)  mParseSection = sectionVolume;
+		else if (strcmp(ptr, "ReplayMode")   == 0)  mParseSection = sectionReplayMode;
+		else if (strcmp(ptr, "Replay")       == 0)  mParseSection = sectionReplay;
+		else if (strcmp(ptr, "Message")      == 0)  mParseSection = sectionMessage;
 		return true;
 	}
 
@@ -93,6 +94,14 @@ bool cText2SkinItem::Parse(const char *Text) {
 		else if (strcmp(item, "Volumebar")          == 0) mItem = itemVolumebar;
 		else if (strcmp(item, "Mute")               == 0) mItem = itemMute;
 		else if (strcmp(item, "Progressbar")        == 0) mItem = itemProgressbar;
+		else if (strcmp(item, "ReplayTitle")        == 0) mItem = itemReplayTitle;
+		else if (strcmp(item, "ReplayCurrent")      == 0) mItem = itemReplayCurrent;
+		else if (strcmp(item, "ReplayTotal")        == 0) mItem = itemReplayTotal;
+		else if (strcmp(item, "ReplayJump")         == 0) mItem = itemReplayJump;
+		else if (strcmp(item, "MessageStatus")      == 0) mItem = itemMessageStatus;
+		else if (strcmp(item, "MessageInfo")        == 0) mItem = itemMessageInfo;
+		else if (strcmp(item, "MessageWarning")     == 0) mItem = itemMessageWarning;
+		else if (strcmp(item, "MessageError")       == 0) mItem = itemMessageError;
 		else if (strcmp(item, "MenuArea")           == 0) mItem = itemMenuArea;
 		else if (strcmp(item, "MenuItem")           == 0) mItem = itemMenuItem;
 		else if (strcmp(item, "MenuCurrent")        == 0) mItem = itemMenuCurrent;

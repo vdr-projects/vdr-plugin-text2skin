@@ -1,6 +1,12 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
-2004-05-21: Version 0.0.1
+2004-05-23: Version 0.0.1-pre2
+
+- added "ChannelSmall" section
+- added replay and message items
+- added a german translation of the SKINS document (incomplete)
+
+2004-05-23: Version 0.0.1-pre1
 
 - Initial revision.

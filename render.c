@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: render.c,v 1.3 2004/05/23 19:20:26 lordjaxom Exp $
  */
 
 #include <vdr/channels.h>
@@ -13,33 +13,35 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, eSkinSection Section) {
 	tArea areas[MAXOSDAREAS];
 	int numAreas = 0;
 
-	mData          = Data;
-	mSection       = Section;
-	mOsd           = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
-	mChannel       = NULL;
-	mNumber        = 0;
-	mVolumeCurrent = 0;
-	mVolumeTotal   = 0;
-	mVolumeMute    = false;
-	mReplayTitle   = NULL;
-	mReplayPlay    = false;
-	mReplayForward = false;
-	mReplaySpeed   = 0;
-	mReplayCurrent = 0;
-	mReplayTotal   = 0;
-	mReplayJump    = NULL;
-	mMessageType   = (eMessageType)-1;
-	mMessageText   = NULL;
-	mPresent       = NULL;
-	mFollowing     = NULL;
-	mTitle         = NULL;
-	mCurrent       = 0;
+	mData              = Data;
+	mSection           = Section;
+	mOsd               = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
+	mChannel           = NULL;
+	mNumber            = 0;
+	mVolumeCurrent     = 0;
+	mVolumeTotal       = 0;
+	mVolumeMute        = false;
+	mReplayTitle       = NULL;
+	mReplayPlay        = false;
+	mReplayForward     = false;
+	mReplaySpeed       = 0;
+	mReplayCurrent     = 0;
+	mReplayTotal       = 0;
+	mReplayCurrentText = NULL;
+	mReplayTotalText   = NULL;
+	mReplayJump        = NULL;
+	mMessageType       = (eMessageType)-1;
+	mMessageText       = NULL;
+	mPresent           = NULL;
+	mFollowing         = NULL;
+	mTitle             = NULL;
+	mCurrent           = 0;
 
 	cText2SkinItem *item;
 	for (item = Data->First(); item; item = Data->Next(item)) {
 		if (item->Section() == Section && item->Item() == itemBackground) {
 			if (numAreas < MAXOSDAREAS) {
-				printf("area item: %d:%d:%d:%d\n", item->X(), item->Y(), item->X() + item->Width() - 1, item->Y() + item->Height() - 1, item->Bpp());
+				printf("area item: %d:%d:%d:%d:%d\n", item->X(), item->Y(), item->X() + item->Width() - 1, item->Y() + item->Height() - 1, item->Bpp());
 				areas[numAreas].x1 = item->X();
 				areas[numAreas].y1 = item->Y();
 				areas[numAreas].x2 = item->X() + item->Width() - 1;
@@ -136,6 +138,20 @@ void cText2SkinRender::Flush(void) {
 				DisplayProgressbar(item); break;
 			case itemReplayTitle:
 				DisplayReplayTitle(item); break;
+			case itemReplayCurrent:
+				DisplayReplayCurrent(item); break;
+			case itemReplayTotal:
+				DisplayReplayTotal(item); break;
+			case itemReplayJump:
+				DisplayReplayJump(item); break;
+			case itemMessageInfo:
+				DisplayMessageInfo(item); break;
+			case itemMessageStatus:
+				DisplayMessageStatus(item); break;
+			case itemMessageWarning:
+				DisplayMessageWarning(item); break;
+			case itemMessageError:
+				DisplayMessageError(item); break;
 			case itemMenuItem:
 				DisplayMenuItems(item); break;
 			default:
@@ -343,6 +359,41 @@ void cText2SkinRender::DisplayProgressbar(cText2SkinItem *Item) {
 void cText2SkinRender::DisplayReplayTitle(cText2SkinItem *Item) {
 	if (mReplayTitle)
 		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mReplayTitle, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+	
+void cText2SkinRender::DisplayReplayCurrent(cText2SkinItem *Item) {
+	if (mReplayCurrentText)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mReplayCurrentText, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+
+void cText2SkinRender::DisplayReplayTotal(cText2SkinItem *Item) {
+	if (mReplayTotalText)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mReplayTotalText, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+
+void cText2SkinRender::DisplayReplayJump(cText2SkinItem *Item) {
+	if (mReplayJump)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mReplayJump, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMessageStatus(cText2SkinItem *Item) {
+	if (mMessageType == mtStatus && mMessageText)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mMessageText, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMessageInfo(cText2SkinItem *Item) {
+	if (mMessageType == mtInfo && mMessageText)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mMessageText, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMessageWarning(cText2SkinItem *Item) {
+	if (mMessageType == mtWarning && mMessageText)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mMessageText, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMessageError(cText2SkinItem *Item) {
+	if (mMessageType == mtError && mMessageText)
+		DrawTextTransparent(mOsd, Item->X(), Item->Y(), mMessageText, Item->Fg(), Item->Bg(), SkinFont(Item), Item->Width(), Item->Height(), Item->Align());
 }
 
 void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {

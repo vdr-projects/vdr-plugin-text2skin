@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: data.h,v 1.2 2004/05/23 19:20:26 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -13,6 +13,7 @@
 
 enum eSkinSection {
 	sectionUnknown,
+	sectionChannelSmall,
 	sectionChannel,
 	sectionVolume,
 	sectionReplayMode,
@@ -50,6 +51,13 @@ enum eSkinItem {
 	itemMute,
 	itemProgressbar,
 	itemReplayTitle,
+	itemReplayCurrent,
+	itemReplayTotal,
+	itemReplayJump,
+	itemMessageStatus,
+	itemMessageInfo,
+	itemMessageWarning,
+	itemMessageError,
 	itemMenuArea,
 	itemMenuItem,
 	itemMenuCurrent

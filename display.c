@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: display.c,v 1.2 2004/05/23 19:20:26 lordjaxom Exp $
  */
 
 #include "display.h"
@@ -12,7 +12,7 @@ cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinData *Data, bool Wi
 	printf("cText2SkinDisplayChannel\n");
 	mData     = Data;
 	mWithInfo = WithInfo;
-	mRender   = new cText2SkinRender(mData, sectionChannel);
+	mRender   = new cText2SkinRender(mData, WithInfo ? sectionChannel : sectionChannelSmall);
 	mDirty    = false;
 }
 
@@ -113,9 +113,17 @@ void cText2SkinDisplayReplay::SetProgress(int Current, int Total) {
 }
 
 void cText2SkinDisplayReplay::SetCurrent(const char *Current) {
+	if (mRender->mReplayCurrentText != Current) {
+		mRender->mReplayCurrentText = Current;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayReplay::SetTotal(const char *Total) {
+	if (mRender->mReplayTotalText != Total) {
+		mRender->mReplayTotalText = Total;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayReplay::SetJump(const char *Jump) {

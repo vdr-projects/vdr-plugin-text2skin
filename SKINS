@@ -15,9 +15,9 @@ holds the skin description file and the needed image files. The skin
 description file must have the same name as the skin directory, with the 
 extension ".skin"
 
-Example:
-/video0/plugins/text2skin
-/video0/plugins/text2skin/myskin
+Example (the Skin is called myskin):
+/video0/plugins/text2skin/
+/video0/plugins/text2skin/myskin/
 /video0/plugins/text2skin/msykin/msykin.skin
 /video0/plugins/text2skin/myskin/channeldisplay.png
 
@@ -40,7 +40,7 @@ Creation of an image
 
 I used gimp to create some test images displaying things on screen, although
 I don't know much about image processing :-). To give an advice, I will point
-out how I created those test images with GIMP.
+out how I created those test images.
 
 I've used a template for a menu provided by a community member, tiled it into
 sections fully covered by the image. That made three images in this case. Then
@@ -55,8 +55,8 @@ decoration you intend to use. I saved the results to a png file and placed the
 result into the skin.
 
 If you intend to use xpm's, be aware that VDR doesn't know about named colors,
-so most images GIMP creates will not be read on-the-fly, because GIMP always
-uses the color "None". [ TODO at least None will be supported by VDR 1.3.8 ]
+so some images GIMP creates will not be read on-the-fly, because GIMP may use
+some named colors, but VDR only recognizes "None".
 
 
 The Description File Format
@@ -81,6 +81,10 @@ Item=Volumebar,x=10,y=10,width=10,height=100,bg=#FF000000,fg=#FFFFFFFF;
 
 Known Sections
 --------------
+
+Section:     [ChannelSmall]
+Description: The channel display. It displays the current programme and number
+             only, together with some decoration.
 
 Section:     [Channel]
 Description: The channel display. It displays the current programme and number,
@@ -108,6 +112,7 @@ Description: [ TODO ] Full menu.
 
 Known Items
 -----------
+
 Item:        Item=Skin
 Description: This identifies the skin and adds a description to it.
 Parameters:  name, version
@@ -247,6 +252,34 @@ Item:        Item=ReplayTitle
 Description: Draws the title of the current replay.
 Parameters:  x, y, width, height, fg, font, align
 
+Item:        Item=ReplayCurrent
+Description: Draws the current time in the current replay.
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=ReplayTotal
+Description: Draws the total length of the current replay.
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=ReplayJump
+Description: Draws the "Jump:" prompt (if present) of the current replay.
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=MessageStatus
+Description: Draws the current status message (if present).
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=MessageInfo
+Description: Draws the current info message (if present).
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=MessageWarning
+Description: Draws the current warning message (if present).
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=MessageError
+Description: Draws the current error message (if present).
+Parameters:  x, y, width, height, fg, font, align
+
 
 Known Parameters
 ----------------
@@ -269,8 +302,8 @@ Default:     not given (sometimes mandatory)
 
 Parameter:   bpp
 Description: A positive number representing the depth of a background area.
-             Possible values are 1, 2, 4 and 8 mapping to 2, 4, 8, 16 and 256
-             colors.
+             Possible values are 1, 2, 3, 4 and 8 mapping to 2, 4, 8, 16 and 
+             256 colors.
 Default:     4 (16 colors)
 
 Parameter:   fg
