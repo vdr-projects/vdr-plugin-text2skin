@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.9 2005/01/20 17:07:09 lordjaxom Exp $
+ * $Id: display.h,v 1.10 2005/01/26 20:43:01 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -212,13 +212,7 @@ private:
 
 	std::string mTitle;
 
-	struct tListItem {
-		std::string text;
-
-		tListItem(const std::string &Text): text(Text) {}
-
-		bool operator!=(const tListItem &b) { return b.text != text; }
-	};
+	typedef std::string tListItem;
 	typedef std::vector<tListItem> tListItems;
 
 	tListItems  mItems;
@@ -246,7 +240,7 @@ public:
 inline bool cText2SkinDisplayTracks::HasTabText(int Index, int n)
 {
 	if (Index < 0 || mItems.size () > (uint)Index && n <= 0)
-		return mItems[Index].text.length() > 0;
+		return mItems[Index].length() > 0;
 	return false;
 }
 #endif
