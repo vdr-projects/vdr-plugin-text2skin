@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.17 2005/01/07 21:47:23 lordjaxom Exp $
+ * $Id: render.c,v 1.18 2005/01/07 23:30:46 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -577,7 +577,8 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	case tFreeDiskSpace: {
 			int FreeMB;
 			VideoDiskSpace(&FreeMB);
-			return Token.Attrib.Type == aString
+			Dprintf("FreeMB: %d, attrib type is %d\n", FreeMB,Token.Attrib.Type);
+			return Token.Attrib.Type == aString && Token.Attrib.Text.length() > 0
 			       ? (cxType)DurationType((int)(FreeMB * 60 * FRAMESPERSEC / MB_PER_MINUTE), 
 			                              Token.Attrib.Text)
 			       : (cxType)FreeMB;
