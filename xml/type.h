@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.5 2005/01/07 21:50:54 lordjaxom Exp $
+ *  $Id: type.h,v 1.6 2005/01/23 19:43:28 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
@@ -54,18 +54,18 @@ public:
 };
 
 inline std::string cxType::String(void) const {
-	if (mType != string)
-		return (const char*)itoa(mNumber);
-	return mString;
+	switch (mType) {
+	case number:  return (const char*)itoa(mNumber);
+	case boolean: return mNumber != 0 ? "1" : "";
+	default:      return mString;
+	}
 }
 
 inline cxType::operator bool () const
 {
 	switch (mType) {
-	case string:
-		return mString != "";
-	default:
-		return mNumber != 0;
+	case string: return mString != "";
+	default:     return mNumber != 0;
 	}
 }
 
