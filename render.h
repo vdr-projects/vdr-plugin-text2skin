@@ -91,6 +91,7 @@ private:
 	// update thread
 	bool              mActive;
 	cCondVar          mDoUpdate;
+	cCondVar          mStarted;
 	cMutex            mMutex;
 	int               mUpdateIn;
 

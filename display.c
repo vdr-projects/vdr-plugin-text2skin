@@ -53,7 +53,9 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) {
 
 void cText2SkinDisplayChannel::Flush(void) {
 	if (mDirty) {
+		Dprintf("Flushing\n");
 		mRender->Flush();
+		Dprintf("Flushing done\n");
 		mDirty = false;
 	}
 }

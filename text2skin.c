@@ -11,7 +11,7 @@
 #include "i18n.h"
 #include "loader.h"
 
-const char *cText2SkinPlugin::VERSION        = "0.0.8";
+const char *cText2SkinPlugin::VERSION        = "0.0.8.1";
 const char *cText2SkinPlugin::THEMEVERSION   = "0.0.3";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 

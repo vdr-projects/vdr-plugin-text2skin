@@ -90,6 +90,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 		}
 	}
 	res = mScreen->SetAreas(areas, numAreas);
+	Dprintf("areas set, res = %d\n", res);
 
 	if (res != oeOk) {
 		const char *emsg = NULL;
@@ -113,7 +114,12 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 		}
 		esyslog("ERROR: text2skin: OSD provider can't handle skin: %s\n", emsg);
 	}
+
+	Lock();        
 	Start();
+	mStarted.Wait(mMutex);
+	Unlock();
+	// Make sure this constructor returns when the thread is running
 }
 
 cText2SkinRender::~cText2SkinRender() {
@@ -131,9 +137,13 @@ cText2SkinRender::~cText2SkinRender() {
 void cText2SkinRender::Action(void) {
 	mActive = true;
 	Lock();
+	mStarted.Broadcast(); // signal the constructor
 	while (mActive) {
+		Dprintf("mutex locked? %d\n", mMutex.locked);
+		int b = time_ms();
 		if (mUpdateIn) mDoUpdate.TimedWait(mMutex, mUpdateIn);
 		else           mDoUpdate.Wait(mMutex);
+		Dprintf("waited %d\n", time_ms() - b);
 
 		if (!mActive) break; // fall out if thread to be stopped
 

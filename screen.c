@@ -6,6 +6,7 @@
 
 cText2SkinScreen::cText2SkinScreen(int x, int y) {
 	mOsd = cOsdProvider::NewOsd(x, y);
+	Dprintf("got osd -> %p\n", mOsd);
 }
 
 cText2SkinScreen::~cText2SkinScreen() {
