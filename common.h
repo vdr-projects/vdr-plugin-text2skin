@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.12 2004/06/25 17:51:34 lordjaxom Exp $
+ * $Id: common.h,v 1.13 2004/07/02 19:00:22 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -147,7 +147,13 @@ extern const string DisplayNames[__DISPLAY_COUNT__];
 extern const string ReplayNames[__REPLAY_COUNT__];
 extern const string BaseNames[__BASE_COUNT__];
 
-// geometrical structures
+// class forwards
+
+class cMarks;
+class cChannel;
+class cText2SkinItem;
+
+// geometrical and helper structures
 
 struct POINT {
 	int x, y;
@@ -159,11 +165,16 @@ struct SIZE {
 	int w, h;
 	SIZE(int _w = 0, int _h = 0) { w = _w; h = _h; }
 };
-
-// class forwards
-
-class cChannel;
-class cText2SkinItem;
+	
+struct tItemData {
+	string text;
+	string path;
+	int current;
+	int shown;
+	int total;
+	const cMarks *marks;
+	tItemData(void) { marks = NULL; }
+};
 
 // helper functions
 

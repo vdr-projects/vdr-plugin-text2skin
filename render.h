@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.24 2004/06/24 18:37:30 lordjaxom Exp $
+ * $Id: render.h,v 1.26 2004/07/13 13:52:51 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -17,6 +17,8 @@ class cText2SkinLoader;
 class cText2SkinData;
 class cText2SkinI18n;
 class cText2SkinTheme;
+class cText2SkinScroller;
+class cText2SkinScreen;
 
 class cText2SkinRender: public cThread {
 	friend class cText2SkinDisplayChannel;
@@ -28,22 +30,12 @@ class cText2SkinRender: public cThread {
 private:
 	static cText2SkinRender *mRender;
 
-	cText2SkinData   *mData;
-	cText2SkinI18n   *mI18n;
-	cText2SkinTheme  *mTheme;
-	eSkinSection      mSection;
-	cOsd             *mOsd;
-	cTextScroller    *mScroller;
-
-	struct ItemData {
-		string text;
-		string path;
-		int current;
-		int shown;
-		int total;
-		const cMarks *marks;
-		ItemData(void) { marks = NULL; }
-	};
+	cText2SkinData     *mData;
+	cText2SkinI18n     *mI18n;
+	cText2SkinTheme    *mTheme;
+	eSkinSection        mSection;
+	cText2SkinScreen   *mScreen;
+	cText2SkinScroller *mScroller;
 
 	// channel display
 	const cChannel   *mChannel;
@@ -119,13 +111,13 @@ protected:
 	void DrawRectangle(const POINT &Pos, const SIZE &Size, const tColor *Fg);
 	void DrawEllipse(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
 	void DrawSlope(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
-	void DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Fg, const tColor *Bg, const cMarks *Marks = NULL);
- 	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal);
+	void DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Fg, const tColor *Bg, const tColor *Selected, const tColor *Mark, const tColor *Cur, const cMarks *Marks = NULL);
+ 	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal, const tColor *Mark, const tColor *Cur);
 	void DrawScrolltext(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
 	void DrawScrollbar(const POINT &Pos, const SIZE &Size, int Offset, int Shown, int Total, const tColor *Bg, const tColor *Fg);
 
 	// displays a full item
-	void DisplayItem(cText2SkinItem *Item, const ItemData *Data = NULL);
+	void DisplayItem(cText2SkinItem *Item, const tItemData *Data = NULL);
 
 	// High-level operations
 	void DisplayDateTime(cText2SkinItem *Item);
@@ -155,8 +147,6 @@ protected:
 	// Helpers
 	string ItemText(cText2SkinItem *Item);
 	string ItemText(cText2SkinItem *Item, const string &Content);
-	tColor *ItemFg(cText2SkinItem *Item);
-	tColor *ItemBg(cText2SkinItem *Item);
 	int GetEditableWidth(MenuItem Item, bool Current);
 	void Update(void);
 
@@ -165,6 +155,7 @@ public:
 	virtual ~cText2SkinRender();
 
 	static POINT Transform(const POINT &Pos);
+	static bool ItemColor(const string &Color, tColor &Result);
 
 	void Flush(void) { Lock(); mDoUpdate.Broadcast(); Unlock(); }
 };

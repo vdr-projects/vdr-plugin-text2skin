@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.17 2004/06/18 16:08:11 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.18 2004/07/13 13:52:51 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -72,7 +72,7 @@ cBitmap &cText2SkinBitmap::Get(int &UpdateIn) {
 	} else if ((diff = cur - mLastGet) >= mDelay) {
 		mCurrent = (mCurrent + 1) % mBitmaps.size();
 		mLastGet = cur;
-		upd = mDelay;
+		upd = mDelay - diff > 1 ? mDelay - diff : 1;
 	} else {
 		upd = mDelay - diff;
 	}

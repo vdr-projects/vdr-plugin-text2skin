@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.17 2004/06/22 16:48:03 lordjaxom Exp $
+ * $Id: data.h,v 1.18 2004/07/13 13:52:51 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -22,6 +22,9 @@ private:
 	int             mAlpha;
 	string          mFg;
 	string          mBg;
+	string          mSelected;
+	string          mMark;
+	string          mCurrent;
 	const cFont    *mFont;
 	string          mName;
 	string          mVersion;
@@ -55,8 +58,6 @@ public:
 	int             Bpp(void)     const { return mBpp; }
 	int             Arc(void)     const { return mArc; }
 	int             Alpha(void)   const { return mAlpha; }
-	const string   &Fg(void)      const { return mFg; }
-	const string   &Bg(void)      const { return mBg; }
 	const cFont    *Font(void)    const { return mFont; }
 	const string   &Name(void)    const { return mName; }
 	const string   &Version(void) const { return mVersion; }
@@ -70,6 +71,11 @@ public:
 	// auto-conversion
 	const POINT     Pos(void)     const;
 	const SIZE      Size(void)    const;
+	const tColor   *Fg(void)      const;
+	const tColor   *Bg(void)      const;
+	const tColor   *Selected(void)const;
+	const tColor   *Mark(void)    const;
+	const tColor   *Current(void) const;
 };
 
 class cText2SkinData: public cText2SkinFile {

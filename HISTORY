@@ -1,6 +1,17 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-07-14: Version 0.0.8
+
+- fixed display of scrollbar if there is no text present
+- fixed animation delay if update takes longer than the delay
+- using backgrounds also in 8-bit fullscreen mode to improve performance
+- implemented screen layer to improve performance
+- corrected offsets and tab widths in main menu
+- implemented parameters "current", "mark" and "selected" to choose mark colors
+  in replay display (defaults to the old values)
+- implemented color value "None" to be able to unset a color
+
 2004-06-25: Version 0.0.7
 
 - on devices capable of full-color OSD, bpp's have no meaning anymore

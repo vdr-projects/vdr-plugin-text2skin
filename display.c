@@ -1,11 +1,12 @@
 /*
- * $Id: display.c,v 1.18 2004/06/24 18:37:30 lordjaxom Exp $
+ * $Id: display.c,v 1.19 2004/07/02 19:00:22 lordjaxom Exp $
  */
 
 #include "render.h"
 #include "data.h"
 #include "loader.h"
 #include "display.h"
+#include "scroller.h"
 
 // --- cText2SkinDisplayChannel -----------------------------------------------
 
@@ -248,6 +249,7 @@ void cText2SkinDisplayMenu::Clear(void) {
 	mRender->mMenuEvent     = NULL;
 	mRender->mMenuRecording = NULL;
 	mRender->mMenuText      = "";
+	Dprintf("Clear\n");
 	//mRender->mMessageText   = "";
 	DELETENULL(mRender->mScroller);
 	mRender->Unlock();
@@ -281,6 +283,7 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 }
 
 void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
+	Dprintf("SetMessage %s\n", Text);
 	if (Text == NULL) Text = "";
 	mRender->Lock();
 	if (mRender->mMessageType != Type || mRender->mMessageText != Text) {

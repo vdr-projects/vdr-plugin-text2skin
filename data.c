@@ -1,5 +1,5 @@
 /*
- * $Id: data.c,v 1.20 2004/06/22 16:48:03 lordjaxom Exp $
+ * $Id: data.c,v 1.21 2004/07/13 13:52:51 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -12,6 +12,9 @@ cText2SkinItem::cText2SkinItem(void) {
 	mBpp     = 4;
 	mArc     = 0;
 	mAlpha   = 0;
+	mSelected= "#FFFC1414";
+	mMark    = "#FF000000";
+	mCurrent = "#FFFC1414";
 	mFont    = cFont::GetFont(fontOsd);
 	mAlign   = taDefault;
 	mBase    = baseRelative;
@@ -52,6 +55,9 @@ bool cText2SkinItem::ParseItem(const char *Text) {
 	ParseVar(Text, "alpha",   &mAlpha);
 	ParseVar(Text, "fg",       mFg);
 	ParseVar(Text, "bg",       mBg);
+	ParseVar(Text, "selected", mSelected);
+	ParseVar(Text, "mark",     mMark);
+	ParseVar(Text, "current",  mCurrent);
 	ParseVar(Text, "font",    &mFont);
 	ParseVar(Text, "path",     mPath);
 	ParseVar(Text, "altpath",  mAltPath);
@@ -70,6 +76,31 @@ const SIZE cText2SkinItem::Size(void) const {
 	POINT p1 = cText2SkinRender::Transform(mPos1);
 	POINT p2 = cText2SkinRender::Transform(mPos2);
 	return SIZE(p2.x - p1.x + 1, p2.y - p1.y + 1);
+}
+
+const tColor *cText2SkinItem::Fg(void) const {
+	static tColor Fg;
+	return cText2SkinRender::ItemColor(mFg, Fg) ? &Fg : NULL;
+}
+
+const tColor *cText2SkinItem::Bg(void) const {
+	static tColor Bg;
+	return cText2SkinRender::ItemColor(mBg, Bg) ? &Bg : NULL;
+}
+
+const tColor *cText2SkinItem::Selected(void) const {
+	static tColor Selected;
+	return cText2SkinRender::ItemColor(mSelected, Selected) ? &Selected : NULL;
+}
+
+const tColor *cText2SkinItem::Mark(void) const {
+	static tColor Mark;
+	return cText2SkinRender::ItemColor(mMark, Mark) ? &Mark : NULL;
+}
+
+const tColor *cText2SkinItem::Current(void) const {
+	static tColor Current;
+	return cText2SkinRender::ItemColor(mCurrent, Current) ? &Current : NULL;
 }
 
 // --- cText2SkinData ---------------------------------------------------------

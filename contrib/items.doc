@@ -24,13 +24,14 @@ This is the documentation to the Text2Skin file-format (version 0.0.2).
 How To create text-based skins
 ------------------------------
 
+[ THIS HAS CHANGED - BACKGROUNDS ARE MANDATORY ]
+
 If you are using an output driver capable of displaying a full-screen 256 color
 OSD (i.e. an upgraded DVB-card, or plugins like SoftDevice), the plugin will
-detect this and make use of the full-screen area. If you intend to write a skin
-that will only work on such a device, you can skip the section concerning 
-backgrounds. However, if you plan to make the skin usable on a usual DVB-card,
-even if you don't use one yourself, you should read the following sections
-carefully.
+detect this and make use of the full-screen area. However, you will still need
+to define some drawing areas (backgrounds), because commiting a full-screen
+area can take some time (depending on the output device). By specifying the
+area you intend to draw on, things can be sped up a lot.
 
 It is important that you understand the limitations of the OSD memory. If there
 are too many objects with too many colors defined, VDR will throw an error and
@@ -123,9 +124,16 @@ END_EN
 Wie man textbasierte Skins erstellt
 -----------------------------------
 
+[ HAT SICH GEÄNDERT - BACKGROUNDS SIND PFLICHT ]
+
 Wenn Sie einen Ausgabetreiber nutzen, der fähig ist, ein 256-Farben Vollbild
 als OSD darzustellen (z.B. eine aufgerüstete DVB-Karte oder Plugins wie
 SoftDevice), wird das Plugin dies erkennen und die volle Bildfläche nutzen. 
+Dennoch werden Sie einige Malbereiche (Backgrounds) definieren müssen, weil
+bspw. das Übermitteln des gesamten OSD-Bildes einige Zeit beanspruchen kann 
+(je nach Ausgabegerät). Durch die Angabe der Bereiche auf die später gemalt
+werden soll, beschleunigt sich das ganze erheblich.
+
 Wenn Sie beabsichtigen, ein Skin zu schreiben, welches nur auf solchen Geräten
 funktionieren soll, können Sie die folgenden Sektionen, die die Backgrounds 
 betreffen überspringen. Wenn Sie jedoch planen Ihr Skin auch auf normalen
@@ -423,7 +431,7 @@ END_DE
 	"Rectangle" => "display, x, y, width, height, fg",
 	"Ellipse" => "display, x, y, width, height, fg, arc",
 	"Slope" => "display, x, y, width, height, fg, arc",
-	"Progress" => "display, x, y, width, height, bg, fg",
+	"Progress" => "display, x, y, width, height, bg, fg, selected, mark, current",
 	"Logo" => "display, x, y, width, height, bg, fg, path, type",
 	"Symbol" => "display, x, y, width, height, bg, fg, path, altpath",
 	"MenuArea" => "x, y, width, height",
