@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.8 2005/01/25 15:15:53 lordjaxom Exp $
+ * $Id: status.c,v 1.9 2005/01/31 14:40:55 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -96,8 +96,9 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name)
 	}
 
 	if (mRender != NULL) {
-		mRender->UpdateUnlock();
+		Dprintf("\nFlushing from cStatus\n\n");
 		mRender->Flush(true);
+		mRender->UpdateUnlock();
 	}
 }
 
