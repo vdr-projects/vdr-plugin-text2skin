@@ -13,7 +13,7 @@ HAVE_FREETYPE=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
+# $Id: Makefile,v 1.3 2005/01/05 19:33:27 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -114,15 +114,9 @@ $(DEPFILE): Makefile
 
 all: libvdr-$(PLUGIN).so
 
-libvdr-$(PLUGIN).so: $(OBJS) SKINS SKINS.de
+libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
-
-SKINS: contrib/items.doc
-	@contrib/list_items.pl >$@
-
-SKINS.de: contrib/items.doc
-	@contrib/list_items.pl de >$@
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
