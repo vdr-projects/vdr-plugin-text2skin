@@ -1,10 +1,34 @@
 /*
- * $Id: i18n.c,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
+ * $Id: i18n.c,v 1.2 2005/01/11 18:00:34 lordjaxom Exp $
  */
 
 #include "i18n.h"
+#include <vdr/config.h>
 
 const tI18nPhrase Phrases[] = {
+	/*
+  { "English",
+    "Deutsch",
+    "Slovenski",
+    "Italiano",
+    "Nederlands",
+    "Português",
+    "Français",
+    "Norsk",
+    "suomi", // this is not a typo - it's really lowercase!
+    "Polski",
+    "Español",
+    "ÅëëçíéêÜ", // Greek
+    "Svenska",
+    "Românã",
+    "Magyar",
+    "Català",
+    "ÀãááÚØÙ", // Russian
+    "Hrvatski",
+    "Eesti",
+    "Dansk",
+  },
+	*/
   { "Loader for text-based skins",
     "Lader für textbasierte Skins",
     "",
@@ -22,7 +46,13 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    ""
+    "",
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
   },
   { "Flush image cache",
     "Bildspeicher leeren",
@@ -41,7 +71,13 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    ""
+    "",
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
   },
   { "Flushing image cache...",
     "Bildspeicher wird geleert...",
@@ -60,7 +96,13 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    ""
+    "",
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
   },
   { "Max. image cache size",
     "Max. Größe des Bildspeichers",
@@ -79,7 +121,13 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    ""
+    "",
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
   },
 	{ NULL }
 };
