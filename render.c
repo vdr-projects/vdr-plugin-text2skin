@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.12 2005/01/01 23:44:36 lordjaxom Exp $
+ * $Id: render.c,v 1.13 2005/01/02 19:58:30 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -141,8 +141,8 @@ void cText2SkinRender::Update(void)
 
 	Dbench(flush);
 	mScreen->Flush();
-	Dprintf("flush only took %ld ms\n", Ddiff(flush));
-	Dprintf("complete flush took %ld ms\n", Ddiff(update));
+	Dprintf("flush only took %llu ms\n", Ddiff(flush));
+	Dprintf("complete flush took %llu ms\n", Ddiff(update));
 }
 
 void cText2SkinRender::DrawObject(const cxObject *Object)
@@ -203,6 +203,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 		break;
 
 	case cxObject::list: {
+			Dprintf("list\n");
 			const cxObject *item = Object->GetObject(0);
 			if (item && item->Type() == cxObject::item) {
 				txSize areasize = Object->Size();
@@ -509,18 +510,6 @@ std::string cText2SkinRender::ImagePath(const std::string &Filename)
 		return mRender->mBasePath + "/" + Filename;
 	return cxFunction::False;
 }
-
-/*std::string cText2SkinRender::Translate(const std::string &Text) {
-	if (mRender != NULL) {
-		string result;
-		if (mRender->mI18n != NULL)
-			result = mRender->mI18n->Translate(Text);
-		else
-			result = Text;
-		return result;
-	}
-	return Text;
-}*/
 
 cxType cText2SkinRender::GetToken(const txToken &Token) 
 {
