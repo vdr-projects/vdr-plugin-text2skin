@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.24 2005/01/20 17:07:09 lordjaxom Exp $
+ * $Id: render.c,v 1.25 2005/01/20 20:59:13 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -265,7 +265,39 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 							}
 
 							obj.mPos2.y += Object->mPos1.y + yoffset;
-							DrawObject(&obj);
+
+							std::string text = obj.Text();
+							if (text.length() > 5 
+									&& text[0] == '[' && text[text.length() - 1] == ']') {
+								Dprintf("detected progress bar tab\n");
+								if (obj.Condition() == NULL || obj.Condition()->Evaluate()) {
+									int total = text.length() - 2;
+									int current = 0;
+									const char *p = text.c_str() + 1;
+									while (*p == '|')
+										(++current, ++p);
+
+									txPoint pos = obj.Pos();
+									txSize size = obj.Size();
+
+									DrawRectangle(txPoint(pos.x, pos.y + 4), 
+									              txSize(size.w, 2), obj.Fg());
+									DrawRectangle(txPoint(pos.x, pos.y + 4),
+									              txSize(2, size.h - 8), obj.Fg());
+									DrawRectangle(txPoint(pos.x, pos.y + size.h - 6), 
+									              txSize(size.w, 2), obj.Fg());
+									DrawRectangle(txPoint(pos.x + size.w - 2, pos.y + 4),
+									              txSize(2, size.h - 8), obj.Fg());
+
+									pos.x += 4;
+									pos.y += 8;
+									size.w -= 8;
+									size.h -= 16;
+									DrawProgressbar(pos, size, current, total, obj.Bg(),
+									                obj.Fg(), NULL, NULL, NULL, NULL);
+								}
+							} else
+								DrawObject(&obj);
 						}
 					}
 				}
