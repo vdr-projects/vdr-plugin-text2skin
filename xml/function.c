@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.7 2005/01/05 19:32:43 lordjaxom Exp $
+ *  $Id: function.c,v 1.8 2005/01/07 21:49:55 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -10,11 +10,8 @@
 #include <vdr/tools.h>
 
 static const char *Internals[] = {
-	"not", "and", "or", "equal", "file", "trans", "plugin", NULL
+	"not", "and", "or", "equal", "file", "trans", "plugin", "gt",  "lt", "ge", "le", NULL
 };
-
-const std::string cxFunction::False = "";
-const std::string cxFunction::True  = "1";
 
 cxFunction::cxFunction(cxSkin *Skin):
 		mSkin(Skin),
@@ -81,6 +78,18 @@ bool cxFunction::Parse(const std::string &Text)
 
 		mType = string;
 	}
+	else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '-' || *ptr == '+') {
+		// must be number
+		char *end;
+		int num = strtol(ptr, &end, 10);
+		if (end == ptr || *end != '\0') {
+			esyslog("ERROR: Invalid numeric value\n");
+			return false;
+		}
+
+		mNumber = num;
+		mType = number;
+	}
 	else {
 		// expression
 		for (; *ptr; ++ptr) {
@@ -134,7 +143,11 @@ bool cxFunction::Parse(const std::string &Text)
 						case fun_and: 
 						case fun_or:   params = -1; break;
 
-						case fun_eq:   ++params;
+						case fun_eq:   
+						case fun_gt:
+						case fun_lt:
+						case fun_ge:
+						case fun_le:   ++params;
 						case fun_not:
 						case fun_trans:
 						case fun_plugin:
@@ -189,6 +202,9 @@ cxType cxFunction::Evaluate(void) const
 	case string:
 		return mString.Evaluate();
 
+	case number:
+		return mNumber;
+
 	case fun_not:
 		return !mParams[0]->Evaluate();
 
@@ -209,6 +225,18 @@ cxType cxFunction::Evaluate(void) const
 	case fun_eq:
 		return mParams[0]->Evaluate() == mParams[1]->Evaluate();
 
+	case fun_gt:
+		return mParams[0]->Evaluate() >  mParams[1]->Evaluate();
+
+	case fun_lt:
+		return mParams[0]->Evaluate() <  mParams[1]->Evaluate();
+
+	case fun_ge:
+		return mParams[0]->Evaluate() >= mParams[1]->Evaluate();
+
+	case fun_le:
+		return mParams[0]->Evaluate() <= mParams[1]->Evaluate();
+
 	case fun_file:
 		return FunFile(mParams[0]->Evaluate());
 
@@ -225,7 +253,7 @@ cxType cxFunction::Evaluate(void) const
 		esyslog("ERROR: Unknown function code called (this shouldn't happen)");
 		break;
 	}
-	return False;
+	return false;
 }
 
 #if 0

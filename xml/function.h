@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.5 2005/01/05 19:32:43 lordjaxom Exp $
+ *  $Id: function.h,v 1.6 2005/01/07 21:50:27 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -22,17 +22,21 @@ public:
 		string     = STRING,
 		number     = NUMBER,
 
-		fun_not    = INTERNAL + 1,
-		fun_and    = INTERNAL + 2,
-		fun_or     = INTERNAL + 3,
-		fun_eq     = INTERNAL + 4,
-		fun_file   = INTERNAL + 5,
-		fun_trans  = INTERNAL + 6,
-		fun_plugin = INTERNAL + 7
+		fun_not    = INTERNAL +  1,
+		fun_and    = INTERNAL +  2,
+		fun_or     = INTERNAL +  3,
+		fun_eq     = INTERNAL +  4,
+		fun_file   = INTERNAL +  5,
+		fun_trans  = INTERNAL +  6,
+		fun_plugin = INTERNAL +  7,
+		fun_gt     = INTERNAL +  8,
+		fun_lt     = INTERNAL +  9,
+		fun_ge     = INTERNAL + 10,
+		fun_le     = INTERNAL + 11,
 	};
 
-	static const std::string False;
-	static const std::string True;
+	//static const std::string False;
+	//static const std::string True;
 	
 private:
 	cxSkin     *mSkin;
