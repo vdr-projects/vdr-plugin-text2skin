@@ -1,5 +1,5 @@
 /*
- *  $Id: font.c,v 1.3 2005/01/02 23:18:42 lordjaxom Exp $
+ *  $Id: font.c,v 1.4 2005/01/30 18:09:42 lordjaxom Exp $
  *
  * Taken from GraphTFT 
  */
@@ -117,11 +117,6 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 	}
 	iconv_close(cd);
 
-        /* load glyph image into the slot (erase previous one) */
-	error = FT_Load_Char( _face, '-', FT_LOAD_RENDER );
-	if ( error )
-		return  false;
-
 	cFont::tPixelData value;
 	int num_rows_global = (_face->size->metrics.height / 64 )+1;
 	int num_rows = num_rows_global + 2;
@@ -132,12 +127,9 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 		for (int j = 0; j < num_rows; j++)
 			font_data[(i*num_rows)+j]=0x0000000000000000;
 	
-	font_data[0+0]=_slot->bitmap.width+2;
-	font_data[0+1]=num_rows_global;
-
-	// Time to put char 33..255 in font_data
+	// Time to put char 32..255 in font_data
 	FT_UInt glyph_index;	
-	for ( int num_char = 33, num_char_array = 1; num_char < 256; num_char++, num_char_array++ )
+	for ( int num_char = 32, num_char_array = 0; num_char < 256; num_char++, num_char_array++ )
 	{
 
 		 //Get FT char index 
@@ -152,11 +144,13 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 		 if ( error ) continue;
 		
 		// now, convert to vdr font data
-		int  width = ((_slot->bitmap.width+2) > (int)sizeof(cFont::tPixelData) * 8) ?  (((int)sizeof(cFont::tPixelData) * 8) - 2) : _slot->bitmap.width;
+		int width = (_slot->metrics.horiAdvance / 64) + 1;
+		int bearingX = (_slot->metrics.horiBearingX / 64) +1;
+		width = (width > (int)sizeof(cFont::tPixelData) * 8) ? (((int)sizeof(cFont::tPixelData) * 8)-2) :width ;
 		int  top = _slot->bitmap_top;
 		int  y_off = Size - top;
 
-		font_data[(num_char_array*num_rows)+0]=width+2;
+		font_data[(num_char_array*num_rows)+0]=width;
 		font_data[(num_char_array*num_rows)+1]=num_rows_global;
 
 		unsigned char *bmp = _slot->bitmap.buffer;
@@ -167,8 +161,8 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 			value = 0x00;
 
 			for (int x = 0; x < _slot->bitmap.width; ++x) {
-				if (bmp[pos] & bit && x < width)
-					value = value | (cFont::tPixelData)1 << _slot->bitmap.width-x+1;
+				if (bmp[pos] & bit && x < width + 1 )
+					value = value | (cFont::tPixelData)1 << width - bearingX - x ;
 				
 				bit >>= 1;
 				if (bit == 0) {
