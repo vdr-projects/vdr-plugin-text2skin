@@ -12,7 +12,7 @@
 #include "i18n.h"
 #include "loader.h"
 
-const char *cText2SkinPlugin::VERSION        = "1.0-pre6";
+const char *cText2SkinPlugin::VERSION        = "1.0-rc1";
 const char *cText2SkinPlugin::SKINVERSION    = "1.0";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
