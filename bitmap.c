@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.8 2005/01/27 13:03:24 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.9 2005/01/27 17:31:35 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -17,18 +17,6 @@ using namespace Magick;
 #include <glob.h>
 
 cxCache<tBitmapSpec,cText2SkinBitmap*> cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
-
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Delete(const tBitmapSpec &Key, cText2SkinBitmap *&Data)
-{
-	delete Data;
-}
-
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Reset(cText2SkinBitmap *&Data)
-{
-	Data->Reset();
-}
 
 cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height, 
                                          int width, int colors, bool Quiet) {
