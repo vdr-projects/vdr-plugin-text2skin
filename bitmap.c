@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.6 2005/01/27 10:53:07 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.7 2005/01/27 11:19:44 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -206,10 +206,12 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, i
 				(*it).sample(Geometry(width,height));
 			w = (*it).columns();
 			h = (*it).rows();
+			/*
 			if ((*it).depth() > 8) {
 				esyslog("ERROR: text2skin: More than 8bpp images are not supported");
 				return false;
 			}
+			*/
 			bmp = new cBitmap(w, h, (*it).depth());
 			//Dprintf("this image has %d colors\n", (*it).totalColors());
 
