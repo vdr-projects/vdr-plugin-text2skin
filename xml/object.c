@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.5 2004/12/28 14:35:54 lordjaxom Exp $
+ *  $Id: object.c,v 1.6 2004/12/28 18:03:24 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -21,6 +21,7 @@ cxObject::cxObject(cxDisplay *parent):
 		mCondition(NULL),
 		mFontFace("Osd"),
 		mFontSize(0),
+		mFontWidth(0),
 		mDelay(150),
 		mIndex(0),
 		mObjects(NULL),
@@ -49,6 +50,7 @@ cxObject::cxObject(const cxObject &Src):
 		mTotal(Src.mTotal),
 		mFontFace(Src.mFontFace),
 		mFontSize(Src.mFontSize),
+		mFontWidth(Src.mFontSize),
 		mDelay(0),
 		mObjects(NULL),
 		mDisplay(Src.mDisplay),
