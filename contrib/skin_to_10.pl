@@ -36,6 +36,8 @@ my $TOKENS = {
 	MenuGreen => '{ButtonGreen}',
 	MenuYellow => '{ButtonYellow}',
 	MenuBlue => '{ButtonBlue}',
+	MenuGroups => '{MenuGroup}',
+	MenuItems => '{MenuItem}',
 };
 
 my $ALIGNS = {
