@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.9 2004/12/28 18:06:02 lordjaxom Exp $
+ * $Id: render.c,v 1.10 2004/12/29 00:38:08 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -297,7 +297,6 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 		state = tState();
 		state.text = Text;
 	}
-	Dprintf("drawMarquee state.text = %s, offset = %d\n", state.text.c_str(), state.offset);
 	
 	if (state.nexttime == 0)
 		state.nexttime = mNow + 1500;
@@ -325,6 +324,8 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 		if (mUpdateIn == 0 || updatein < mUpdateIn)
 			mUpdateIn = updatein;
 	}
+	Dprintf("drawMarquee text = %s, state.text = %s, offset = %d, index = %d, scrolling = %d, mUpdatteIn = %d, nexttime = %d, delay = %d\n", 
+	        Text.c_str(), state.text.c_str(), state.offset, Index, scrolling, mUpdateIn, state.nexttime, Delay);
 		
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + state.offset, Fg ? *Fg : 0, clrTransparent, Font,
 	                  Size.w, Size.h, Align);

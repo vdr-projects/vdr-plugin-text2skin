@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.4 2004/12/28 14:25:45 lordjaxom Exp $
+ *  $Id: parser.c,v 1.5 2004/12/29 00:38:08 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -244,6 +244,9 @@ bool xEndElem(const std::string &name) {
 			if (object->mCondition == NULL) {
 				switch (object->mType) {
 				case cxObject::text:
+				case cxObject::marquee:
+				case cxObject::blink:
+				case cxObject::scrolltext:
 					object->mCondition = new cxFunction(object->mText);
 					break;
 
