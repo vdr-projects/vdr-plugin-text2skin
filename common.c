@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.4 2004/12/21 21:39:21 lordjaxom Exp $
+ * $Id: common.c,v 1.5 2004/12/22 15:38:18 lordjaxom Exp $
  */
 
 #include "common.h"
@@ -150,13 +150,13 @@ cxType DurationType(uint Index, const std::string &Format)
 			const char *ptr = Format.c_str(); 
 			char *res = result;
 			enum { normal, format } state = normal;
+			int n = 0;
+			int f = (Index % FRAMESPERSEC) + 1;
+			int s = (Index / FRAMESPERSEC);
+			int m = s / 60 % 60;
+			int h = s / 3600;
+			s %= 60;
 			while (*ptr && res < result + sizeof(result)) {
-				int n = 0;
-				int f = (Index % FRAMESPERSEC) + 1;
-				int s = (Index / FRAMESPERSEC);
-				int m = s / 60 % 60;
-				int h = s / 3600;
-				s %= 60;
 				switch (state) {
 				case normal:
 					if (*ptr == '%')
