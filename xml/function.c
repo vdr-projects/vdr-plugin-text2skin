@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ *  $Id: function.c,v 1.3 2004/12/29 22:22:16 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -73,7 +73,7 @@ bool cxFunction::Parse(const std::string &Text)
 
 		int pos = -1;
 		while ((pos = temp.find("\\'", pos + 1)) != -1)
-			temp.replace(pos, 1, "\'");
+			temp.replace(pos, 2, "'");
 
 		if (!mString.Parse(temp))
 			return false;
