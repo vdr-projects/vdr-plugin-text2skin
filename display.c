@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.15 2005/01/21 18:13:59 lordjaxom Exp $
+ * $Id: display.c,v 1.16 2005/01/21 23:18:34 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -1143,20 +1143,18 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 	case tMenuTitle:
 		return mTitle;
 
-	case tMenuItem: {
+	case tMenuItem:
 		return mItems.size() > (uint)index && mCurrentItem != (uint)index
-		       ? (cxType)((std::string)(const char*)itoa(index) + " " + mItems[index].text)
+		       ? (cxType)mItems[index].text
 		       : (cxType)false;
-					}
 	
 	case tIsMenuItem:
 		return mItems.size() > (uint)index && mCurrentItem != (uint)index;
 
-	case tMenuCurrent: {
+	case tMenuCurrent:
 		return mItems.size() > (uint)index && mCurrentItem == (uint)index
-		       ? (cxType)((std::string)(const char*)itoa(index) + " " + mItems[index].text)
+		       ? (cxType)mItems[index].text
 		       : (cxType)false;
-					   }
 
 	case tIsMenuCurrent:
 		return mItems.size() > (uint)index && mCurrentItem == (uint)index;
