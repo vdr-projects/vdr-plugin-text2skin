@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
+ *  $Id: string.h,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -112,10 +112,10 @@ struct txAttrib {
 	std::string Text;
 	int         Number;
 
-	txAttrib(const std::string &a): Type(aString), Text(a) {}
-	txAttrib(int n): Type(aNumber), Number(0) {}
+	txAttrib(const std::string &a): Type(aString), Text(a), Number(0) {}
+	txAttrib(int n): Type(aNumber), Text(""), Number(n) {}
 	txAttrib(exAttrib t): Type(t), Text(""), Number(0) {}
-	txAttrib(void): Type(aNone) {}
+	txAttrib(void): Type(aNone), Text(""), Number(0) {}
 
 	friend bool operator== (const txAttrib &A, const txAttrib &B);
 	friend bool operator<  (const txAttrib &A, const txAttrib &B);
@@ -124,13 +124,16 @@ struct txAttrib {
 inline bool operator== (const txAttrib &A, const txAttrib &B)
 {
 	return A.Type == B.Type
-	    && A.Text == B.Text;
+	    && A.Text == B.Text
+	    && A.Number == B.Number;
 }
 
 inline bool operator<  (const txAttrib &A, const txAttrib &B)
 {
 	return A.Type == B.Type
-	       ? A.Text < B.Text
+	       ? A.Text == B.Text
+		     ? A.Number < B.Number
+	         : A.Text < B.Text
 	       : A.Type < B.Type;
 }
 

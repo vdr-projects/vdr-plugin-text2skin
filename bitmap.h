@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.1 2004/12/19 22:03:09 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.2 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -30,7 +30,7 @@ public:
 	virtual ~cText2SkinBitmap();
 
 	void Reset(void) { mCurrent = 0; mLastGet = 0; }
-	cBitmap &Get(int &UpdateIn);
+	cBitmap &Get(uint &UpdateIn);
 	void SetColor(int Index, tColor Color);
 	void SetAlpha(int Alpha);
 

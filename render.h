@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.3 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: render.h,v 1.4 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -57,7 +57,7 @@ private:
 	cCondVar            mDoUpdate;
 	cMutex              mDoUpdateMutex;
 	cCondVar            mStarted;
-	int                 mUpdateIn;
+	uint                mUpdateIn;
 
 	// coordinate transformation
 	txSize              mBaseSize;

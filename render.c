@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: render.c,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -292,7 +292,11 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 		cText2SkinMarquee marquee(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text, Font, Fg ? *Fg : 0,
 		                          clrTransparent, mUpdateIn);
 		mMarquees.push_back(marquee);
-	} else
+	} 
+	else if (Text != mMarquees[Index].Text())
+		mMarquees[Index].Set(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text, Font, Fg ? *Fg : 0,
+		                     clrTransparent, mUpdateIn);
+	else
 		mMarquees[Index].DrawText(mUpdateIn);
 }
 
@@ -494,8 +498,15 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
 			}
 		}
-		if (!res.NoCache())
+		if (res.UpdateIn() > 0) {
+			Dprintf("Passing token without cacheing\n");
+			if (mRender->mUpdateIn == 0 || res.UpdateIn() < mRender->mUpdateIn) {
+				Dprintf("updating in %d\n", res.UpdateIn());
+				mRender->mUpdateIn = res.UpdateIn();
+			}
+		} else
 			mRender->mTokenCache[Token] = res;
+
 		return res;
 	}
 	return cxType::False;

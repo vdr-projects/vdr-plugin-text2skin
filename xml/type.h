@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
+ *  $Id: type.h,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
@@ -20,24 +20,25 @@ private:
 	eType       mType;
 	std::string mString;
 	int         mNumber;
-	bool        mNoCache;
+	bool        mCache;
+	uint        mUpdateIn;
 
 public:
 	static cxType True;
 	static cxType False;
 
-	cxType(void): mType(boolean), mNumber(0), mNoCache(false) {}
-	cxType(const char *String): mType(string), mString(String ?: ""), mNoCache(false) {}
-	cxType(std::string String): mType(string), mString(String), mNoCache(false) {}
-	cxType(int Number): mType(number), mNumber(Number), mNoCache(false) {}
-	cxType(time_t Number): mType(number), mNumber(Number), mNoCache(false) {}
-	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0), mNoCache(false) {}
+	cxType(void): mType(boolean), mNumber(0), mUpdateIn(0) {}
+	cxType(const char *String): mType(string), mString(String ?: ""), mUpdateIn(0) {}
+	cxType(std::string String): mType(string), mString(String), mUpdateIn(0) {}
+	cxType(int Number): mType(number), mNumber(Number), mUpdateIn(0) {}
+	cxType(time_t Number): mType(number), mNumber(Number), mUpdateIn(0) {}
+	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0), mUpdateIn(0) {}
 
 	const std::string &String(void);
 	int Number(void) const { return mType == number ? mNumber : 0; }
 
-	void SetNoCache(bool Enable = true) { mNoCache = Enable; }
-	bool NoCache(void) const { return mNoCache; }
+	void SetUpdate(uint UpdateIn) { mUpdateIn = UpdateIn; }
+	uint UpdateIn(void) const { return mUpdateIn; }
 
 	operator std::string () { return String(); }
 	operator int         () { return Number(); }

@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: status.c,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -107,6 +107,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		return ReplayNames[mReplayMode];
 
 	case tCurrentRecording:
+		Dprintf("token attrib type is: %d, number: %d\n", Token.Attrib.Type, Token.Attrib.Number);
 		if (Token.Attrib.Type == aNumber) {
 			return mRecordings.size() > (uint)Token.Attrib.Number
 			       ? (cxType)mRecordings[Token.Attrib.Number].name
@@ -127,7 +128,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			}
 
 			cxType res = mRecordings[mCurrentRecording].name;
-			res.SetNoCache();
+			res.SetUpdate(next);
 			return res;
 		}
 		return false;

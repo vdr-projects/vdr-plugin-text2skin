@@ -1,5 +1,5 @@
 /*
- *  $Id: marquee.h,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
+ *  $Id: marquee.h,v 1.2 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_MARQUEE_H
@@ -33,12 +33,14 @@ public:
 	cText2SkinMarquee(const cText2SkinMarquee &Src);
 	cText2SkinMarquee(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
 	                  const std::string &Text, const cFont *Font, tColor ColorFg, tColor ColorBg, 
-	                  int &UpdateIn);
+	                  uint &UpdateIn);
 
 	void Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
 	         const std::string &Text, const cFont *Font, tColor ColorFg, tColor ColorBg, 
-	         int &UpdateIn);
-	void DrawText(int &UpdateIn);
+	         uint &UpdateIn);
+	void DrawText(uint &UpdateIn);
+
+	const std::string &Text(void) const { return mText; }
 };
 
 #endif // VDR_TEXT2SKIN_MARQUEE_H

@@ -1,5 +1,5 @@
 /*
- *  $Id: marquee.c,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
+ *  $Id: marquee.c,v 1.2 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #include "marquee.h"
@@ -25,14 +25,14 @@ cText2SkinMarquee::cText2SkinMarquee(const cText2SkinMarquee &Src):
 
 cText2SkinMarquee::cText2SkinMarquee(cText2SkinScreen *Screen, int Left, int Top, int Width, 
                                      int Height, const std::string &Text, const cFont *Font, 
-                                     tColor ColorFg, tColor ColorBg, int &UpdateIn)
+                                     tColor ColorFg, tColor ColorBg, uint &UpdateIn)
 {
 	Set(Screen, Left, Top, Width, Height, Text, Font, ColorFg, ColorBg, UpdateIn);
 }
 
 void cText2SkinMarquee::Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
                             const std::string &Text, const cFont *Font, tColor ColorFg, 
-                            tColor ColorBg, int &UpdateIn)
+                            tColor ColorBg, uint &UpdateIn)
 {
 	mScreen = Screen;
 	mFont = Font;
@@ -50,43 +50,38 @@ void cText2SkinMarquee::Set(cText2SkinScreen *Screen, int Left, int Top, int Wid
 	DrawText(UpdateIn);
 }
 
-void cText2SkinMarquee::DrawText(int &mUpdateIn)
+void cText2SkinMarquee::DrawText(uint &UpdateIn)
 {
 	uint now = time_ms();
-	if (!mScrolling || (mNextTime > 0 && now < mNextTime)) {
-		mScreen->DrawText(mLeft, mTop, mText.c_str() + mOffset, mColorFg, mColorBg, mFont, mWidth, 
-						  mHeight);
-		if (mScrolling) {
-			uint updatein = mNextTime - now;
-			if (mUpdateIn == 0 || (uint)mUpdateIn > updatein)
-				mUpdateIn = updatein;
+	if (mNextTime == 0)
+		mNextTime = now + 1500;
+	else if (now >= mNextTime) {
+		uint nextin = 250;
+		if (mDirection > 0) {
+			if (mFont->Width(mText.c_str() + mOffset) <= mWidth) {
+				--mDirection;
+				nextin = 1500;
+			}
+			else
+				++mOffset;
 		}
-		return;
-	}
-	
-	int nextupdate = 250;
-	if (mDirection > 0) {
-		if (mFont->Width(mText.c_str() + mOffset) <= mWidth) {
-			--mDirection;
-			nextupdate = 1500;
+		else {
+			if (mOffset <= 0) {
+				++mDirection;
+				nextin = 1500;
+			}
+			else
+				--mOffset;
 		}
-		else
-			++mOffset;
-	}
-	else {
-		if (mOffset <= 0) {
-			++mDirection;
-			nextupdate = 1500;
-		}
-		else
-			--mOffset;
+		mNextTime = now + nextin;
 	}
 
-	mNextTime = now + nextupdate;
+	if (mScrolling) {
+		uint updatein = mNextTime - now;
+		if (UpdateIn == 0 || updatein < UpdateIn)
+			UpdateIn = updatein;
+	}
 		
 	mScreen->DrawText(mLeft, mTop, mText.c_str() + mOffset, mColorFg, mColorBg, mFont, mWidth, 
-	                  mHeight);
-
-	if (mUpdateIn == 0 || mUpdateIn > nextupdate)
-		mUpdateIn = nextupdate;
+					  mHeight);
 }

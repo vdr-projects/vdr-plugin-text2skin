@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
+ *  $Id: string.c,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -110,9 +110,11 @@ bool cxString::Parse(const std::string &Text) {
 				else {
 					char *end;
 					int n = strtol(attr.c_str(), &end, 10);
-					if (end != attr.c_str() && end == '\0')
+					Dprintf("attr: %s, n: %d, end: |%s|\n", attr.c_str(), n, end);
+					if (end != attr.c_str() && *end == '\0') {
+						Dprintf("a number\n");
 						lastToken.Attrib = n;
-					else
+					} else
 						lastToken.Attrib = attr;
 				} 
 
