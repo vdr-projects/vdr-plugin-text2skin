@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
+ *  $Id: object.h,v 1.3 2004/12/28 02:03:00 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -128,14 +128,6 @@ public:
 	uint               Objects(void)         const;
 	const cxObject    *GetObject(uint Index) const;
 };
-
-inline void cxObject::SetListIndex(uint Index, int Tab)
-{
-	mText.SetListIndex(Index, Tab);
-	mPath.SetListIndex(Index, Tab);
-	if (mCondition != NULL)
-		mCondition->SetListIndex(Index, Tab);
-}
 
 class cxObjects: public std::vector<cxObject*> {
 public:

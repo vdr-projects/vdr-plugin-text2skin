@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.3 2004/12/28 01:24:35 lordjaxom Exp $
+ *  $Id: object.c,v 1.4 2004/12/28 02:03:00 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -111,7 +111,16 @@ bool cxObject::ParseFontFace(const std::string &Text)
 	mFontSize = size;
 	return true;
 }
-	
+
+void cxObject::SetListIndex(uint Index, int Tab)
+{
+	mIndex = mDisplay->Objects() + (Index * cSkinDisplayMenu::MaxTabs + Tab);
+	mText.SetListIndex(Index, Tab);
+	mPath.SetListIndex(Index, Tab);
+	if (mCondition != NULL)
+		mCondition->SetListIndex(Index, Tab);
+}
+
 const std::string &cxObject::TypeName(void) const 
 {
 	return ObjectNames[mType];
