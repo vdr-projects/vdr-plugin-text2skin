@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.6 2004/12/28 01:54:02 lordjaxom Exp $
+ * $Id: render.c,v 1.7 2004/12/28 02:39:51 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -212,11 +212,8 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 				uint yoffset = 0;
 
 				for (uint i = 0; i < maxitems; ++i, yoffset += itemheight) {
-					for (uint j = 0; j < Object->Objects(); ++j) {
+					for (uint j = 1; j < Object->Objects(); ++j) {
 						const cxObject *o = Object->GetObject(j);
-						if (o->Type() == cxObject::item)
-							continue;
-
 						for (int t = -1; t < cSkinDisplayMenu::MaxTabs; ++t) {
 							if (!HasTabText(i, t))
 								continue;
