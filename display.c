@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.12 2005/01/20 14:04:15 lordjaxom Exp $
+ * $Id: display.c,v 1.13 2005/01/20 15:12:16 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -961,15 +961,15 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	case tChannelHasVPS:
 		return mEvent != NULL && mEvent->Vps() != 0;
 
-	case tEventHasVPS:
+	case tPresentHasVPS:
 		return mEvent != NULL && mEvent->Vps() != mEvent->StartTime();
 
 	case tHasTimer:
-	case tEventHasTimer:
+	case tPresentHasTimer:
 		return mEvent != NULL && mEvent->HasTimer();
 	
 	case tIsRunning:
-	case tEventIsRunning:
+	case tPresentIsRunning:
 		return mEvent != NULL && mEvent->IsRunning();
 
 	case tMenuText:

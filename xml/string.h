@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.13 2005/01/20 14:02:41 lordjaxom Exp $
+ *  $Id: string.h,v 1.14 2005/01/20 15:12:16 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -119,11 +119,8 @@ enum exToken {
 	tButtonBlue,
 	tCanScrollUp,
 	tCanScrollDown,
-	tEventHasTimer, // alias
-	tEventIsRunning, // alias
-	tEventHasVPS, // alias
 
-#define __COUNT_TOKEN__ (tEventHasVPS + 1)
+#define __COUNT_TOKEN__ (tCanScrollDown + 1)
 };
 
 enum exAttrib {
