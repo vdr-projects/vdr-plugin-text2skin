@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.4 2005/01/01 23:44:36 lordjaxom Exp $
+ *  $Id: function.c,v 1.5 2005/01/02 20:04:09 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -205,8 +205,9 @@ std::string cxFunction::Evaluate(void) const
 		return FunFile(mParams[0]->Evaluate());
 
 	case fun_trans:
-		Dprintf("|%s| translates to |%s|\n", mParams[0]->Evaluate().c_str(), tr(mParams[0]->Evaluate().c_str()));
-		return tr(mParams[0]->Evaluate().c_str());
+		//Dprintf("|%s| translates to |%s|\n", mParams[0]->Evaluate().c_str(), tr(mParams[0]->Evaluate().c_str()));
+		//return tr(mParams[0]->Evaluate().c_str());
+		return mParams[0]->Evaluate().c_str();
 	
 	case fun_plugin:
 		return FunPlugin(mParams[0]->Evaluate());
