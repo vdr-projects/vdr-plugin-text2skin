@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.3 2005/01/01 23:44:36 lordjaxom Exp $
+ *  $Id: function.h,v 1.4 2005/01/02 20:33:20 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -12,7 +12,7 @@
 #define NUMBER    0x02000000
 #define INTERNAL  0x04000000
 
-#define MAXPARAMETERS 16
+#define MAXPARAMETERS 512
 
 class cxFunction {
 public:
