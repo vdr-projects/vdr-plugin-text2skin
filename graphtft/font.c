@@ -1,5 +1,5 @@
 /*
- *  $Id: font.c,v 1.1 2004/12/19 22:03:24 lordjaxom Exp $
+ *  $Id: font.c,v 1.2 2005/01/02 14:34:05 lordjaxom Exp $
  *
  * Taken from GraphTFT 
  */
@@ -115,7 +115,7 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 	iconv_close(cd);
 
         /* load glyph image into the slot (erase previous one) */
-	error = FT_Load_Char( _face, '_', FT_LOAD_RENDER );
+	error = FT_Load_Char( _face, '-', FT_LOAD_RENDER );
 	if ( error )
 		return  false;
 
