@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.11 2005/01/20 20:45:46 lordjaxom Exp $
+ * $Id: render.h,v 1.12 2005/01/26 20:42:41 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -85,7 +85,7 @@ protected:
 	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
 	                    int Alpha, const std::string &Path);
 	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
-	               int Alpha, int Colors, const std::string &Path);
+	               const tColor *Mask, int Alpha, int Colors, const std::string &Path);
 	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const std::string &Text,
 	              const cFont *Font, int Align);
 	void DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 

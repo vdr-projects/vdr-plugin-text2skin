@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.27 2005/01/23 12:27:15 lordjaxom Exp $
+ * $Id: render.c,v 1.28 2005/01/26 20:42:41 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -163,8 +163,8 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 
 	switch (Object->Type()) {
 	case cxObject::image:
-		DrawImage(Object->Pos(), Object->Size(), Object->Bg(), Object->Fg(), Object->Alpha(), 
-		          Object->Colors(), Object->Path());
+		DrawImage(Object->Pos(), Object->Size(), Object->Bg(), Object->Fg(), Object->Mask(),
+		          Object->Alpha(), Object->Colors(), Object->Path());
 		break;
 
 	case cxObject::text:
@@ -222,7 +222,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 				uint maxitems = areasize.h / itemheight;
 				uint yoffset = 0;
 
-				SetMaxItems(maxitems); Dprintf("setmaxitems %d\n", maxitems);
+				SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
 				for (uint i = 0; i < maxitems; ++i, yoffset += itemheight) {
 					for (uint j = 1; j < Object->Objects(); ++j) {
 						const cxObject *o = Object->GetObject(j);
@@ -325,18 +325,18 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 }
 
 void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, 
-                                const tColor *Fg, int Alpha, int Colors, const std::string &Path)
+                                 const tColor *Fg, const tColor *Mask, int Alpha, int Colors, 
+                                 const std::string &Path)
 {
 	cText2SkinBitmap *bmp;
-	Dprintf("trying to draw image %s to %dx%d - alpha %d\n", ImagePath(Path).c_str(), Pos.x, 
-	        Pos.y, Alpha);
+	//Dprintf("trying to draw image %s to %dx%d - alpha %d\n", ImagePath(Path).c_str(), Pos.x, Pos.y, Alpha);
 
 	if ((bmp = cText2SkinBitmap::Load(ImagePath(Path), Alpha, Size.h > 1 ? Size.h : 0, 
 	                                  Size.w > 1 ? Size.w : 0, Colors)) != NULL) {
 		//Dprintf("success loading image\n");
 		if (Bg) bmp->SetColor(0, *Bg);
 		if (Fg) bmp->SetColor(1, *Fg);
-		mScreen->DrawBitmap(Pos.x, Pos.y, bmp->Get(mUpdateIn, mNow));
+		mScreen->DrawBitmap(Pos.x, Pos.y, bmp->Get(mUpdateIn, mNow), Mask);
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.5 2005/01/01 23:44:36 lordjaxom Exp $
+ *  $Id: object.h,v 1.6 2005/01/26 20:39:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -73,6 +73,7 @@ private:
 	int            mArc;
 	std::string    mFg;
 	std::string    mBg;
+	std::string    mMask;
 	std::string    mMark;
 	std::string    mActive;
 	std::string    mKeep;
@@ -122,6 +123,7 @@ public:
 	const cFont       *Font(void)            const;
 	const tColor      *Fg(void)              const;
 	const tColor      *Bg(void)              const;
+	const tColor      *Mask(void)            const;
 	const tColor      *Mark(void)            const;
 	const tColor      *Active(void)          const;
 	const tColor      *Keep(void)            const;

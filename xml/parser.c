@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.8 2005/01/20 14:46:12 lordjaxom Exp $
+ *  $Id: parser.c,v 1.9 2005/01/26 20:39:12 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -129,30 +129,31 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 		else {
 			object = new cxObject(display);
 			if (object->ParseType(name)) {
-				ATTRIB_OPT_NUMBER("x1",        object->mPos1.x);
-				ATTRIB_OPT_NUMBER("y1",        object->mPos1.y);
-				ATTRIB_OPT_NUMBER("x2",        object->mPos2.x);
-				ATTRIB_OPT_NUMBER("y2",        object->mPos2.y);
-				ATTRIB_OPT_FUNC  ("condition", object->ParseCondition);
+				ATTRIB_OPT_NUMBER("x1",            object->mPos1.x);
+				ATTRIB_OPT_NUMBER("y1",            object->mPos1.y);
+				ATTRIB_OPT_NUMBER("x2",            object->mPos2.x);
+				ATTRIB_OPT_NUMBER("y2",            object->mPos2.y);
+				ATTRIB_OPT_FUNC  ("condition",     object->ParseCondition);
 
 				if      (name == "image") {
-					ATTRIB_OPT_NUMBER("x",       object->mPos1.x);
-					ATTRIB_OPT_NUMBER("y",       object->mPos1.y);
-					ATTRIB_OPT_NUMBER("x",       object->mPos2.x);
-					ATTRIB_OPT_NUMBER("y",       object->mPos2.y);
-					ATTRIB_OPT_NUMBER("alpha",   object->mAlpha);
-					ATTRIB_OPT_NUMBER("colors",  object->mColors);
-					ATTRIB_OPT_STRING("color",   object->mFg);
-					ATTRIB_OPT_STRING("bgColor", object->mBg);
-					ATTRIB_MAN_FUNC  ("path",    object->mPath.Parse);
+					ATTRIB_OPT_NUMBER("x",         object->mPos1.x);
+					ATTRIB_OPT_NUMBER("y",         object->mPos1.y);
+					ATTRIB_OPT_NUMBER("x",         object->mPos2.x);
+					ATTRIB_OPT_NUMBER("y",         object->mPos2.y);
+					ATTRIB_OPT_NUMBER("alpha",     object->mAlpha);
+					ATTRIB_OPT_NUMBER("colors",    object->mColors);
+					ATTRIB_OPT_STRING("color",     object->mFg);
+					ATTRIB_OPT_STRING("bgColor",   object->mBg);
+					ATTRIB_OPT_STRING("maskColor", object->mMask);
+					ATTRIB_MAN_FUNC  ("path",      object->mPath.Parse);
 				}
 				else if (name == "text"
 				      || name == "marquee"
 				      || name == "blink"
 				      || name == "scrolltext") {
-					ATTRIB_OPT_STRING("color",   object->mFg);
-					ATTRIB_OPT_FUNC  ("align",   object->ParseAlignment);
-					ATTRIB_OPT_FUNC  ("font",    object->ParseFontFace);
+					ATTRIB_OPT_STRING("color",     object->mFg);
+					ATTRIB_OPT_FUNC  ("align",     object->ParseAlignment);
+					ATTRIB_OPT_FUNC  ("font",      object->ParseFontFace);
 
 					if      (name == "blink") {
 						ATTRIB_OPT_STRING("blinkColor", object->mBg);
