@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.5 2004/12/28 01:29:35 lordjaxom Exp $
+ * $Id: render.c,v 1.6 2004/12/28 01:54:02 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -278,7 +278,7 @@ void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const t
 		//Dprintf("success loading image\n");
 		if (Bg) bmp->SetColor(0, *Bg);
 		if (Fg) bmp->SetColor(1, *Fg);
-		mScreen->DrawBitmap(Pos.x, Pos.y, bmp->Get(mUpdateIn));
+		mScreen->DrawBitmap(Pos.x, Pos.y, bmp->Get(mUpdateIn, mNow));
 	}
 }
 
@@ -457,7 +457,8 @@ void cText2SkinRender::DrawScrolltext(const txPoint &Pos, const txSize &Size, co
 {
 	//Dprintf("trying to draw scrolltext %s\n", Text.c_str());
 	if (mScroller == NULL)
-		mScroller = new cText2SkinScroller(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text.c_str(), Font, Fg ? *Fg : 0, clrTransparent);
+		mScroller = new cText2SkinScroller(mScreen, Pos.x, Pos.y, Size.w, Size.h, Text.c_str(), 
+		                                   Font, Fg ? *Fg : 0, clrTransparent);
 	else
 		mScroller->DrawText();
 }
