@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: common.c,v 1.3 2004/12/21 21:22:41 lordjaxom Exp $
  */
 
 #include "common.h"
@@ -120,7 +120,17 @@ cxType TimeType(time_t Time, const std::string &Format)
 	if (Time > 0) {
 		if (Format.length() > 0) {
 			strftime(result, sizeof(result), Format.c_str(), tm);
-			return result;
+			
+			cxType r = result;
+			/*if      (Format.find("%s") != -1 || Format.find("%S") != -1
+			      || Format.find("%Es") != -1 || Format.find("%ES") != -1
+			      || Format.find("%Os") != -1 || Format.find("%OS") != -1)
+				r.SetUpdate(1000);
+			else if (Format.find("%M") != -1 || Format.find("%EM") != -1
+			      || Format.find("%OM") != -1)
+				r.SetUpdate(1000*60);*/
+
+			return r;
 		} else
 			return Time;
 	}
@@ -132,6 +142,7 @@ cxType DurationType(uint Index, const std::string &Format)
 	static char result[1000];
 	if (Index > 0) {
 		if (Format.length() > 0) {
+			uint update = 0;
 			const char *ptr = Format.c_str(); 
 			char *res = result;
 			enum { normal, format } state = normal;
@@ -162,18 +173,22 @@ cxType DurationType(uint Index, const std::string &Format)
 
 					case 'M':
 						n = snprintf(res, sizeof(result) - (res - result), "%02d", m);
+						update = 1000*60;
 						break;
 
 					case 'm':
 						n = snprintf(res, sizeof(result) - (res - result), "%d", m + (h * 60));
+						update = 1000*60;
 						break;
 
 					case 'S':
 						n = snprintf(res, sizeof(result) - (res - result), "%02d", s);
+						update = 1000;
 						break;
 					
 					case 'f':
 						n = snprintf(res, sizeof(result) - (res - result), "%d", f);
+						update = 1000;
 						break;
 
 					case '%':
@@ -187,7 +202,10 @@ cxType DurationType(uint Index, const std::string &Format)
 				}
 				++ptr;
 			}
-			return result;
+
+			cxType r = result;
+			r.SetUpdate(update);
+			return r;
 		} else
 			return (int)Index;
 	}

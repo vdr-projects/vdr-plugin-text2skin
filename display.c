@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ * $Id: display.c,v 1.3 2004/12/21 21:22:41 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -393,10 +393,8 @@ void cText2SkinDisplayReplay::SetProgress(int Current, int Total)
 void cText2SkinDisplayReplay::SetMarks(const cMarks *Marks)
 {
 	UpdateLock();
-	if (mMarks != Marks) {
-		mMarks = Marks;
-		SetDirty();
-	}
+	mMarks = Marks;
+	SetDirty();
 	UpdateUnlock();
 }
 
