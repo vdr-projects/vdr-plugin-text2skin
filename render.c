@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.14 2004/06/01 17:25:38 lordjaxom Exp $
+ * $Id: render.c,v 1.15 2004/06/01 21:02:38 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -195,7 +195,7 @@ void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const 
 	}
 
 	if (image)
-		mOsd->DrawBitmap(Pos.x, Pos.y, bm);
+		DrawBitmap(mOsd, Pos.x, Pos.y, bm);
 	else
 		mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, Bg ? *Bg : 0);
 }
@@ -209,7 +209,7 @@ void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColo
 		if (Bg) bm.SetColor(0, *Bg);
 		if (Fg) bm.SetColor(1, *Fg);
 		//mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, bm.Color(0));
-		mOsd->DrawBitmap(Pos.x, Pos.y, bm);
+		DrawBitmap(mOsd, Pos.x, Pos.y, bm);
 	}
 	free(p);
 }
@@ -323,8 +323,10 @@ void cText2SkinRender::DisplayLanguage(cText2SkinItem *Item) {
 			++i;
 		}
 		printf("\n");
-		string path = Item->Path() + "/" + tracks[current] + "." + Item->Type();
-		DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), path);
+		if (current < i) {
+			string path = Item->Path() + "/" + tracks[current] + "." + Item->Type();
+			DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), path);
+		}
 	}
 }
 
@@ -353,6 +355,7 @@ void cText2SkinRender::DisplayTime(cText2SkinItem *Item) {
 	char *text = strdup(DayDateTime(time(NULL)));
 	text[18] = '\0'; 
 	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text + 13), Item->Font(), Item->Align());
+	free(text);
 }
 
 void cText2SkinRender::DisplayChannelNumberName(cText2SkinItem *Item) {

@@ -1,11 +1,16 @@
 #
 # Makefile for a Video Disk Recorder plugin
 #
-# $Id: Makefile,v 1.2 2004/05/26 21:27:11 lordjaxom Exp $
+# $Id: Makefile,v 1.3 2004/06/01 21:02:38 lordjaxom Exp $
 
 # disable in case you don't want to install imlib
 # in that case, you will not be able to load other files than simple xpms
 HAVE_IMLIB2=1
+
+# !!!!THIS DOESN'T WORK YET!!!!
+# disable in case you don't want to install ImageMagick
+# in that case, you will not be able to load other files than simple xpms
+#HAVE_IMAGEMAGICK=1
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
@@ -46,6 +51,10 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2
+endif
+
+ifdef HAVE_IMAGEMAGICK
+	DEFINES += -DHAVE_IMAGEMAGICK
 endif
 
 INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include

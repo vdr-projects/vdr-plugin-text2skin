@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.5 2004/06/01 17:10:13 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.6 2004/06/01 21:02:38 lordjaxom Exp $
  */
 
 #define __STL_CONFIG_H
@@ -24,11 +24,10 @@ cText2SkinBitmap::~cText2SkinBitmap() {
 bool cText2SkinBitmap::Load(const char *Filename) {
 	int len = strlen(Filename);
 	if (len > 4) {
-#ifndef HAVE_IMLIB2
 		if (strcmp(Filename + len - 4, ".xpm") == 0)
 			return LoadXpm(Filename);
-#else
-		if (strcmp(Filename + len - 4, ".xpm") == 0 || strcmp(Filename + len - 4, ".png") == 0)
+#ifdef HAVE_IMLIB2
+		else if (strcmp(Filename + len - 4, ".png") == 0)
 			return LoadImlib(Filename);
 #endif
 		else
@@ -44,6 +43,8 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 	image = imlib_load_image(Filename);
 	if (!image)
 		return false;
+	Imlib_Context ctx = imlib_context_new();
+	imlib_context_push(ctx);
 	imlib_context_set_image(image);
 	SetSize(imlib_image_get_width(), imlib_image_get_height());
 	SetBpp(8);
@@ -62,6 +63,14 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 		}
 	}
 	imlib_free_image();
+	imlib_context_free(ctx);
 	return true;
+}
+#endif
+
+#ifdef HAVE_IMAGEMAGICK
+bool cText2SkinBitmap::LoadMagick(const char *Filename) {
+	Image image;
+	image.read(Filename);
 }
 #endif

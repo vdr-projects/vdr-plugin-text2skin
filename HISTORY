@@ -1,6 +1,13 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-01: Version 0.0.1-rc3
+
+- fixed possible segfault when showing language logo (happened when channel 
+  was not available)
+- fixed some memory leaks
+- fixed "too many colors used in palette" warning for non-imlib-users
+
 2004-06-01: Version 0.0.1-rc2
 
 - fixed some possible segfaults in Display Update

@@ -1,5 +1,5 @@
 /*
- * $Id: data.c,v 1.10 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: data.c,v 1.11 2004/06/01 21:02:38 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -156,17 +156,18 @@ bool cText2SkinItem::ParseVar(const char *Text, const char *Name, int *Value) {
 bool cText2SkinItem::ParseVar(const char *Text, const char *Name, string &Value){
 	char *ptr1, *ptr2;
 	char *str;
+	bool res = false;
 	asprintf(&str, "%s=", Name);
 	if ((ptr1 = strstr(Text, str))) {
 		ptr1 += strlen(str);
 		if ((ptr2 = strchr(ptr1, ',')) || (ptr2 = strchr(ptr1, ';'))) {
 			Value = ptr1;
 			Value.erase(ptr2 - ptr1);
-			return true;
+			res = true;
 		}
 	}
 	free(str);
-	return false;
+	return res;
 }
 
 bool cText2SkinItem::ParseVar(const char *Text, const char *Name, tColor **Value) {

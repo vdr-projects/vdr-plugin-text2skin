@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.4 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: common.c,v 1.5 2004/06/01 21:02:38 lordjaxom Exp $
  */
 
 #define __STL_CONFIG_H
@@ -60,6 +60,23 @@ void DrawTextTransparent(cOsd *Osd, int x, int y, const char *s, tColor ColorFg,
 					}
 			 x += CharData->width;
 			 }
+}
+
+void DrawBitmap(cOsd *Osd, int x, int y, cBitmap &Bitmap, tColor ColorFg, tColor ColorBg) {
+	if (ColorFg || ColorBg) {
+		Bitmap.SetColor(0, ColorBg);
+		Bitmap.SetColor(1, ColorFg);
+	}
+	tColor fill = Bitmap.Color(*Bitmap.Data(0, 0)); // to be sure to grab a USED color
+	Osd->DrawRectangle(x, y, x + Bitmap.Width() - 1, y + Bitmap.Height() - 1, fill); // to be sure the palette is reset, if the Bitmap covers an Area
+ 	for (int iy = 0; iy < Bitmap.Height(); iy++) {
+		const tIndex *ptr = Bitmap.Data(0, iy);
+		for (int ix = 0; ix < Bitmap.Width(); ix++, ptr += sizeof(tIndex)) {
+			// DrawPixel is b0rked
+			//Osd->DrawPixel(x + ix, y + iy, Bitmap.Color(*ptr));
+			Osd->DrawRectangle(x + ix, y + iy, x + ix, y + iy, Bitmap.Color(*ptr));
+		}
+	}
 }
 
 const char *ChannelNumber(const cChannel *Channel, int Number) {

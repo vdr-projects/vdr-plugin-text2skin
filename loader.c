@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.4 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: loader.c,v 1.5 2004/06/01 21:02:38 lordjaxom Exp $
  */
 
 #define __STL_CONFIG_H
@@ -33,12 +33,11 @@ void cText2SkinLoader::Start(void) {
 }
 
 void cText2SkinLoader::Load(const char *Skin) {
-	char *skinfile;
 	struct stat buf;
-	asprintf(&skinfile, "%s/%s/%s.skin", SkinPath(), Skin, Skin);
-	if (stat(skinfile, &buf) == 0) {
+	string file = (string)SkinPath() + "/" + Skin + "/" + Skin + ".skin";
+	if (stat(file.c_str(), &buf) == 0) {
 		cText2SkinData *data = new cText2SkinData(Skin);
-		if (data->Load(skinfile)) {
+		if (data->Load(file.c_str())) {
 			cText2SkinItem *skin = data->Get(itemSkin);
 			if (skin) {
 				new cText2SkinLoader(data, Skin, skin->Name());
