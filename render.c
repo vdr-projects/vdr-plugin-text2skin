@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.8 2004/12/28 14:35:54 lordjaxom Exp $
+ * $Id: render.c,v 1.9 2004/12/28 18:06:02 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -10,7 +10,6 @@
 #include "status.h"
 #include "screen.h"
 #include "scroller.h"
-#include "marquee.h"
 #include "xml/display.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.5 2004/12/28 01:24:35 lordjaxom Exp $
+ * $Id: render.h,v 1.6 2004/12/28 18:06:02 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -7,7 +7,6 @@
 
 #include "common.h"
 #include "scroller.h"
-#include "marquee.h"
 #include "xml/skin.h"
 #include "xml/type.h"
 #include <vdr/osd.h>
