@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.22 2005/01/19 19:30:27 lordjaxom Exp $
+ * $Id: render.c,v 1.23 2005/01/20 14:04:29 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -611,6 +611,8 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	case tCanScrollUp:   return mScroller != NULL && mScroller->CanScrollUp();
 
 	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
+	
+	case tIsRecording:   return cRecordControls::Active();
 
 #if VDRVERSNUM >=10318
 	case tAudioTrack:    {
