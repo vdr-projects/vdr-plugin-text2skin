@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.10 2005/01/15 16:29:38 lordjaxom Exp $
+ *  $Id: function.c,v 1.11 2005/01/15 20:53:22 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -16,7 +16,7 @@ static const char *Internals[] = {
 cxFunction::cxFunction(cxSkin *Skin):
 		mSkin(Skin),
 		mType(string),
-		mString(Skin),
+		mString(Skin, false),
 		mNumber(0),
 		mNumParams(0) 
 {
@@ -245,9 +245,9 @@ cxType cxFunction::Evaluate(void) const
 		return FunFile(mParams[0]->Evaluate());
 
 	case fun_trans:
-		//Dprintf("|%s| translates to |%s|\n", mParams[0]->Evaluate().c_str(), tr(mParams[0]->Evaluate().c_str()));
-		//return tr(mParams[0]->Evaluate().c_str());
-		return mParams[0]->Evaluate();
+		Dprintf("|%s| translates to |%s|\n", mParams[0]->Evaluate().String().c_str(), mSkin->Translate(mParams[0]->Evaluate()).c_str());
+		return mSkin->Translate(mParams[0]->Evaluate());
+		//return mParams[0]->Evaluate();
 	
 	case fun_plugin:
 		return FunPlugin(mParams[0]->Evaluate());
