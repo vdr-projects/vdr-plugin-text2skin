@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.28 2005/01/26 20:42:41 lordjaxom Exp $
+ * $Id: render.c,v 1.29 2005/01/27 17:31:12 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -152,8 +152,8 @@ void cText2SkinRender::Update(void)
 
 	Dbench(flush);
 	mScreen->Flush();
-	Dprintf("flush only took %llu ms\n", Ddiff(flush));
-	Dprintf("complete flush took %llu ms\n", Ddiff(update));
+	Ddiff("flush only", flush);
+	Ddiff("complete flush", update);
 }
 
 void cText2SkinRender::DrawObject(const cxObject *Object)

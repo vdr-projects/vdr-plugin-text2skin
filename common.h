@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.3 2005/01/02 19:54:22 lordjaxom Exp $
+ * $Id: common.h,v 1.4 2005/01/27 17:31:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -10,18 +10,22 @@
 #include <vdr/osd.h>
 #include <vdr/config.h>
 
-#ifdef DEBUG
-#	define Dprintf(x...) fprintf(stderr, x);
-#	define Dbench(x) uint64 bench_##x = time_ms();
-#	define Ddiff(x) time_ms() - bench_##x
+#if defined(DEBUG) || defined(BENCH)
+#	ifdef DEBUG
+#		define Dprintf(x...) fprintf(stderr, x)
+#	else
+#		define Dprintf(x...)
+#	endif
+#	define Dbench(x) uint64 bench_##x = time_ms()
+#	define Ddiff(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
 #else
 #	define Dprintf(x...)
 #	define Dbench(x)
-#	define Ddiff(x)
+#	define Ddiff(t,x)
 #endif
 
 #if VDRVERSNUM >= 10318
-#	define time_ms() cTimeMs().Now()
+#	define time_ms() cTimeMs::Now()
 #	define Apid1() Apid(0)
 #	define Apid2() Apid(1)
 #	define Dpid1() Dpid(0)
