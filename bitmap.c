@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.3 2004/12/28 01:54:02 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.4 2005/01/11 17:55:31 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -228,6 +228,11 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, i
 	} catch (Exception &e) {
 		if (!Quiet)
 			esyslog("ERROR: text2skin: Couldn't load %s: %s", Filename, e.what());
+		delete bmp;
+		return false;
+	} catch (...) {
+		if (!Quiet)
+			esyslog("ERROR: text2skin: Couldn't load %s: Unknown exception caught", Filename);
 		delete bmp;
 		return false;
 	}
