@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.3 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.6 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -18,21 +18,24 @@ using namespace Magick;
 cText2SkinCache cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
 
 cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height, int width, int colors) {
-	if (mCache.Contains(Filename))
-		return mCache[Filename];
+	tBitmapSpec spec(Filename, Alpha, height, width, colors);
+
+	cText2SkinBitmap *res = NULL;
+	if (mCache.Contains(spec))
+		res = mCache[spec];
 	else {
-		cText2SkinBitmap *bmp = new cText2SkinBitmap;
+		res = new cText2SkinBitmap;
 		int len = Filename.length();
 		bool result = false;
 		if (len > 4) {
 			if (Filename.substr(len - 4, 4) == ".xpm")
-				result = bmp->LoadXpm(Filename.c_str());
+				result = res->LoadXpm(Filename.c_str());
 			else {
 #ifdef HAVE_IMLIB2
-				result = bmp->LoadImlib(Filename.c_str(),height,width,colors);
+				result = res->LoadImlib(Filename.c_str(),height,width,colors, false);
 #else
 #	ifdef HAVE_IMAGEMAGICK
-				result = bmp->LoadMagick(Filename.c_str(),height,width,colors);
+				result = res->LoadMagick(Filename.c_str(),height,width,colors, false);
 #	else
 				esyslog("ERROR: text2skin: unknown file format for %s", Filename);
 #	endif
@@ -42,12 +45,38 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 			esyslog("ERROR: text2skin: filename %s too short to identify format", Filename.c_str());
 	
 		if (result) {
-			bmp->SetAlpha(Alpha);
-			return (mCache[Filename] = bmp);
+			res->SetAlpha(Alpha);
+			mCache[spec] = res;
 		} else
-			delete bmp;
+			DELETENULL(res);
 	}
-	return false;
+	return res;
+}
+
+bool cText2SkinBitmap::Available(const std::string &Filename)
+{
+	bool res = false;
+	if (mCache.Contains(Filename))
+		res = true;
+	else {
+		cText2SkinBitmap *bmp = new cText2SkinBitmap;
+		int len = Filename.length();
+		if (len > 4) {
+			if (Filename.substr(len - 4, 4) == ".xpm")
+				res = bmp->LoadXpm(Filename.c_str());
+			else {
+#ifdef HAVE_IMLIB2
+				res = bmp->LoadImlib(Filename.c_str(), 0, 0, 0, true);
+#else
+#	ifdef HAVE_IMAGEMAGICK
+				res = bmp->LoadMagick(Filename.c_str(), 0, 0, 0, true);
+#	endif
+#endif
+			}
+		}
+		delete bmp;
+	}
+	return res;
 }
 
 cText2SkinBitmap::cText2SkinBitmap(void) {
@@ -110,7 +139,7 @@ bool cText2SkinBitmap::LoadXpm(const char *Filename) {
 }
 
 #ifdef HAVE_IMLIB2
-bool cText2SkinBitmap::LoadImlib(const char *Filename, int height, int width, int colors) {
+bool cText2SkinBitmap::LoadImlib(const char *Filename, int height, int width, int colors, bool Quiet) {
 	Imlib_Image image;
         unsigned char * outputImage = NULL;
 	unsigned int * outputPalette = NULL;
@@ -155,7 +184,7 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename, int height, int width, in
 #endif
 
 #ifdef HAVE_IMAGEMAGICK
-bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, int colors) {
+bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, int colors, bool Quiet) {
 	std::vector<Image> images;
 	cBitmap *bmp = NULL;
 	try {
@@ -197,7 +226,8 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, i
 			mBitmaps.push_back(bmp);
 		}
 	} catch (Exception &e) {
-		esyslog("ERROR: text2skin: Couldn't load %s: %s", Filename, e.what());
+		if (!Quiet)
+			esyslog("ERROR: text2skin: Couldn't load %s: %s", Filename, e.what());
 		delete bmp;
 		return false;
 	}

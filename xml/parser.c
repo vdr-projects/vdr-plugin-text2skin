@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.5 2004/12/10 21:46:46 lordjaxom Exp $
+ *  $Id: parser.c,v 1.7 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -32,7 +32,6 @@
 #define ATTRIB_OPT_STRING(_attr,_target) \
 	if (attrs.find(_attr) != attrs.end()) { \
 		_target = attrs[_attr]; \
-		attrs.erase(_attr); \
 	}
 
 #define ATTRIB_MAN_STRING(_attr,_target) \
@@ -53,9 +52,8 @@
 			return false; \
 		} else \
 			_target = _l; \
-		attrs.erase(_attr); \
 	}
-
+		
 #define ATTRIB_MAN_NUMBER(_attr,_target) \
 	ATTRIB_OPT_NUMBER(_attr,_target) \
 	else { \
@@ -71,7 +69,6 @@
 					attrs[_attr].c_str(), _attr); \
 			return false; \
 		} \
-		attrs.erase(_attr); \
 	}
 
 #define ATTRIB_MAN_FUNC(_attr,_func) \
@@ -140,7 +137,10 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				if      (name == "image") {
 					ATTRIB_OPT_NUMBER("x",       object->mPos1.x);
 					ATTRIB_OPT_NUMBER("y",       object->mPos1.y);
+					ATTRIB_OPT_NUMBER("x",       object->mPos2.x);
+					ATTRIB_OPT_NUMBER("y",       object->mPos2.y);
 					ATTRIB_OPT_NUMBER("alpha",   object->mAlpha);
+					ATTRIB_OPT_NUMBER("colors",  object->mColors);
 					ATTRIB_OPT_STRING("color",   object->mFg);
 					ATTRIB_OPT_STRING("bgColor", object->mBg);
 					ATTRIB_MAN_FUNC  ("path",    object->mPath.Parse);

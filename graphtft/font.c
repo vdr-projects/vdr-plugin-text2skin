@@ -1,10 +1,11 @@
 /*
- *  $Id: font.c,v 1.3 2004/12/09 12:43:14 lordjaxom Exp $
+ *  $Id: font.c,v 1.6 2004/12/14 20:02:31 lordjaxom Exp $
  *
  * Taken from GraphTFT 
  */
 
 #include "font.h"
+#include <iconv.h>
 #include <stdio.h>
 
 cGraphtftFont::cGraphtftFont()
@@ -16,7 +17,7 @@ cGraphtftFont::cGraphtftFont()
 	int error = FT_Init_FreeType(&_library);
 	if (error)
 	{
-		fprintf(stderr, "ERROR: Could not init freetyie library\n");	
+		esyslog("ERROR: Could not init freetype library");	
 	}
 }
 
@@ -35,22 +36,22 @@ cGraphtftFont::~cGraphtftFont()
 	}
 }
 
-bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Width)
+bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Language, int Width, int format)
 {
 	if ( _cache.find(CacheName) != _cache.end() )
 		return true;	
 	
-	int error = FT_New_Face(_library, Filename.c_str(), 0, &_face);
+	int error = FT_New_Face(_library, Filename.c_str(), format, &_face);
 
 	// every thing ok?
 	if (error == FT_Err_Unknown_File_Format)
 	{
-		fprintf(stderr, "ERROR: Font file (%s) could be opened and read, but it appears that its font format is unsupported\n", Filename.c_str());
+		esyslog("ERROR: Font file (%s) could be opened and read, but it appears that its font format is unsupported", Filename.c_str());
 		return false;
 	}
 	else if (error)
 	{
-		fprintf(stderr, "ERROR: Font file (%s) could be opened or read, or simply it is broken\n", Filename.c_str());
+		esyslog("ERROR: Font file (%s) could be opened or read, or simply it is broken", Filename.c_str());
 		return false;
 	}
 
@@ -67,6 +68,52 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Width)
 		0               // vertical device resolution (dpi)
 	);
 
+	iconv_t cd;
+	char from_code[255];
+	wchar_t	 	utf_buff[256];
+
+	// XXX: Get this values from i18n
+	switch(Language) {
+	case 11:
+		strcpy(from_code,"ISO8859-7");
+		break;
+	case 13:
+	case 17:
+		strcpy(from_code,"ISO8859-2");
+		break;
+	case 16:
+		strcpy(from_code,"ISO8859-5");
+		break;
+	default :
+		strcpy(from_code,"ISO8859-15");
+		break;
+	}
+
+	if ((cd = iconv_open("WCHAR_T",from_code)) == (iconv_t)-1) {
+			esyslog("ERROR: Iconv encoding not supported: %m");
+	        return false; //encoding no supportet
+	}
+
+	for (int c = 0; c < 256; c++) {
+	
+		char char_buff = c;
+		wchar_t wchar_buff;
+
+		char *in_buff,*out_buff;
+		size_t in_len, out_len, count;
+
+		in_len=1; out_len=4;
+		in_buff=(char*)&char_buff;
+		out_buff=(char *)&wchar_buff;
+		count = iconv(cd,&in_buff,&in_len,&out_buff,&out_len);
+		if ( (size_t)-1 == count ){
+			//printf("ERROR - PREPARING TABLE CHAR %d \n", c);
+			utf_buff[c] = 0;	
+		}
+		utf_buff[c] = wchar_buff;
+	}
+	iconv_close(cd);
+
         /* load glyph image into the slot (erase previous one) */
 	error = FT_Load_Char( _face, '_', FT_LOAD_RENDER );
 	if ( error )
@@ -80,7 +127,7 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Width)
 	
 	for (int i = 0; i < 225; i++)
 		for (int j = 0; j < num_rows; j++)
-			font_data[(i*num_rows)+j]=0x00;
+			font_data[(i*num_rows)+j]=0x0000000000000000;
 	
 	font_data[0+0]=_slot->bitmap.width+2;
 	font_data[0+1]=num_rows_global;
@@ -91,13 +138,13 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Width)
 	{
 
 		 //Get FT char index 
-		 glyph_index = FT_Get_Char_Index( _face, num_char );
+		 glyph_index = FT_Get_Char_Index( _face, utf_buff[num_char] );
 		
 		 //Load the char
 		 error = FT_Load_Glyph( _face, glyph_index, FT_LOAD_DEFAULT ); 
 		 if ( error ) continue; /* ignore errors */  
 		 
-		 // convert to an mono bitmap
+		 // convert to a mono bitmap
 		 error = FT_Render_Glyph( _face->glyph, ft_render_mode_mono ); 
 		 if ( error ) continue;
 		

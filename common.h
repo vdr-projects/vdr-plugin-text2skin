@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.3 2004/12/08 17:13:25 lordjaxom Exp $
+ * $Id: common.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -29,11 +29,11 @@ class cChannel;
 
 // helper functions
 
-std::string SkinPath(void);
+const std::string &SkinPath(void);
 const char *ChannelNumber(const cChannel *Channel, int Number);
 const char *ChannelName(const cChannel *Channel, int Number);
 const char *ChannelShortName(const cChannel *Channel, int Number);
-const char *ChannelBouquet(const cChannel *Channel, int Number);
+//const char *ChannelBouquet(const cChannel *Channel, int Number);
 
 cxType TimeType(time_t Time, const std::string &Format);
 

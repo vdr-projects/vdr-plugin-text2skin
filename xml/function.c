@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.5 2004/12/10 21:46:46 lordjaxom Exp $
+ *  $Id: function.c,v 1.7 2004/12/14 13:13:10 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -160,7 +160,7 @@ const std::string &cxFunction::FunFile(const std::string &Param) const
 {
 	std::string path = cText2SkinRender::ImagePath(Param);
 	Dprintf("checking file(%s) in cache\n", path.c_str());
- 	return cText2SkinBitmap::Load(path) ? Param : False;
+ 	return cText2SkinBitmap::Available(path) ? Param : False;
 }
 
 std::string cxFunction::FunPlugin(const std::string &Param) const

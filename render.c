@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.7 2004/12/10 21:46:46 lordjaxom Exp $
+ * $Id: render.c,v 1.10 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -29,8 +29,6 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mActive(false),
 		mDoUpdate(),
 		mDoUpdateMutex(),
-		//mDoneUpdate(),
-		//mDoneUpdateMutex(),
 		mStarted(),
 		mUpdateIn(0),
 		mBaseSize()
@@ -96,7 +94,8 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 	}
 }
 
-cText2SkinRender::~cText2SkinRender() {
+cText2SkinRender::~cText2SkinRender() 
+{
 	if (mActive) {
 		mActive = false;
 		Flush(true);
@@ -104,11 +103,12 @@ cText2SkinRender::~cText2SkinRender() {
 	}
 	delete mScroller;
 	delete mScreen;
-	cText2SkinBitmap::ResetCache();
+	//cText2SkinBitmap::ResetCache();
 	mRender = NULL;
 }
 
-void cText2SkinRender::Action(void) {
+void cText2SkinRender::Action(void) 
+{
 	mActive = true;
 	mDoUpdateMutex.Lock();
 	mStarted.Broadcast();
@@ -120,15 +120,12 @@ void cText2SkinRender::Action(void) {
 
 		mUpdateIn = 0; // has to be re-set within Update();
 		Update();
-
-		//mDoneUpdateMutex.Lock();
-		//mDoneUpdate.Broadcast();
-		//mDoneUpdateMutex.Unlock();
 	}
 	mDoUpdateMutex.Unlock();
 }
 
-void cText2SkinRender::Update(void) {
+void cText2SkinRender::Update(void) 
+{
 	Dbench(update);
 
 	for (uint i = 0; i < mDisplay->Objects(); ++i)
@@ -147,7 +144,8 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 
 	switch (Object->Type()) {
 	case cxObject::image:
-		DrawImage(Object->Pos(), Object->Bg(), Object->Fg(), Object->Alpha(), Object->Path());
+		DrawImage(Object->Pos(), Object->Size(), Object->Bg(), Object->Fg(), Object->Alpha(), 
+		          Object->Colors(), Object->Path());
 		break;
 
 	case cxObject::text:
@@ -245,12 +243,14 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 	}
 }
 
-void cText2SkinRender::DrawImage(const txPoint &Pos, const tColor *Bg, const tColor *Fg, int Alpha, 
-                                 const std::string &Path)
+void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, 
+		                         const tColor *Fg, int Alpha, int Colors, const std::string &Path)
 {
 	cText2SkinBitmap *bmp;
 	Dprintf("trying to draw image %s to %dx%d - alpha %d\n", ImagePath(Path).c_str(), Pos.x, Pos.y, Alpha);
-	if ((bmp = cText2SkinBitmap::Load(ImagePath(Path), Alpha)) != NULL) {
+
+	if ((bmp = cText2SkinBitmap::Load(ImagePath(Path), Alpha, Size.h > 1 ? Size.h : 0, 
+	                                  Size.w > 1 ? Size.w : 0, Colors)) != NULL) {
 		//Dprintf("success loading image\n");
 		if (Bg) bmp->SetColor(0, *Bg);
 		if (Fg) bmp->SetColor(1, *Fg);
@@ -408,7 +408,7 @@ std::string cText2SkinRender::ImagePath(const std::string &Filename)
 {
 	if (mRender)
 		return mRender->mBasePath + "/" + Filename;
-	return "";
+	return cxFunction::False;
 }
 
 /* TODO: translation when parsing
@@ -435,9 +435,9 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				int pos = -1;
 				
 				if (Token.Type == tMenuCurrent && (pos = str.rfind(' ')) != -1)
-					return str.substr(pos + 1);
+					res = str.substr(pos + 1);
 				else if (Token.Type == tMenuTitle && (pos = str.find(' ')) != -1)
-					return str.substr(0, pos);
+					res = str.substr(0, pos);
 			}
 		}
 		return res;

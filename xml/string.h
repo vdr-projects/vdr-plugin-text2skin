@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.5 2004/12/08 18:47:37 lordjaxom Exp $
+ *  $Id: string.h,v 1.7 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -17,6 +17,8 @@ enum exToken {
 	tChannelName,
 	tChannelShortName,
 	tChannelBouquet,
+	tChannelPortal,
+	tChannelSource,
 	// next 8 also in Menu
 	tPresentStartDateTime,
 	tPresentVPSDateTime,
@@ -100,6 +102,7 @@ struct txToken {
 
 	txToken(void): Index(-1), Tab(-1) {}
 	txToken(exToken t, uint o, const std::string &a): Type(t), Offset(o), Attrib(a), Index(-1), Tab(-1) {}
+
 	static std::string Token(const txToken &Token);
 };
 

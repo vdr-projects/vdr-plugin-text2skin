@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.4 2004/12/08 17:13:25 lordjaxom Exp $
+ * $Id: loader.c,v 1.6 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -24,7 +24,8 @@ void cText2SkinLoader::Start(void) {
 			if (strcmp(result->d_name, ".") == 0 || strcmp(result->d_name, "..") == 0)
 				continue;
 			asprintf(&path, "%s/%s", SkinPath().c_str(), result->d_name);
-			if (stat(path, &buf) == 0 && S_ISDIR(buf.st_mode))
+			if (stat((SkinPath() + "/" + result->d_name).c_str(), &buf) == 0 
+					&& S_ISDIR(buf.st_mode))
 				Load(result->d_name);
 			free(path);
 		}
@@ -34,7 +35,7 @@ void cText2SkinLoader::Start(void) {
 
 void cText2SkinLoader::Load(const char *Skin) {
 	cText2SkinI18n *translations = NULL;
-	std::string transfile = (std::string)SkinPath() + "/" + Skin + "/" + Skin + ".trans";
+	std::string transfile = SkinPath() + "/" + Skin + "/" + Skin + ".trans";
 	if (access(transfile.c_str(), F_OK) == 0) {
 		translations = new cText2SkinI18n(Skin);
 		if (!translations->Load(transfile))

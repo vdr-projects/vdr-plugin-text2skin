@@ -13,7 +13,7 @@ HAVE_FREETYPE=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.8 2004/12/09 12:43:14 lordjaxom Exp $
+# $Id: Makefile,v 1.9 2004/12/12 20:26:25 lordjaxom Exp $
 #
 
 # The official name of this plugin.

@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.2 2004/12/08 18:47:37 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.4 2004/12/14 13:13:10 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -23,6 +23,7 @@ private:
 
 public:
 	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0, int height = 0, int width = 0, int colors = 0);
+	static bool Available(const std::string &Filename);
 	static void ResetCache(void) { mCache.Reset(); }
 	static void FlushCache(void) { mCache.Flush(); }
 	
@@ -35,10 +36,10 @@ public:
 
 	bool LoadXpm(const char *Filename);
 #ifdef HAVE_IMLIB2
-	bool LoadImlib(const char *Filename,int height = 0, int width = 0, int colors = 0);
+	bool LoadImlib(const char *Filename,int height, int width, int colors, bool Quiet);
 #endif
 #ifdef HAVE_IMAGEMAGICK
-	bool LoadMagick(const char *Filename,int height = 0, int width = 0, int colors = 0);
+	bool LoadMagick(const char *Filename,int height, int width, int colors, bool Quiet);
 #endif
 };
 

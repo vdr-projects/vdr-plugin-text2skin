@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.4 2004/12/08 18:47:37 lordjaxom Exp $
+ *  $Id: function.h,v 1.5 2004/12/12 20:26:25 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H

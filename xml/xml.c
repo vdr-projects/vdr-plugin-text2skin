@@ -1,5 +1,5 @@
 /*
- *  $Id: xml.c,v 1.2 2004/12/06 15:01:02 lordjaxom Exp $
+ *  $Id: xml.c,v 1.3 2004/12/12 20:26:25 lordjaxom Exp $
  *  This module was kindly provided by Clemens Kirchgatterer
  */
 

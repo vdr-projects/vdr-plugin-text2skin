@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.5 2004/12/10 21:46:46 lordjaxom Exp $
+ * $Id: display.h,v 1.7 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -35,7 +35,8 @@ public:
 	virtual void SetEvents(const cEvent *Present, const cEvent *Following);
 	virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
-	virtual void Flush(void);
+
+	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
 
 class cText2SkinDisplayVolume: public cSkinDisplayVolume, public cText2SkinRender {
@@ -51,7 +52,8 @@ public:
 	cText2SkinDisplayVolume(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayVolume();
 	virtual void SetVolume(int Current, int Total, bool Mute);
-	virtual void Flush(void);
+
+	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
 
 class cText2SkinDisplayReplay: public cSkinDisplayReplay, public cText2SkinRender {
@@ -85,7 +87,8 @@ public:
 	virtual void SetTotal(const char *Total);
 	virtual void SetJump(const char *Jump);
 	virtual void SetMessage(eMessageType Type, const char *Text);
-	virtual void Flush(void);
+
+	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
 
 class cText2SkinDisplayMessage: public cSkinDisplayMessage, public cText2SkinRender {
@@ -100,7 +103,8 @@ public:
 	cText2SkinDisplayMessage(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayMessage();
 	virtual void SetMessage(eMessageType Type, const char *Text);
-	virtual void Flush(void);
+
+	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
 
 class cText2SkinDisplayMenu: public cSkinDisplayMenu, public cText2SkinRender {
@@ -158,7 +162,8 @@ public:
 	virtual void SetText(const char *Text, bool FixedFont);
 	virtual void SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5);
 	virtual void Scroll(bool Up, bool Page);
-	virtual void Flush(void);
+
+	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
 
 inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)

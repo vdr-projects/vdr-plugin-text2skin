@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.6 2004/12/10 21:46:46 lordjaxom Exp $
+ * $Id: display.c,v 1.9 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -19,14 +19,16 @@ cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinLoader *Loader, boo
 		mPresent(NULL),
 		mFollowing(NULL),
 		mType(mtStatus),
-		mText("") {
+		mText("") 
+{
 }
 
-cText2SkinDisplayChannel::~cText2SkinDisplayChannel() {
-	Dprintf("~cTe...\n");
+cText2SkinDisplayChannel::~cText2SkinDisplayChannel() 
+{
 }
 
-void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number) {
+void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number) 
+{
 	if (mChannel != Channel || mNumber != Number) {
 		mChannel = Channel;
 		mNumber = Number;
@@ -34,8 +36,8 @@ void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number) {
 	}
 }
 
-void cText2SkinDisplayChannel::SetEvents(const cEvent *Present, 
-		const cEvent *Following) {
+void cText2SkinDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following) 
+{
 	if (mPresent != Present || mFollowing != Following) {
 		mPresent = Present;
 		mFollowing = Following;
@@ -43,7 +45,8 @@ void cText2SkinDisplayChannel::SetEvents(const cEvent *Present,
 	}
 }
 
-void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) {
+void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) 
+{
 	if (Text == NULL) Text = "";
 	if (mType != Type || mText != Text) {
 		mType = Type;
@@ -52,55 +55,63 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) {
 	}
 }
 	
-void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue) {
+void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue) 
+{
 	Dprintf("SetButtons(%s, %s, %s, %s)\n", Red, Green, Yellow, Blue);
 }
 
-void cText2SkinDisplayChannel::Flush(void) {
-	cText2SkinRender::Flush();
-}
-
-cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token) {
+cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token) 
+{
 	switch (Token.Type) {
 	case tChannelNumber: 
 		return mChannel != NULL 
 		       ? (cxType)ChannelNumber(mChannel, mNumber) 
-					 : (cxType)false;
+		       : (cxType)false;
 		
 	case tChannelName:   
 		return mChannel != NULL 
 		       ? (cxType)ChannelName(mChannel, mNumber) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tChannelShortName:
 		return mChannel != NULL 
 		       ? (cxType)ChannelShortName(mChannel, mNumber) 
-					 : (cxType)false;
+		       : (cxType)false;
 	
 	case tChannelBouquet:
 		return mChannel != NULL 
-		       ? (cxType)ChannelBouquet(mChannel, mNumber) 
-					 : (cxType)false;
-	
+		       ? (cxType)mChannel->Provider()
+		       : (cxType)false;
+
+	case tChannelPortal:
+		return mChannel != NULL
+		       ? (cxType)mChannel->PortalName()
+			   : (cxType)false;
+
+	case tChannelSource:
+		return mChannel != NULL
+		       ? (cxType)Sources.Get(mChannel->Source())->Description()
+			   : (cxType)false;
+
 	case tPresentStartDateTime:
 		return mPresent != NULL 
 		       ? (cxType)TimeType(mPresent->StartTime(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentVPSDateTime:
 		return mPresent != NULL 
 		       ? (cxType)TimeType(mPresent->Vps(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentEndDateTime:
 		return mPresent != NULL 
 		       ? (cxType)TimeType(mPresent->EndTime(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentProgress:
 		return mPresent != NULL 
 		       ? (cxType)TimeType(time(NULL) - mPresent->StartTime(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentDuration:
 		return mPresent != NULL 
@@ -110,52 +121,52 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token) {
 	case tPresentTitle:
 		return mPresent != NULL 
 		       ? (cxType)mPresent->Title() 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentShortText:
 		return mPresent != NULL 
 		       ? (cxType)mPresent->ShortText() 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tPresentDescription:
 		return mPresent != NULL 
 		       ? (cxType)mPresent->Description()
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tFollowingStartDateTime:
 		return mFollowing != NULL 
 		       ? (cxType)TimeType(mFollowing->StartTime(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tFollowingVPSDateTime:
 		return mFollowing != NULL 
 		       ? (cxType)TimeType(mFollowing->Vps(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 	
 	case tFollowingEndDateTime:
 		return mFollowing != NULL 
 		       ? (cxType)TimeType(mFollowing->EndTime(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tFollowingDuration:
 		return mFollowing != NULL 
 		       ? (cxType)TimeType(mFollowing->Duration(), Token.Attrib) 
-					 : (cxType)false;
+		       : (cxType)false;
 		
 	case tFollowingTitle:
 		return mFollowing != NULL 
 		       ? (cxType)mFollowing->Title() 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tFollowingShortText:
 		return mFollowing != NULL 
 		       ? (cxType)mFollowing->ShortText() 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tFollowingDescription:
 		return mFollowing != NULL 
 		       ? (cxType)mFollowing->Description() 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tLanguage: {
 			int cur;
@@ -203,22 +214,22 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token) {
 	case tMessageInfo:
 		return mType == mtInfo 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tMessageWarning:
 		return mType == mtWarning 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 	
 	case tMessageStatus:
 		return mType == mtStatus 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 	
 	case tMessageError:
 		return mType == mtError 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	default:             break;
 	}
@@ -245,10 +256,6 @@ void cText2SkinDisplayVolume::SetVolume(int Current, int Total, bool Mute) {
 		mMute = Mute;
 		SetDirty();
 	}
-}
-
-void cText2SkinDisplayVolume::Flush(void) {
-	cText2SkinRender::Flush();
 }
 
 cxType cText2SkinDisplayVolume::GetTokenData(const txToken &Token) {
@@ -354,10 +361,6 @@ void cText2SkinDisplayReplay::SetMessage(eMessageType Type, const char *Text) {
 	}
 }
 
-void cText2SkinDisplayReplay::Flush(void) {
-	cText2SkinRender::Flush();
-}
-
 cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token) {
 	switch (Token.Type) {
 	case tReplayTitle:
@@ -379,40 +382,40 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token) {
 		return mPrompt;
 
 	case tIsPlaying:
-		return mStateInfo && (mSpeed == -1 && mPlay);
+		return mStateInfo && mSpeed == -1 && mPlay;
 	
 	case tIsPausing:
-		return mStateInfo && (mSpeed == -1 && !mPlay);
+		return mStateInfo && mSpeed == -1 && !mPlay;
 
 	case tIsFastForward:
-		if (mStateInfo && (mSpeed != -1 && mPlay && mForward)) {
+		if (mStateInfo && mSpeed != -1 && mPlay && mForward) {
 			return Token.Attrib.length() > 0
 			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
-						 : (cxType)true;
+			       : (cxType)true;
 		}
 		return false;
 		
 	case tIsFastRewind:
-		if (mStateInfo && (mSpeed != -1 && mPlay && !mForward)) {
+		if (mStateInfo && mSpeed != -1 && mPlay && !mForward) {
 			return Token.Attrib.length() > 0
 			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
-						 : (cxType)true;
+			       : (cxType)true;
 		}
 		return false;
 
 	case tIsSlowForward:
-		if (mStateInfo && (mSpeed != -1 && !mPlay && mForward)) {
+		if (mStateInfo && mSpeed != -1 && !mPlay && mForward) {
 			return Token.Attrib.length() > 0
 			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
-						 : (cxType)true;
+			       : (cxType)true;
 		}
 		return false;
 
 	case tIsSlowRewind:
-		if (mStateInfo && (mSpeed != -1 && !mPlay && !mForward)) {
+		if (mStateInfo && mSpeed != -1 && !mPlay && !mForward) {
 			return Token.Attrib.length() > 0
 			       ? (cxType)(mSpeed == atoi(Token.Attrib.c_str()))
-						 : (cxType)true;
+			       : (cxType)true;
 		}
 		return false;
 
@@ -422,22 +425,22 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token) {
 	case tMessageInfo:
 		return mType == mtInfo 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tMessageWarning:
 		return mType == mtWarning 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 	
 	case tMessageStatus:
 		return mType == mtStatus 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 	
 	case tMessageError:
 		return mType == mtError 
 		       ? (cxType)mText 
-					 : (cxType)false;
+		       : (cxType)false;
 
 	case tReplayMode:
 		return cText2SkinStatus::ReplayMode();
@@ -465,10 +468,6 @@ void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) {
 		mText = Text;
 		SetDirty();
 	}
-}
-
-void cText2SkinDisplayMessage::Flush(void) {
-	cText2SkinRender::Flush();
 }
 
 cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token) {
@@ -647,10 +646,6 @@ void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int 
 void cText2SkinDisplayMenu::Scroll(bool Up, bool Page) {
 	cText2SkinRender::Scroll(Up, Page);
 	SetDirty();
-}
-
-void cText2SkinDisplayMenu::Flush(void) {
-	cText2SkinRender::Flush();
 }
 
 cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) {

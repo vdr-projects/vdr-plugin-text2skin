@@ -1,5 +1,5 @@
 /*
- * $Id: font.c,v 1.5 2004/12/08 17:23:17 lordjaxom Exp $
+ * $Id: font.c,v 1.6 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "font.h"
@@ -30,8 +30,9 @@ const cFont *cText2SkinFont::Load(const std::string &Path, const std::string &Fi
 	const cFont *res = NULL;
 #ifdef HAVE_FREETYPE
 	char *cachename;
-	asprintf(&cachename, "%s_%d", Filename.c_str(), Size);
-	if (mFontCache.Load(Path + "/" + Filename, cachename, Size))
+	asprintf(&cachename, "%s_%d_%d", Filename.c_str(), Size, Setup.OSDLanguage);
+	Dprintf("trying now: %s %s\n", (Path + "/" + Filename).c_str(), cachename);
+	if (mFontCache.Load(Path + "/" + Filename, cachename, Size, Setup.OSDLanguage))
 		res = mFontCache.GetFont(cachename);
 	else
 		esyslog("ERROR: Text2Skin: Couldn't load font %s:%d", Filename.c_str(), Size);

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.6 2004/12/10 21:46:46 lordjaxom Exp $
+ * $Id: render.h,v 1.8 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -48,8 +48,6 @@ private:
 	
 	cCondVar            mDoUpdate;
 	cMutex              mDoUpdateMutex;
-	//cCondVar            mDoneUpdate;
-	//cMutex              mDoneUpdateMutex;
 	cCondVar            mStarted;
 	int                 mUpdateIn;
 
@@ -66,10 +64,10 @@ protected:
 	void DrawObject(const cxObject *Object);
 	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
 	                    int Alpha, const std::string &Path);
-	void DrawImage(const txPoint &Pos, const tColor *Bg, const tColor *Fg, int Alpha, 
-	               const std::string &Path);
-	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-			const std::string &Text, const cFont *Font, int Align);
+	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
+			       int Alpha, int Colors, const std::string &Path);
+	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const std::string &Text,
+			      const cFont *Font, int Align);
 	void DrawRectangle(const txPoint &Pos, const txSize &Size, 
 			const tColor *Fg);
 	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
@@ -118,18 +116,9 @@ public:
 
 inline void cText2SkinRender::Flush(bool Force) {
 	if (mDirty || Force) {
-		//mDoneUpdateMutex.Lock();
-
 		mDoUpdateMutex.Lock();
 		mDoUpdate.Broadcast();
 		mDoUpdateMutex.Unlock();
-
-		//if (mActive) {
-			//Dprintf("flush wait\n");
-			//mDoneUpdate.Wait(mDoneUpdateMutex);
-			//Dprintf("flush wait done\n");
-		//}
-		//mDoneUpdateMutex.Unlock();
 		
 		mDirty = false;
 	}

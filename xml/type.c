@@ -1,5 +1,5 @@
 /*
- *  $Id: type.c,v 1.2 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: type.c,v 1.3 2004/12/12 20:26:25 lordjaxom Exp $
  */
 
 #include "xml/type.h"

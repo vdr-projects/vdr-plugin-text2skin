@@ -1,12 +1,14 @@
 /*
- * $Id: common.c,v 1.2 2004/12/06 22:35:54 lordjaxom Exp $
+ * $Id: common.c,v 1.4 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "common.h"
 #include <vdr/plugin.h>
 
-std::string SkinPath(void) {
-	return cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
+const std::string &SkinPath(void) {
+	// should never change
+	static std::string path = cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
+	return path;
 }
 
 const char *ChannelNumber(const cChannel *Channel, int Number) {
@@ -24,15 +26,17 @@ const char *ChannelNumber(const cChannel *Channel, int Number) {
 const char *ChannelName(const cChannel *Channel, int Number) {
 	static char buffer[256];
 	buffer[0] = '\0';
-	if (Channel) 
+	if (Channel)
 		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
 	else if (!Number)
 		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
 
+#if VDRVERSNUM < 10315
 	char *ptr;
 	if ((ptr = strchr(buffer, ',')) != NULL
 			|| (ptr = strchr(buffer, ';')) != NULL)
 		*ptr = '\0';
+#endif
 	return buffer;
 }
 
@@ -40,10 +44,15 @@ const char *ChannelShortName(const cChannel *Channel, int Number) {
 	static char buffer[256];
 	buffer[0] = '\0';
 	if (Channel) 
+#if VDRVERSNUM < 10315
 		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
+#else
+		snprintf(buffer, sizeof(buffer), "%s", Channel->ShortName(true));
+#endif
 	else if (!Number)
 		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
 
+#if VDRVERSNUM < 10315
 	char *ptr;
 	if ((ptr = strchr(buffer, ',')) != NULL) {
 		char *start = ptr + 1;
@@ -52,25 +61,34 @@ const char *ChannelShortName(const cChannel *Channel, int Number) {
 		return start;
 	} else if ((ptr = strchr(buffer, ';')) != NULL)
 		*ptr = '\0';
+#endif
 	
 	return buffer;
 }
-
+/*
 const char *ChannelBouquet(const cChannel *Channel, int Number) {
 	static char buffer[256];
 	buffer[0] = '\0';
 	if (Channel) 
+#if VDRVERSNUM < 10315
 		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
+#else
+		snprintf(buffer, sizeof(buffer), "%s", Channel->Provider());
+#endif
 	else if (!Number)
 		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
 
+#if VDRVERSNUM < 10315
 	char *ptr;
 	if ((ptr = strchr(buffer, ';')) != NULL)
 		return ptr + 1;
 	else
 		return "";
+#else
+	return buffer;
+#endif
 }
-
+*/
 cxType TimeType(time_t Time, const std::string &Format) {
 	static char result[1000];
 	struct tm tm_r, *tm;

@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.3 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: type.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
@@ -22,12 +22,12 @@ private:
 	int         mNumber;
 
 public:
+	cxType(void): mType(boolean), mNumber(0) {}
 	cxType(const char *String): mType(string), mString(String ?: "") {}
 	cxType(std::string String): mType(string), mString(String) {}
 	cxType(int Number): mType(number), mNumber(Number) {}
 	cxType(time_t Number): mType(number), mNumber(Number) {}
 	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0) {}
-	cxType(const cxType &Src): mType(Src.mType), mString(Src.mString), mNumber(Src.mNumber) {}
 
 	const std::string &String(void);
 	int                Number(void) const;

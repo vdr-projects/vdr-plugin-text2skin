@@ -1,5 +1,5 @@
 /*
- *  $Id: font.h,v 1.2 2004/12/06 21:19:07 lordjaxom Exp $
+ *  $Id: font.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
  *
  * Taken from GraphTFT 
  */
@@ -13,6 +13,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <vdr/font.h>
+#include <vdr/config.h>
 
 using std::map;
 using std::string;
@@ -29,7 +30,7 @@ public:
 	cGraphtftFont();
 	~cGraphtftFont();
 
-	bool Load(string Filename, string CacheName, int Size, int Width = 0);
+	bool Load(string Filename, string CacheName, int Size, int Language = 0, int Width = 0, int Format = 0);
 	const cFont* GetFont(string CacheName);
 	void Clear(string CacheName);
 	void Clear();

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.5 2004/12/08 17:22:28 lordjaxom Exp $
+ *  $Id: string.c,v 1.7 2004/12/14 13:13:10 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -10,7 +10,8 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"DateTime",
 
 	// Channel Display
-	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "PresentStartDateTime", 
+	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
+	"ChannelSource", "PresentStartDateTime", 
 	"PresentVPSDateTime", "PresentEndDateTime", "PresentDuration", "PresentProgress", 
 	"PresentTitle", "PresentShortText", "PresentDescription", "FollowingStartDateTime", 
 	"FollowingVPSDateTime", "FollowingEndDateTime", "FollowingDuration",

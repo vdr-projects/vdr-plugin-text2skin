@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.4 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: object.h,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -65,6 +65,7 @@ private:
 	txPoint        mPos1;
 	txPoint        mPos2;
 	int            mAlpha;
+	int            mColors;
 	int            mArc;
 	std::string    mFg;
 	std::string    mBg;
@@ -77,7 +78,8 @@ private:
 	cxFunction    *mCondition;
 	cxString       mCurrent;
 	cxString       mTotal;
-	const cFont   *mFont;
+	std::string    mFontFace;
+	int            mFontSize;
 	cxObjects     *mObjects; // used for block objects such as <list>
 	cxDisplay     *mDisplay;
 	cxSkin        *mSkin;
@@ -97,19 +99,20 @@ public:
 	eType              Type(void)            const { return mType; }
 	cxFunction        *Condition(void)       const { return mCondition; }
 	int                Alpha(void)           const { return mAlpha; }
+	int                Colors(void)          const { return mColors; }
 	eTextAlignment     Align(void)           const { return mAlign; }
 	int                Arc(void)             const { return mArc; }
 	std::string        Path(void)            const { return mPath.Evaluate(); }
 	std::string        Text(void)            const { return mText.Evaluate(); }
 	int                Current(void)         const { return mCurrent.Evaluate(); }
 	int                Total(void)           const { return mTotal.Evaluate(); }
-	const cFont       *Font(void)            const { return mFont; }
 	cxDisplay         *Display(void)         const { return mDisplay; }
 	cxSkin            *Skin(void)            const { return mSkin; }
 
 	const std::string &TypeName(void)        const;
 	txPoint            Pos(void)             const;
 	txSize             Size(void)            const;
+	const cFont       *Font(void)            const;
 	const tColor      *Fg(void)              const;
 	const tColor      *Bg(void)              const;
 	const tColor      *Mark(void)            const;

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.4 2004/12/08 17:13:26 lordjaxom Exp $
+ *  $Id: object.c,v 1.5 2004/12/14 20:02:31 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -15,10 +15,12 @@ cxObject::cxObject(cxDisplay *parent):
 		mPos1(0, 0),
 		mPos2(-1, -1),
 		mAlpha(255),
+		mColors(0),
 		mArc(0),
 		mAlign(taDefault),
 		mCondition(NULL),
-		mFont(cFont::GetFont(fontOsd)),
+		mFontFace("Osd"),
+		mFontSize(0),
 		mObjects(NULL),
 		mDisplay(parent),
 		mSkin(parent->Skin()) 
@@ -30,6 +32,7 @@ cxObject::cxObject(const cxObject &Src):
 		mPos1(Src.mPos1),
 		mPos2(Src.mPos2),
 		mAlpha(Src.mAlpha),
+		mColors(Src.mColors),
 		mArc(Src.mArc),
 		mFg(Src.mFg),
 		mBg(Src.mBg),
@@ -42,7 +45,8 @@ cxObject::cxObject(const cxObject &Src):
 		mCondition(NULL),
 		mCurrent(Src.mCurrent),
 		mTotal(Src.mTotal),
-		mFont(Src.mFont),
+		mFontFace(Src.mFontFace),
+		mFontSize(Src.mFontSize),
 		mObjects(NULL),
 		mDisplay(Src.mDisplay),
 		mSkin(Src.mSkin)
@@ -59,7 +63,8 @@ cxObject::~cxObject()
 	delete mObjects;
 }
 
-bool cxObject::ParseType(const std::string &Text) {
+bool cxObject::ParseType(const std::string &Text) 
+{
 	for (int i = 0; i < (int)__COUNT_OBJECT__; ++i) {
 		if (ObjectNames[i] == Text) {
 			mType = (eType)i;
@@ -69,7 +74,8 @@ bool cxObject::ParseType(const std::string &Text) {
 	return false;
 }
 
-bool cxObject::ParseCondition(const std::string &Text) {
+bool cxObject::ParseCondition(const std::string &Text) 
+{
 	cxFunction *result = new cxFunction;
 	if (result->Parse(Text)) {
 		delete mCondition;
@@ -79,7 +85,8 @@ bool cxObject::ParseCondition(const std::string &Text) {
 	return false;
 }
 
-bool cxObject::ParseAlignment(const std::string &Text) {
+bool cxObject::ParseAlignment(const std::string &Text) 
+{
 	if      (Text == "center") mAlign = (eTextAlignment)(taTop | taCenter);
 	else if (Text == "right")  mAlign = (eTextAlignment)(taTop | taRight);
 	else if (Text == "left")   mAlign = (eTextAlignment)(taTop | taLeft);
@@ -88,38 +95,48 @@ bool cxObject::ParseAlignment(const std::string &Text) {
 	return true;
 }
 
-bool cxObject::ParseFontFace(const std::string &Text) {
-	/*for (int i = 0; i < eDvbFontSize; ++i) {
-		if (FontNames[i] == Text) {
-			mFont = cFont::GetFont((eDvbFont)i);
-			return true;
-		}
-	}*/
-
+bool cxObject::ParseFontFace(const std::string &Text) 
+{
 	int size = 0, pos;
 	std::string face = Text;
 	if ((pos = face.find(':')) != -1) {
 		size = atoi(face.substr(pos + 1).c_str());
 		face.erase(pos);
 	}
-	Dprintf("trying: %s %d\n", ((std::string)SkinPath() + "/fonts/" + face).c_str(), size);
-	if ((mFont = cText2SkinFont::Load(SkinPath() + "/fonts", face, size)) != NULL)
-		return true;
-	else if ((mFont = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), face, size)) != NULL)
-		return true;
-	return false;
-}
 
-const std::string &cxObject::TypeName(void) const {
+	mFontFace = face;
+	mFontSize = size;
+	return true;
+}
+	
+const std::string &cxObject::TypeName(void) const 
+{
 	return ObjectNames[mType];
 }
 
-txPoint cxObject::Pos(void) const {
+const cFont *cxObject::Font(void) const
+{
+	const cFont *font;
+
+	Dprintf("trying: %s %d\n", (SkinPath() + "/fonts/" + mFontFace).c_str(), mFontSize);
+	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize)) != NULL)
+		return font;
+	
+	Dprintf("trying: %s %d\n", (SkinPath() + "/" + mSkin->Name() + "/" + mFontFace).c_str(), mFontSize);
+	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize)) != NULL)
+		return font;
+	
+	return cFont::GetFont(fontOsd);
+}
+
+txPoint cxObject::Pos(void) const 
+{
 	return txPoint(mSkin->BaseOffset().x + (mPos1.x < 0 ? Skin()->BaseSize().w + mPos1.x : mPos1.x), 
 			       mSkin->BaseOffset().y + (mPos1.y < 0 ? Skin()->BaseSize().h + mPos1.y : mPos1.y));
 }
 
-txSize cxObject::Size(void) const {
+txSize cxObject::Size(void) const 
+{
 	txPoint p1(mSkin->BaseOffset().x + (mPos1.x < 0 ? Skin()->BaseSize().w + mPos1.x : mPos1.x), 
 			   mSkin->BaseOffset().y + (mPos1.y < 0 ? Skin()->BaseSize().h + mPos1.y : mPos1.y));
 	txPoint p2(mSkin->BaseOffset().x + (mPos2.x < 0 ? Skin()->BaseSize().w + mPos2.x : mPos2.x), 
