@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.14 2005/01/02 20:16:20 lordjaxom Exp $
+ * $Id: render.c,v 1.15 2005/01/02 20:34:20 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -36,7 +36,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mBaseSize()
 {
 	if (mDisplay == NULL) {
-		esyslog("ERROR: text2skin: display for %s missing", cxDisplay::GetType(Display));
+		esyslog("ERROR: text2skin: display for %s missing", cxDisplay::GetType(Display).c_str());
 		return;
 	}
 
