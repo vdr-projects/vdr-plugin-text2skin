@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.6 2005/01/07 21:50:27 lordjaxom Exp $
+ *  $Id: function.h,v 1.7 2005/01/08 00:08:21 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -35,9 +35,6 @@ public:
 		fun_le     = INTERNAL + 11,
 	};
 
-	//static const std::string False;
-	//static const std::string True;
-	
 private:
 	cxSkin     *mSkin;
 	eType       mType;
