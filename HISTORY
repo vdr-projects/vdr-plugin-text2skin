@@ -1,6 +1,15 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-01: Version 0.0.1-rc2
+
+- fixed some possible segfaults in Display Update
+- fixed segfault in Timebar when EPG doesn't contain time and duration
+- fixed "too many colors used in palette" warning (only with HAVE_IMLIB2=1)
+  in channel display
+- fixed above message in full menu
+- removed some debug printf's
+
 2004-05-31: Version 0.0.1-rc1
 
 - "Background" may be initialized with a color now

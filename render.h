@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.10 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: render.h,v 1.11 2004/06/01 14:32:46 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -71,6 +71,10 @@ private:
 	string            mMenuGreen;
 	string            mMenuYellow;
 	string            mMenuBlue;
+	const cEvent     *mMenuEvent;
+	const cRecording *mMenuRecording;
+	string            mMenuText;
+	bool              mMenuTextFixedFont;
 
 protected:
 	// Basic operations

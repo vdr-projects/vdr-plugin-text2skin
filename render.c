@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.10 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: render.c,v 1.14 2004/06/01 17:25:38 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -15,8 +15,6 @@
 cText2SkinRender::cText2SkinRender(cText2SkinData *Data, eSkinSection Section) {
 	tArea areas[MAXOSDAREAS];
 	int numAreas = 0;
-
-	printf("Section: %d\n",Section);
 
 	mData              = Data;
 	mSection           = Section;
@@ -36,12 +34,14 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, eSkinSection Section) {
 	mChannelPresent    = NULL;
 	mChannelFollowing  = NULL;
 	mMenuCurrent       = 0;
+	mMenuEvent         = NULL;
+	mMenuRecording     = NULL;
+	mMenuTextFixedFont = false;
 
 	cText2SkinItem *item;
 	for (item = Data->First(); item; item = Data->Next(item)) {
 		if (item->Section() == Section && item->Item() == itemBackground) {
 			if (numAreas < MAXOSDAREAS) {
-				printf("area item: %d:%d:%d:%d:%d\n", item->Pos().x, item->Pos().y, item->Pos().x + item->Size().w - 1, item->Pos().y + item->Size().h - 1, item->Bpp());
 				areas[numAreas].x1 = item->Pos().x;
 				areas[numAreas].y1 = item->Pos().y;
 				areas[numAreas].x2 = item->Pos().x + item->Size().w - 1;
@@ -177,7 +177,6 @@ void cText2SkinRender::Flush(void) {
 			}
 		}
 	}
-	printf("osd flush\n");
 	mOsd->Flush();
 }
 
@@ -209,7 +208,7 @@ void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColo
 	if (bm.Load(p)) {
 		if (Bg) bm.SetColor(0, *Bg);
 		if (Fg) bm.SetColor(1, *Fg);
-		mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, bm.Color(0));
+		//mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, bm.Color(0));
 		mOsd->DrawBitmap(Pos.x, Pos.y, bm);
 	}
 	free(p);
@@ -314,7 +313,6 @@ void cText2SkinRender::DisplayChannelLogo(cText2SkinItem *Item) {
 }
 
 void cText2SkinRender::DisplayLanguage(cText2SkinItem *Item) {
-	printf("DisplayLanguage, %s %s\n", Item->Path().c_str(), Item->Type().c_str());
 	int current;
 	const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&current);
 	if (Item->Path() != "" && Item->Type() != "" && tracks) {
@@ -331,12 +329,10 @@ void cText2SkinRender::DisplayLanguage(cText2SkinItem *Item) {
 }
 
 void cText2SkinRender::DisplayText(cText2SkinItem *Item) {
-	printf("DisplayText\n");
 	DrawText(Item->Pos(), Item->Size(), Item->Fg(), Item->Text(), Item->Font(), Item->Align());
 }
 
 void cText2SkinRender::DisplayImage(cText2SkinItem *Item) {
-	printf("DisplayImage\n");
 	DrawImage(Item->Pos(), Item->Size(), Item->Bg(), Item->Fg(), Item->Path());
 }
 
@@ -349,7 +345,6 @@ void cText2SkinRender::DisplayDate(cText2SkinItem *Item) {
 	char *text = strdup(DayDateTime(time(NULL)));
 	text[9] = '.';
 	text[10] = '\0';
-	printf("DisplayDate %d:%d:%d:%d %s\n", Item->Pos().x, Item->Pos().y, Item->Size().w, Item->Size().h, text + 4);
 	DrawText(Item->Pos(), Item->Size(), Item->Fg(), ItemText(Item, text + 4), Item->Font(), Item->Align());
 	free(text);
 }
@@ -387,7 +382,7 @@ void cText2SkinRender::DisplaySlope(cText2SkinItem *Item) {
 
 void cText2SkinRender::DisplayTimebar(cText2SkinItem *Item) {
 	time_t now = time(NULL);
-	if (mChannelPresent && now > mChannelPresent->StartTime()) {
+	if (mChannelPresent && mChannelPresent->StartTime() && mChannelPresent->Duration() && now > mChannelPresent->StartTime()) {
 		int total = mChannelPresent->Duration();
 		int current = now - mChannelPresent->StartTime();
 		DrawProgressbar(Item->Pos(), Item->Size(), current, total, Item->Bg(), Item->Fg());
@@ -544,12 +539,14 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 	if (Item->Pos().y != -1)
 		yoffs += Item->Pos().y;
 
-	printf("menu items\n");
-
 	int index = 0;
 	while (yoffs < area->Pos().y + area->Size().h && index < (int)mMenuItems.size()) {
 		if (index == mMenuCurrent) {
-			POINT pt = { xoffs + current->Pos().x, yoffs + current->Pos().y };
+			POINT pt = { xoffs, yoffs };
+			if (current->Pos().x != -1)
+				pt.x += current->Pos().x;
+			if (current->Pos().y != -1)
+				pt.y += current->Pos().y;
 			SIZE size = { current->Size().w, current->Size().h };
 			if (current->Bg())
 				DrawRectangle(pt, size, current->Bg());

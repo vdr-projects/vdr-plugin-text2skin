@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.6 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: display.c,v 1.8 2004/06/01 17:25:38 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -9,7 +9,6 @@
 // --- cText2SkinDisplayChannel -----------------------------------------------
 
 cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinData *Data, bool WithInfo) {
-	printf("cText2SkinDisplayChannel\n");
 	mData     = Data;
 	mWithInfo = WithInfo;
 	mRender   = new cText2SkinRender(mData, WithInfo ? sectionChannel : sectionChannelSmall);
@@ -21,7 +20,6 @@ cText2SkinDisplayChannel::~cText2SkinDisplayChannel() {
 }
 
 void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number) {
-	printf("SetChannel\n");
 	if (mRender->mChannel != Channel || mRender->mChannelNumber != Number) {
 		mRender->mChannel = Channel;
 		mRender->mChannelNumber = Number;
@@ -48,7 +46,6 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) {
 
 void cText2SkinDisplayChannel::Flush(void) {
 	if (mDirty) {
-		printf("real flush\n");
 		mRender->Flush();
 		mDirty = false;
 	}
@@ -57,7 +54,6 @@ void cText2SkinDisplayChannel::Flush(void) {
 // --- cText2SkinDisplayVolume ------------------------------------------------
 
 cText2SkinDisplayVolume::cText2SkinDisplayVolume(cText2SkinData *Data) {
-	printf("cText2SkinDisplayVolume\n");
 	mData     = Data;
 	mRender   = new cText2SkinRender(mData, sectionVolume);
 	mDirty    = false;
@@ -78,7 +74,6 @@ void cText2SkinDisplayVolume::SetVolume(int Current, int Total, bool Mute) {
 
 void cText2SkinDisplayVolume::Flush(void) {
 	if (mDirty) {
-		printf("real flush\n");
 		mRender->Flush();
 		mDirty = false;
 	}
@@ -87,7 +82,6 @@ void cText2SkinDisplayVolume::Flush(void) {
 // --- cText2SkinDisplayReplay ------------------------------------------------
 
 cText2SkinDisplayReplay::cText2SkinDisplayReplay(cText2SkinData *Data, bool ModeOnly) {
-	printf("cText2SkinDisplayReplay\n");
 	mData     = Data;
 	mRender   = new cText2SkinRender(mData, ModeOnly ? sectionReplayMode : sectionReplay);
 	mDirty    = false;
@@ -98,6 +92,7 @@ cText2SkinDisplayReplay::~cText2SkinDisplayReplay() {
 }
 
 void cText2SkinDisplayReplay::SetTitle(const char *Title) {
+	if (Title == NULL) Title = "";
 	if (mRender->mReplayTitle != Title) {
 		mRender->mReplayTitle = Title;
 		mDirty = true;
@@ -122,7 +117,6 @@ void cText2SkinDisplayReplay::SetProgress(int Current, int Total) {
 }
 
 void cText2SkinDisplayReplay::SetMarks(const cMarks *Marks) {
-	printf("SetMarks: %p\n", Marks);
 	if (mRender->mReplayMarks != Marks) {
 		mRender->mReplayMarks = Marks;
 		mDirty = true;
@@ -130,6 +124,7 @@ void cText2SkinDisplayReplay::SetMarks(const cMarks *Marks) {
 }
 
 void cText2SkinDisplayReplay::SetCurrent(const char *Current) {
+	if (Current == NULL) Current = "";
 	if (mRender->mReplayCurrentText != Current) {
 		mRender->mReplayCurrentText = Current;
 		mDirty = true;
@@ -137,6 +132,7 @@ void cText2SkinDisplayReplay::SetCurrent(const char *Current) {
 }
 
 void cText2SkinDisplayReplay::SetTotal(const char *Total) {
+	if (Total == NULL) Total = "";
 	if (mRender->mReplayTotalText != Total) {
 		mRender->mReplayTotalText = Total;
 		mDirty = true;
@@ -162,7 +158,6 @@ void cText2SkinDisplayReplay::SetMessage(eMessageType Type, const char *Text) {
 
 void cText2SkinDisplayReplay::Flush(void) {
 	if (mDirty) {
-		printf("real flush\n");
 		mRender->Flush();
 		mDirty = false;
 	}
@@ -171,7 +166,6 @@ void cText2SkinDisplayReplay::Flush(void) {
 // --- cText2SkinDisplayMessage -----------------------------------------------
 
 cText2SkinDisplayMessage::cText2SkinDisplayMessage(cText2SkinData *Data) {
-	printf("cText2SkinDisplayMessage\n");
 	mData     = Data;
 	mRender   = new cText2SkinRender(mData, sectionMessage);
 	mDirty    = false;
@@ -192,7 +186,6 @@ void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) {
 
 void cText2SkinDisplayMessage::Flush(void) {
 	if (mDirty) {
-		printf("real flush\n");
 		mRender->Flush();
 		mDirty = false;
 	}
@@ -201,7 +194,6 @@ void cText2SkinDisplayMessage::Flush(void) {
 // --- cText2SkinDisplayMenu --------------------------------------------------
 
 cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinData *Data) {
-	printf("cText2SkinDisplayMenu\n");
 	mData     = Data;
 	mRender   = new cText2SkinRender(mData, sectionMenu);
 	mDirty    = false;
@@ -226,6 +218,7 @@ void cText2SkinDisplayMenu::Clear(void) {
 }
 
 void cText2SkinDisplayMenu::SetTitle(const char *Title) {
+	if (Title == NULL) Title = "";
 	if (mRender->mMenuTitle != Title) {
 		mRender->mMenuTitle = Title;
 		mDirty = true;
@@ -247,7 +240,6 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 }
 
 void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
-	printf("SetMessage: %d, %s\n", Type, Text);
 	if (Text == NULL) Text = "";
 	if (mRender->mMessageType != Type || mRender->mMessageText != Text) {
 		mRender->mMessageType = Type;
@@ -272,17 +264,30 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 }
 
 void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) {
+	if (mRender->mMenuEvent != Event) {
+		mRender->mMenuEvent = Event;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording) {
+	if (mRender->mMenuRecording != Recording) {
+		mRender->mMenuRecording = Recording;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont) {
+	if (Text == NULL) Text = "";
+	if (mRender->mMenuText != Text || mRender->mMenuTextFixedFont != FixedFont) {
+		mRender->mMenuText = Text;
+		mRender->mMenuTextFixedFont = FixedFont;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayMenu::Flush(void) {
 	if (mDirty) {
-		printf("real flush\n");
 		mRender->Flush();
 		mDirty = false;
 	}

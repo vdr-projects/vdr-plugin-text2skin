@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.3 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.5 2004/06/01 17:10:13 lordjaxom Exp $
  */
 
 #define __STL_CONFIG_H
@@ -24,11 +24,12 @@ cText2SkinBitmap::~cText2SkinBitmap() {
 bool cText2SkinBitmap::Load(const char *Filename) {
 	int len = strlen(Filename);
 	if (len > 4) {
+#ifndef HAVE_IMLIB2
 		if (strcmp(Filename + len - 4, ".xpm") == 0)
 			return LoadXpm(Filename);
-#ifdef HAVE_IMLIB2
-		else if (strcmp(Filename + len - 4, ".png") == 0)
-			return LoadPng(Filename);
+#else
+		if (strcmp(Filename + len - 4, ".xpm") == 0 || strcmp(Filename + len - 4, ".png") == 0)
+			return LoadImlib(Filename);
 #endif
 		else
 			esyslog("ERROR: text2skin: unknown file format for %s", Filename);
@@ -38,14 +39,14 @@ bool cText2SkinBitmap::Load(const char *Filename) {
 }
 
 #ifdef HAVE_IMLIB2
-bool cText2SkinBitmap::LoadPng(const char *Filename) {
+bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 	Imlib_Image image;
 	image = imlib_load_image(Filename);
 	if (!image)
 		return false;
 	imlib_context_set_image(image);
 	SetSize(imlib_image_get_width(), imlib_image_get_height());
-	SetBpp(4);
+	SetBpp(8);
 	uint8_t *data = (uint8_t*)imlib_image_get_data_for_reading_only();
 	int pal = 0, pos = 0;
 	for (int y = 0; y < Height(); ++y) {

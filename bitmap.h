@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.3 2004/05/31 19:54:12 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.4 2004/06/01 17:10:13 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -17,7 +17,7 @@ public:
 
 	bool Load(const char *Filename);
 #ifdef HAVE_IMLIB2
-	bool LoadPng(const char *Filename);
+	bool LoadImlib(const char *Filename);
 #endif
 };
 
