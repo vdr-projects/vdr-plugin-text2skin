@@ -1,15 +1,16 @@
-#
-# Makefile for a Video Disk Recorder plugin
-#
-# $Id: Makefile,v 1.5 2004/06/02 20:43:05 lordjaxom Exp $
+# exchange the comments on the following to lines if you would like to use
+# Imlib2 for loading images. BEWARE that you can not use GraphTFT together with
+# Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
 
-# disable in case you don't want to install imlib
-# in that case, you will not be able to load other files than simple xpms
+HAVE_IMAGEMAGICK=1
 # HAVE_IMLIB2=1
 
-# disable in case you don't want to install ImageMagick
-# in that case, you will not be able to load other files than simple xpms
-HAVE_IMAGEMAGICK=1
+
+# DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
+# -------------------------------------------------------------
+#
+# $Id: Makefile,v 1.7 2004/06/05 16:52:44 lordjaxom Exp $
+#
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
@@ -19,7 +20,7 @@ PLUGIN = text2skin
 
 ### The version number of this plugin (taken from the main source file):
 
-VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ print $$6 }' | sed -e 's/[";]//g')
+VERSION = $(shell grep 'const char \*cText2SkinPlugin::VERSION *=' $(PLUGIN).c | awk '{ print $$5 }' | sed -e 's/[";]//g')
 
 ### The C++ compiler and options:
 
@@ -58,6 +59,10 @@ ifdef HAVE_IMAGEMAGICK
 	LIBS += -lMagick++
 endif
 
+ifdef DEBUG
+	DEFINES += -DDEBUG
+endif
+
 INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
@@ -65,7 +70,7 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 ### The object files (add further files here):
 
 OBJS = $(PLUGIN).o loader.o data.o display.o render.o common.o bitmap.o \
-       file.o i18n.o theme.o
+       file.o i18n.o theme.o cache.o
 
 ### Implicit rules:
 

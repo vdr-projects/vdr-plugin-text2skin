@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.12 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: render.h,v 1.15 2004/06/05 18:04:29 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -28,6 +28,7 @@ private:
 	cText2SkinTheme  *mTheme;
 	eSkinSection      mSection;
 	cOsd             *mOsd;
+	cTextScroller    *mScroller;
 
 	// channel display
 	const cChannel   *mChannel;
@@ -58,9 +59,10 @@ private:
 
 	// menu
 	struct MenuItem {
-		string          name;
+		string          text;
+		string          tabs[cSkinDisplayMenu::MaxTabs];
 		bool            sel;
-		bool operator!=(const MenuItem &b) { return b.name != name || b.sel != sel; }
+		bool operator!=(const MenuItem &b) { return b.text != text || b.sel != sel; }
 	};
 	string            mMenuTitle;
 	vector<MenuItem>  mMenuItems;
@@ -73,7 +75,11 @@ private:
 	const cRecording *mMenuRecording;
 	string            mMenuText;
 	bool              mMenuTextFixedFont;
-
+	bool              mMenuScroll;
+	bool              mMenuScrollUp;
+	bool              mMenuScrollPage;
+	int               mMenuTabs[cSkinDisplayMenu::MaxTabs];
+	
 protected:
 	// Basic operations
 	void DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
@@ -84,6 +90,7 @@ protected:
 	void DrawSlope(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
 	void DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Fg, const tColor *Bg, const cMarks *Marks = NULL);
  	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal);
+	void DrawScrollText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
 
 	// High-level operations
 	void DisplayBackground(cText2SkinItem *Item); 
@@ -119,13 +126,19 @@ protected:
 	void DisplayMenuItems(cText2SkinItem *Item);
 	void DisplayMenuTitle(cText2SkinItem *Item);
 	void DisplayMenuColorbutton(cText2SkinItem *Item);
-	void DisplayMenuMessage(cText2SkinItem *Item);
+	void DisplayMenuText(cText2SkinItem *Item);
+	void DisplayMenuEventTitle(cText2SkinItem *Item);
+	void DisplayMenuEventShortText(cText2SkinItem *Item);
+	void DisplayMenuEventDescription(cText2SkinItem *Item);
+	void DisplayMenuEventTime(cText2SkinItem *Item);
+	void DisplayMenuRecording(cText2SkinItem *Item);
 
 	// Helpers
 	string ItemText(cText2SkinItem *Item);
 	string ItemText(cText2SkinItem *Item, const string &Content);
 	tColor *ItemFg(cText2SkinItem *Item);
 	tColor *ItemBg(cText2SkinItem *Item);
+	int GetEditableWidth(MenuItem Item, bool Current);
 
 public:
 	cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, eSkinSection Section);

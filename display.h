@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.3 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: display.h,v 1.5 2004/06/05 18:04:29 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -89,6 +89,8 @@ public:
 	virtual void SetEvent(const cEvent *Event);
 	virtual void SetRecording(const cRecording *Recording);
 	virtual void SetText(const char *Text, bool FixedFont);
+	virtual void SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5);
+	virtual void Scroll(bool Up, bool Page);
 	virtual void Flush(void);
 };
 

@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.1 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: i18n.c,v 1.2 2004/06/05 16:52:44 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -24,12 +24,20 @@ bool cText2SkinI18n::Parse(const char *Text) {
 			memset(&p, 0, sizeof(tI18nPhrase));
 			Text += 17;
 
+
 			for (i = 0; i < I18nNumLanguages; ++i) {
+				char *langs = strdup(I18nLanguageCode(i));
+				char *ptr = langs, *ep;
 				string text;
-				if (ParseVar(Text, I18nLanguageCode(i), text)) 
-					p[i] = strdup(text.c_str());
-				else
-					p[i] = "";
+				p[i] = "";
+				do {
+					if ((ep = strchr(ptr, ',')) != NULL)
+						*ep = '\0';
+					if (ParseVar(Text, ptr, text))
+						p[i] = strdup(text.c_str());
+					ptr = ep + 1;
+				} while (ep != NULL);
+				free(langs);
 			}
 
 			int idx = mNumPhrases++;

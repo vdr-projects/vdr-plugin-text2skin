@@ -1,11 +1,97 @@
 This is a "plugin" for the Video Disk Recorder (VDR).
 
-Written by:                  Your Name <email@host.dom>
+Written by:                  Sascha Volkenandt <sascha@akv-soft.de>
 
-Project's homepage:          URL
+Project's homepage:          http://www.magoa.net/linux/contrib/
 
-Latest version available at: URL
+Latest version available at: http://www.magoa.net/linux/contrib/
 
 See the file COPYING for license information.
 
+
 Description:
+------------
+
+This plugin is designed to load and interpret a set of files describing the
+layout of the On Screen Display and to make this "Skin" available to VDR via
+Setup -> OSD in the main menu. Of course it is possible to load more than one
+text-based skin this way and to choose between them while running VDR. All 
+skins may be themeable (you can create your own color-theme) and translateable
+as the author of the skin wishes.
+
+
+Prerequisites:
+--------------
+
+For loading images in format other than simple XPM, you will need an image 
+library. You can choose between two supported libraries, ImageMagick or Imlib2,
+from which the first one is the default. You can specify which library to use
+(if any) in the first few lines of the Makefile. Here is an overview of the
+advantages and drawbacks of each solution:
+
+No library
+ - you can only load XPM files
+ - XPMs don't support partial transparency / alpha channels
+
+ImageMagick 
+ + you can load many different image types
+ - is a but slower than Imlib2
+
+Imlib2
+ + you can load many different image types
+ - CRASHES WHEN USED TOGETHER WITH THE GRAPHTFT-PLUGIN!
+
+Using both libraries at the same time doesn't make sense anyway.
+
+HINT: Although the manual of ImageMagick claims that the used library Magick++
+is part of the source distribution, some binary distributions may have to 
+install Magick++ separately.
+
+
+Installation:
+-------------
+
+Install text2skin like any other plugin. In this example I assume that you have
+changed to the folder where the VDR sourcecode is located, and that it is 
+version 0.0.1 of the plugin you wish to install.
+
+root@linux # cd PLUGINS/src
+root@linux # wget http://www.magoa.net/linux/contrib/vdr-text2skin-0.0.1.tgz
+root@linux # tar -xfz vdr-text2skin-0.0.1.tgz
+root@linux # ln -s text2skin-0.0.1 text2skin
+root@linux # cd ../..
+root@linux # make plugins
+root@linux # ./vdr -P text2skin
+
+If you are using VDR 1.3.9, you also have to apply a patch to the sources. This
+patch will be included in VDR 1.3.10.
+
+root@linux # patch -p1 < PLUGINS/src/text2skin/patches/vdr-1.3.9-osd.diff
+root@linux # make vdr
+root@linux # ./vdr -P text2skin
+
+
+Where to put the skins:
+-----------------------
+
+As you might know, VDR has a subfolder "plugins" inside it's configuration 
+folder, where all plugin-related files should reside. If you don't know, where
+this could be, look into the folder you gave to VDR with the -v parameter 
+(or the -c parameter, if that was given). "plugins" should be inside that 
+folder.
+
+Inside that "plugins" folder, create a subfolder called "text2skin". Inside
+"text2skin", create one folder for each skin. These skin-folders must have the
+same names as the skins residing in them.  Each skin must at least have a file
+carrying the same name, but ending in ".skin". Example:
+
+/video0/plugins/text2skin/demo/demo.skin
+/video0/plugins/text2skin/skin2/skin2.skin
+...
+
+The other files inside the skin-folder are additional description files (for
+Themeing and Translation), images, logos and symbols.
+
+If you download a skin, you usually just change to plugins/text2skin and unpack
+it there.
+

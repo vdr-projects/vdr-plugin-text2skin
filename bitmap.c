@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.9 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.11 2004/06/05 16:52:44 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -12,40 +12,46 @@
 #include <Magick++.h>
 #endif
 
-cText2SkinBitmap::cText2SkinBitmap(void): cBitmap(1, 1, 1) {
-#ifdef HAVE_IMLIB2
-  imlib_set_cache_size(4096 * 1024);
-#endif
+template<> 
+void cImageCache::Delete(string &key, cText2SkinBitmap *&value) {
+	delete value;
 }
 
-cText2SkinBitmap::cText2SkinBitmap(const char *Filename): cBitmap(1, 1, 1) {
-#ifdef HAVE_IMLIB2
-  imlib_set_cache_size(4096 * 1024);
-#endif
-	Load(Filename);
+cImageCache cText2SkinBitmap::mCache(10);
+
+cText2SkinBitmap::cText2SkinBitmap(void): cBitmap(1, 1, 1) {
 }
 
 cText2SkinBitmap::~cText2SkinBitmap() {
 }
 
-bool cText2SkinBitmap::Load(const char *Filename) {
-	int len = strlen(Filename);
-	if (len > 4) {
-		if (strcmp(Filename + len - 4, ".xpm") == 0)
-			return LoadXpm(Filename);
+cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename) {
+	if (mCache.Contains(Filename)) {
+		return mCache[Filename];
+	} else {
+		cText2SkinBitmap *bmp = new cText2SkinBitmap;
+		int len = strlen(Filename);
+		bool result = false;
+		if (len > 4) {
+			if (strcmp(Filename + len - 4, ".xpm") == 0)
+				result = bmp->LoadXpm(Filename);
+			else {
 #ifdef HAVE_IMLIB2
-		else if (strcmp(Filename + len - 4, ".png") == 0)
-			return LoadImlib(Filename);
+				result = bmp->LoadImlib(Filename);
 #else
 #	ifdef HAVE_IMAGEMAGICK
-		else if (strcmp(Filename + len - 4, ".png") == 0)
-			return LoadMagick(Filename);
+				result = bmp->LoadMagick(Filename);
 #	endif
 #endif
-		else
-			esyslog("ERROR: text2skin: unknown file format for %s", Filename);
-	} else
-		esyslog("ERROR: text2skin: filename %s too short to identify format", Filename);
+			}
+			//else
+				//esyslog("ERROR: text2skin: unknown file format for %s", Filename);
+		} else
+			esyslog("ERROR: text2skin: filename %s too short to identify format", Filename);
+	
+		if (result)
+			return (mCache[Filename] = bmp);
+	}
 	return false;
 }
 
@@ -66,7 +72,6 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 		for (int x = 0; x < Width(); ++x) {
 			tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
 			int res = Index(col);
-			//printf("color: r=%d,g=%d,b=%d,a=%d\n", data[pos], data[pos+1], data[pos+2], data[pos+3]);
 			if (pal > 0 && res == 0)
 				;//esyslog("ERROR: text2skin: Too many colors used in palette");
 			else

@@ -261,6 +261,84 @@ Description: Draws the specified image into the specified location if the
              image handling, see Item=Background.
 Parameters:  x, y, width, height, path, altpath, fg, bg
 
+Item:        Item=SymbolPlay
+Description: Draws the specified image into the specified location if the 
+             current replay is playing normally. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolPause
+Description: Draws the specified image into the specified location if the 
+             current replay is paused. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolFastFwd
+Description: Draws the specified image into the specified location if the 
+             current replay is fast forwarding. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolFastRew
+Description: Draws the specified image into the specified location if the 
+             current replay is fast rewinding. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolSlowFwd
+Description: Draws the specified image into the specified location if the 
+             current replay is slow forwarding. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolSlowRew
+Description: Draws the specified image into the specified location if the 
+             current replay is slow rewinding. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolEventRunning
+Description: Draws the specified image into the specified location if the 
+             displayed event (in menu display) is currently running. If that 
+             is not the case, the alternative image (if given) will be 
+             displayed. For details on the image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolEventTimer
+Description: Draws the specified image into the specified location if the 
+             displayed event (in menu display) will be recorded. If that is 
+             not the case, the alternative image (if given) will be displayed. 
+             For details on the image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolEventVPS
+Description: Draws the specified image into the specified location if the 
+             displayed event (in menu display) is VPS. If that is not the 
+             case, the alternative image (if given) will be displayed. For 
+             details on the image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolScrollUp
+Description: Draws the specified image into the specified location if the 
+             current display is scrollable and not at the top of its contents.
+             If that is not the case, the alternative image (if given) will be 
+             displayed. For details on the image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolScrollDown
+Description: Draws the specified image into the specified location if the 
+             current display is scrollable and not at the bottom of its 
+             contents. If that is not the case, the alternative image (if 
+             given) will be displayed. For details on the image handling, see 
+             Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
 Item:        Item=Language
 Description: Draws a logo for the current language (currently the only 
              languages VDR knows are "Audio 1" and possibly "Audio 2", 
@@ -317,6 +395,61 @@ Item:        Item=MessageError
 Description: Draws the current error message (if present).
 Parameters:  x, y, width, height, fg, font, align, text
 
+Item:        Item=MenuArea
+Description: Specifies the area in which the menu items will be shown as a
+             list.
+Parameters:  x, y, width, height
+
+Item:        Item=MenuItem
+Description: Specifies how one item is drawn in the list of menu items.
+             list.
+Parameters:  [x,] [y,] width, height, fg, bg, font, align
+
+Item:        Item=MenuCurrent
+Description: Specifies how the currently selected item is drawn in the list of 
+             menu items.
+             list.
+Parameters:  [x,] [y,] width, height, fg, bg, font, align
+
+Item:        Item=MenuTitle
+Description: Draws the title line of the displayed menu.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuRed, Item=MenuGreen, Item=MenuYellow, Item=MenuBlue
+Description: Draws the red, green, yellow or blue (respectively) button.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuText
+Description: Draws the current menu text in a scrollable text-area. If this
+             item is present, SymbolScrollUp and SymbolScrollDown apply, too.
+Parameters:  x, y, width, height, fg, [bg,] font, [align,] text
+
+Item:        Item=MenuEventTitle
+Description: Draws the title of the currently selected event when viewing EPG
+             entries.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuEventShortText
+Description: Draws the short text or episode name of the currently selected 
+             event when viewing EPG entries.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuEventDescription
+Description: Draws the long text of the currently selected event when viewing 
+             EPG entries in a scrollable text-area. If this item is present,
+             SymbolScrollUp and SymbolScrollDown apply, too.
+Parameters:  x, y, width, height, fg, [bg,] font, [align,] text
+
+Item:        Item=MenuEventTime
+Description: Draws the start time of the currently selected event when viewing 
+             EPG entries.
+Parameters:  x, y, width, height, fg, font, align, text
+
+Item:        Item=MenuRecording
+Description: Draws the summary of the currently selected recording when 
+             browsing recordings in a scrollable text-area. If this item is 
+             present, SymbolScrollUp and SymbolScrollDown apply, too.
+Parameters:  x, y, width, height, fg, [bg,] font, [align,] text
 
 Known Parameters
 ----------------

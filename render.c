@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.16 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: render.c,v 1.19 2004/06/05 18:04:29 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -18,6 +18,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, c
 	mTheme             = Theme;
 	mSection           = Section;
 	mOsd               = cOsdProvider::NewOsd(Setup.OSDLeft, Setup.OSDTop);
+	mScroller          = NULL;
 	mChannel           = NULL;
 	mChannelNumber     = 0;
 	mVolumeCurrent     = 0;
@@ -36,6 +37,9 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, c
 	mMenuEvent         = NULL;
 	mMenuRecording     = NULL;
 	mMenuTextFixedFont = false;
+	mMenuScroll        = false;
+	mMenuScrollUp      = false;
+	mMenuScrollPage    = false;
 
 	cText2SkinData::tIterator it = Data->First(mSection);
 	for (; it != Data->Last(mSection); ++it) {
@@ -81,6 +85,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinData *Data, cText2SkinI18n *I18n, c
 }
 
 cText2SkinRender::~cText2SkinRender() {
+	delete mScroller;
 	delete mOsd; 
 }
 
@@ -143,6 +148,11 @@ void cText2SkinRender::Flush(void) {
 		case itemSymbolFastRew:
 		case itemSymbolSlowFwd:
 		case itemSymbolSlowRew:
+		case itemSymbolScrollUp:
+		case itemSymbolScrollDown:
+		case itemSymbolEventRunning:
+		case itemSymbolEventTimer:
+		case itemSymbolEventVPS:
 			DisplaySymbol(item); break;
 		case itemVolumebar:
 			DisplayVolumebar(item); break;
@@ -172,6 +182,18 @@ void cText2SkinRender::Flush(void) {
 		case itemMenuYellow:
 		case itemMenuBlue:
 			DisplayMenuColorbutton(item); break;
+		case itemMenuText:
+			DisplayMenuText(item); break;
+		case itemMenuEventTitle:
+			DisplayMenuEventTitle(item); break;
+		case itemMenuEventShortText:
+			DisplayMenuEventShortText(item); break;
+		case itemMenuEventDescription:
+			DisplayMenuEventDescription(item); break;
+		case itemMenuEventTime:
+			DisplayMenuEventTime(item); break;
+		case itemMenuRecording:
+			DisplayMenuRecording(item); break;
 		default:
 			break;
 		}
@@ -180,41 +202,39 @@ void cText2SkinRender::Flush(void) {
 }
 
 void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path) {
-	bool image = false;
-	cText2SkinBitmap bm;
+	cText2SkinBitmap *bmp = NULL;
 	if (Path != "") {
 		char *p;
 		asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
-		if (bm.Load(p)) {
-			if (Bg) bm.SetColor(0, *Bg);
-			if (Fg) bm.SetColor(1, *Fg);
-			image = true;
+		if ((bmp = cText2SkinBitmap::Load(p)) != NULL) {
+			if (Bg) bmp->SetColor(0, *Bg);
+			if (Fg) bmp->SetColor(1, *Fg);
 		}
 		free(p);
 	}
 
-	if (image)
-		DrawBitmap(mOsd, Pos.x, Pos.y, bm);
+	if (bmp)
+		mOsd->DrawBitmap(Pos.x, Pos.y, *bmp);
 	else
 		mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, Bg ? *Bg : 0);
 }
 
 void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path) {
-	cText2SkinBitmap bm;
+	cText2SkinBitmap *bmp;
 	char *p;
 	asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
-	printf("Trying to load image: %s\n", p);
-	if (bm.Load(p)) {
-		if (Bg) bm.SetColor(0, *Bg);
-		if (Fg) bm.SetColor(1, *Fg);
+	Dprintf("Trying to load image: %s\n", p);
+	if ((bmp = cText2SkinBitmap::Load(p)) != NULL) {
+		if (Bg) bmp->SetColor(0, *Bg);
+		if (Fg) bmp->SetColor(1, *Fg);
 		//mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, bm.Color(0));
-		DrawBitmap(mOsd, Pos.x, Pos.y, bm);
+		mOsd->DrawBitmap(Pos.x, Pos.y, *bmp);
 	}
 	free(p);
 }
 
 void cText2SkinRender::DrawText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align) {
-	DrawTextTransparent(mOsd, Pos.x, Pos.y, Text.c_str(), Fg ? *Fg : 0, 0, Font, Size.w, Size.h, Align);
+	mOsd->DrawText(Pos.x, Pos.y, Text.c_str(), Fg ? *Fg : 0, 0, Font, Size.w, Size.h, Align);
 }
 
 void cText2SkinRender::DrawRectangle(const POINT &Pos, const SIZE &Size, const tColor *Fg) {
@@ -300,6 +320,15 @@ void cText2SkinRender::DrawMark(const POINT &Pos, const SIZE &Size, bool Start, 
 	}
 }
 
+void cText2SkinRender::DrawScrollText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align) {
+	if (mScroller == NULL)
+		mScroller = new cTextScroller(mOsd, Pos.x, Pos.y, Size.w, Size.h, Text.c_str(), Font, Fg ? *Fg : 0, clrTransparent);
+	else if (mMenuScroll) {
+		mScroller->Scroll(mMenuScrollUp, mMenuScrollPage);
+		mMenuScroll = false;
+	}
+}
+
 void cText2SkinRender::DisplayBackground(cText2SkinItem *Item) {
 	DrawBackground(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Path());
 }
@@ -315,13 +344,13 @@ void cText2SkinRender::DisplayLanguage(cText2SkinItem *Item) {
 	int current;
 	const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&current);
 	if (Item->Path() != "" && Item->Type() != "" && tracks) {
-		printf("Languages: ");
+		Dprintf("Languages: ");
 		int i = 0;
 		while (tracks[i]) {
-			printf("%s%s, ", tracks[i], i == current ? " (current)" : "");
+			Dprintf("%s%s, ", tracks[i], i == current ? " (current)" : "");
 			++i;
 		}
-		printf("\n");
+		Dprintf("\n");
 		if (current < i) {
 			string path = Item->Path() + "/" + tracks[current] + "." + Item->Type();
 			DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), path);
@@ -444,22 +473,45 @@ void cText2SkinRender::DisplaySymbol(cText2SkinItem *Item) {
 		default:
 			break;
 		}
-	} else if (mSection == sectionReplay) {
+	} else if (mSection == sectionReplay || mSection == sectionReplayMode) {
 		switch (Item->Item()) {
-			case itemSymbolPlay:
-				image = (mReplaySpeed == -1 && mReplayPlay) ? Item->Path() : Item->AltPath(); break;
-			case itemSymbolPause:
-				image = (mReplaySpeed == -1 && !mReplayPlay) ? Item->Path() : Item->AltPath(); break;
-			case itemSymbolFastFwd:
-				image = (mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); break;
-			case itemSymbolFastRew:
-				image = (mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); break;
-			case itemSymbolSlowFwd:
-				image = (!mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); break;
-			case itemSymbolSlowRew:
-				image = (!mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); break;
+		case itemSymbolPlay:
+			image = (mReplaySpeed == -1 && mReplayPlay) ? Item->Path() : Item->AltPath(); break;
+		case itemSymbolPause:
+			image = (mReplaySpeed == -1 && !mReplayPlay) ? Item->Path() : Item->AltPath(); break;
+		case itemSymbolFastFwd:
+			image = (mReplaySpeed != -1 && mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); break;
+		case itemSymbolFastRew:
+			image = (mReplaySpeed != -1 && mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); break;
+		case itemSymbolSlowFwd:
+			image = (mReplaySpeed != -1 && !mReplayPlay && mReplayForward) ? Item->Path() : Item->AltPath(); break;
+		case itemSymbolSlowRew:
+			image = (mReplaySpeed != -1 && !mReplayPlay && !mReplayForward) ? Item->Path() : Item->AltPath(); break;
+		default:
+			break;
+		}
+	} else if (mSection == sectionMenu) {
+		if (mScroller) {
+			switch (Item->Item()) {
+			case itemSymbolScrollUp:
+				image = mScroller->CanScrollUp() ? Item->Path() : Item->AltPath(); break;
+			case itemSymbolScrollDown:
+				image = mScroller->CanScrollDown() ? Item->Path() : Item->AltPath(); break;
 			default:
 				break;
+			}
+		} 
+		if (mMenuEvent) {
+			switch (Item->Item()) {
+			case itemSymbolEventRunning:
+				image = mMenuEvent->IsRunning() ? Item->Path() : Item->AltPath(); break;
+			case itemSymbolEventTimer:
+				image = mMenuEvent->HasTimer() ? Item->Path() : Item->AltPath(); break;
+			case itemSymbolEventVPS:
+				image = mMenuEvent->Vps() > 0 ? Item->Path() : Item->AltPath(); break;
+			default:
+				break;
+			}
 		}
 	}
 	if (image != "")
@@ -543,21 +595,26 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 
 	int index = 0;
 	while (yoffs < area->Pos().y + area->Size().h && index < (int)mMenuItems.size()) {
-		if (index == mMenuCurrent) {
-			POINT pt = { xoffs, yoffs };
-			if (current->Pos().x != -1)
-				pt.x += current->Pos().x;
-			if (current->Pos().y != -1)
-				pt.y += current->Pos().y;
-			SIZE size = { current->Size().w, current->Size().h };
-			if (ItemBg(current))
-				DrawRectangle(pt, size, ItemBg(current));
-			DrawText(pt, size, ItemFg(current), mMenuItems[index].name.c_str(), current->Font(), current->Align());
-		} else {
-			POINT pt = { xoffs + Item->Pos().x, yoffs + Item->Pos().y };
-			SIZE size = { Item->Size().w, Item->Size().h };
-			DrawText(pt, size, ItemFg(Item), mMenuItems[index].name.c_str(), Item->Font(), Item->Align());
+		cText2SkinItem *item = (index == mMenuCurrent) ? current : Item;
+		POINT pt = { xoffs, yoffs };
+		SIZE size = item->Size();
+		if (item->Pos().x != -1)
+			pt.x += item->Pos().x;
+		if (item->Pos().y != -1)
+			pt.y += item->Pos().y;
+		if (ItemBg(item))
+			DrawRectangle(pt, size, ItemBg(item));
+
+		for (int i = 0; i < cSkinDisplayMenu::MaxTabs; ++i) {
+			if (mMenuItems[index].tabs[i] != "") {
+				POINT pt2 = { pt.x + mMenuTabs[i], pt.y };
+				SIZE sz = { size.w - mMenuTabs[i], size.h };
+				DrawText(pt2, sz, ItemFg(item), mMenuItems[index].tabs[i], item->Font(), item->Align());
+			}
+			if (!mMenuTabs[i + 1])
+				break;
 		}
+
 		yoffs += Item->Size().h;
 		++index;
 	}
@@ -583,6 +640,40 @@ void cText2SkinRender::DisplayMenuColorbutton(cText2SkinItem *Item) {
 	}
 	if (text != "")
 		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text), Item->Font(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMenuText(cText2SkinItem *Item) {
+	if (mMenuText != "")
+		DrawScrollText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuText), Item->Font(), Item->Align());
+	else
+		DELETENULL(mScroller);
+}
+
+void cText2SkinRender::DisplayMenuEventTitle(cText2SkinItem *Item) {
+	if (mMenuEvent && mMenuEvent->Title())
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuEvent->Title()), Item->Font(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMenuEventShortText(cText2SkinItem *Item) {
+	if (mMenuEvent && mMenuEvent->ShortText())
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuEvent->ShortText()), Item->Font(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMenuEventDescription(cText2SkinItem *Item) {
+	if (mMenuEvent && mMenuEvent->Description())
+		DrawScrollText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuEvent->Description()), Item->Font(), Item->Align());
+}
+
+void cText2SkinRender::DisplayMenuEventTime(cText2SkinItem *Item) {
+	if (mMenuEvent) {
+		const char *text = DayDateTime(mMenuEvent->StartTime());
+		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, text + 10), Item->Font(), Item->Align());
+	}
+}
+
+void cText2SkinRender::DisplayMenuRecording(cText2SkinItem *Item) {
+	if (mMenuRecording)
+		DrawScrollText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, mMenuRecording->Summary()), Item->Font(), Item->Align());
 }
 
 string cText2SkinRender::ItemText(cText2SkinItem *Item) {
@@ -623,4 +714,13 @@ tColor *cText2SkinRender::ItemBg(cText2SkinItem *Item) {
 	} else
 		return NULL;
 	return &Bg;
+}
+
+int cText2SkinRender::GetEditableWidth(MenuItem Item, bool Current) {
+	cText2SkinItem *current;
+	if (Current)
+		current = mData->Get(sectionMenu, itemMenuCurrent);
+	else
+		current = mData->Get(sectionMenu, itemMenuItem);
+	return current->Size().w - mMenuTabs[1];
 }

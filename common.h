@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.6 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: common.h,v 1.7 2004/06/05 16:52:44 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -14,14 +14,16 @@ using std::string;
 using std::vector;
 using std::map;
 
-#define precond(x) if ((x)) { esyslog("ERROR: text2skin: "#x " not given"); return; }
+#ifdef DEBUG
+#	define Dprintf(x...) fprintf(stderr, x);
+#else
+#	define Dprintf(x...)
+#endif
 
 class cChannel;
 class cText2SkinItem;
 
 const char *SkinPath(void);
-void DrawTextTransparent(cOsd *Osd, int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, int Width, int Height, int Alignment);
-void DrawBitmap(cOsd *Osd, int x, int y, cBitmap &Bitmap, tColor ColorFg = 0, tColor ColorBg = 0);
 const char *ChannelNumber(const cChannel *Channel, int Number);
 const char *ChannelName(const cChannel *Channel, int Number);
 	

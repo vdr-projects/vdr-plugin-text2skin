@@ -3,26 +3,15 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.9 2004/06/02 19:55:55 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.10 2004/06/05 16:52:44 lordjaxom Exp $
  */
 
+#include "text2skin.h"
 #include "loader.h"
-#include <vdr/plugin.h>
 
-static const char *VERSION        = "0.0.1-rc4";
-static const char *DESCRIPTION    = "Loader for text-based skins";
-
-class cText2SkinPlugin : public cPlugin {
-private:
-public:
-  cText2SkinPlugin(void);
-  virtual ~cText2SkinPlugin();
-  virtual const char *Version(void) { return VERSION; }
-  virtual const char *Description(void) { return DESCRIPTION; }
-  virtual bool Start(void);
-  virtual cMenuSetupPage *SetupMenu(void);
-  virtual bool SetupParse(const char *Name, const char *Value);
-  };
+const char *cText2SkinPlugin::VERSION        = "0.0.1";
+const char *cText2SkinPlugin::THEMEVERSION   = "0.0.1";
+const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
 cText2SkinPlugin::cText2SkinPlugin(void)
 {

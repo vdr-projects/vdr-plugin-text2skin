@@ -1,6 +1,19 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-05: Version 0.0.1
+
+- added scrollable texts and "SymbolScrollUp" and "SymbolScrollDown"
+- added "MenuText", "MenuEventTitle", "MenuEventShortText", 
+  "MenuEventDescription", "MenuEventTime", "MenuRecording", 
+  "SymbolEventRunning", "SymbolEventTimer" and "SymbolEventVPS"
+- implemented image caching
+- added english and german README
+- removed some workarounds, and added a patch to vdr to the tree (will be 
+  included in 1.3.10)
+- fixed two bugs when displaying replay symbols
+- implemented tabbed texts in menu
+
 2004-06-02: Version 0.0.1-rc4
 
 - implemented image loading through ImageMagick (fixes crashes when running 

@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.9 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: display.c,v 1.12 2004/06/05 18:04:29 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -81,6 +81,7 @@ void cText2SkinDisplayVolume::Flush(void) {
 // --- cText2SkinDisplayReplay ------------------------------------------------
 
 cText2SkinDisplayReplay::cText2SkinDisplayReplay(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, bool ModeOnly) {
+	Dprintf("ModeOnly: %d\n", ModeOnly);
 	mRender   = new cText2SkinRender(Data, I18n, Theme, ModeOnly ? sectionReplayMode : sectionReplay);
 	mDirty    = false;
 }
@@ -98,7 +99,7 @@ void cText2SkinDisplayReplay::SetTitle(const char *Title) {
 }
 
 void cText2SkinDisplayReplay::SetMode(bool Play, bool Forward, int Speed) {
-	if (mRender->mReplayPlay != Play || mRender->mReplayPlay != Forward || mRender->mReplaySpeed != Speed) {
+	if (mRender->mReplayPlay != Play || mRender->mReplayForward != Forward || mRender->mReplaySpeed != Speed) {
 		mRender->mReplayPlay = Play;
 		mRender->mReplayForward = Forward;
 		mRender->mReplaySpeed = Speed;
@@ -209,7 +210,15 @@ cText2SkinDisplayMenu::~cText2SkinDisplayMenu() {
 
 void cText2SkinDisplayMenu::Clear(void) {
 	mRender->mMenuItems.clear();
-	mRender->mMenuCurrent = -1;
+	mRender->mMenuTitle     = "";
+	mRender->mMenuCurrent   = -1;
+	mRender->mMenuRed       = "";
+	mRender->mMenuGreen     = "";
+	mRender->mMenuYellow    = "";
+	mRender->mMenuBlue      = "";
+	mRender->mMenuEvent     = NULL;
+	mRender->mMenuRecording = NULL;
+	mRender->mMenuText      = "";
 	mDirty = true;
 }
 
@@ -245,7 +254,17 @@ void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
 }
 
 void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) {
-	cText2SkinRender::MenuItem item = { Text, Selectable };
+	cText2SkinRender::MenuItem item;
+	item.text = Text;
+	item.sel = Selectable;
+	for (int i = 0; i < MaxTabs; ++i) {
+		const char *tab = GetTabbedText(Text, i);
+		if (tab)
+			item.tabs[i] = tab;
+		if (!Tab(i + 1))
+			break;
+	}
+	SetEditableWidth(mRender->GetEditableWidth(item, Current));
 	if ((int)mRender->mMenuItems.size() <= Index) {
 		mRender->mMenuItems.push_back(item);
 		mDirty = true;
@@ -278,6 +297,25 @@ void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont) {
 	if (mRender->mMenuText != Text || mRender->mMenuTextFixedFont != FixedFont) {
 		mRender->mMenuText = Text;
 		mRender->mMenuTextFixedFont = FixedFont;
+		mDirty = true;
+	}
+}
+
+void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5) {
+	cSkinDisplayMenu::SetTabs(Tab1, Tab2, Tab3, Tab4, Tab5);
+	mRender->mMenuTabs[0] = Tab(0);
+	mRender->mMenuTabs[1] = Tab(1);
+	mRender->mMenuTabs[2] = Tab(2);
+	mRender->mMenuTabs[3] = Tab(3);
+	mRender->mMenuTabs[4] = Tab(4);
+	mRender->mMenuTabs[5] = Tab(5);
+}
+
+void cText2SkinDisplayMenu::Scroll(bool Up, bool Page) {
+	if (mRender->mScroller && (Up ? mRender->mScroller->CanScrollUp() : mRender->mScroller->CanScrollDown())) {
+		mRender->mMenuScroll = true;
+		mRender->mMenuScrollUp = Up;
+		mRender->mMenuScrollPage = Page;
 		mDirty = true;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.6 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: loader.c,v 1.8 2004/06/05 16:52:44 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -34,9 +34,8 @@ void cText2SkinLoader::Load(const char *Skin) {
 	string transfile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".trans";
 	if (access(transfile.c_str(), F_OK) == 0) {
 		translations = new cText2SkinI18n(Skin);
-		if (!translations->Load(transfile)) {
+		if (!translations->Load(transfile))
 			DELETENULL(translations);
-		}
 	}
 
 	cText2SkinTheme *theme = new cText2SkinTheme(Skin);
@@ -74,7 +73,7 @@ cText2SkinLoader::~cText2SkinLoader() {
 }
 
 cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {
-	printf("WithInfo: %d\n", WithInfo);
+	Dprintf("WithInfo: %d\n", WithInfo);
 	return new cText2SkinDisplayChannel(mData, mI18n, mTheme, WithInfo);
 }
 

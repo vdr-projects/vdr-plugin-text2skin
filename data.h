@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.10 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: data.h,v 1.11 2004/06/05 01:39:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -80,6 +80,18 @@ enum eSkinItem {
 	itemMenuGreen,
 	itemMenuYellow,
 	itemMenuBlue,
+	itemMenuText,
+	itemSymbolScrollUp,
+	itemSymbolScrollDown,
+	itemMenuEventTitle,
+	itemMenuEventShortText,
+	itemMenuEventDescription,
+	itemMenuEventTime,
+	itemSymbolEventRunning,
+	itemSymbolEventTimer,
+	itemSymbolEventVPS,
+	itemMenuRecording,
+	__ITEM_COUNT__
 };
 
 struct POINT {
@@ -124,8 +136,6 @@ public:
 	const SIZE     &Size(void)    const { return mSize; }
 	int             Bpp(void)     const { return mBpp; }
 	int             Arc(void)     const { return mArc; }
-	//const tColor   *Fg(void)      const { return mFg; }
-	//const tColor   *Bg(void)      const { return mBg; }
 	const string   &Fg(void)      const { return mFg; }
 	const string   &Bg(void)      const { return mBg; }
 	const cFont    *Font(void)    const { return mFont; }
