@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.13 2005/01/20 15:12:16 lordjaxom Exp $
+ *  $Id: string.c,v 1.14 2005/01/25 14:14:43 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -206,7 +206,7 @@ cxType cxString::Evaluate(void) const
 
 	if (mText.length() == 0 && mTokens.size() == 1)
 		return cText2SkinRender::GetToken(mTokens[0]);
-	
+
 	for (uint i = 0; i < mTokens.size(); ++i) {
 		result.append(mText.c_str() + offset, mTokens[i].Offset - offset);
 		result.append(cText2SkinRender::GetToken(mTokens[i]));
