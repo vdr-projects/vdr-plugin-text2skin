@@ -1,5 +1,5 @@
 /*
- *  $Id: display.c,v 1.2 2005/01/02 20:01:25 lordjaxom Exp $
+ *  $Id: display.c,v 1.3 2005/01/02 20:16:00 lordjaxom Exp $
  */
 
 #include "xml/display.h"
@@ -26,9 +26,9 @@ bool cxDisplay::ParseType(const std::string &Text)
 	return false;
 }
 
-const std::string &cxDisplay::GetType(void) const 
+const std::string &cxDisplay::GetType(eType Type)
 {
-	return DisplayNames[mType];
+	return DisplayNames[Type];
 }
 
 cxDisplays::cxDisplays(void)
