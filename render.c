@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.4 2004/12/28 01:24:35 lordjaxom Exp $
+ * $Id: render.c,v 1.5 2004/12/28 01:29:35 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -331,7 +331,7 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 	}
 		
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + state.offset, Fg ? *Fg : 0, clrTransparent, Font,
-	                  Size.w, Size.h);
+	                  Size.w, Size.h, Align);
 }
 	
 void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
@@ -357,7 +357,7 @@ void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const t
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), state.offset == 0 
 	                                              ? (Fg ? *Fg : 0) 
 	                                              : (Bg ? *Bg : 0),
-	                  clrTransparent, Font, Size.w, Size.h);
+	                  clrTransparent, Font, Size.w, Size.h, Align);
 }
 
 void cText2SkinRender::DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg) 
