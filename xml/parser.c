@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.7 2005/01/02 16:53:27 lordjaxom Exp $
+ *  $Id: parser.c,v 1.8 2005/01/20 14:46:12 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -79,12 +79,12 @@
 		return false; \
 	}
 
-static std::vector<std::string> context;
-static cxSkin    *skin    = NULL;
-static cxDisplay *display = NULL;
-static cxObject  *parent  = NULL;
-static cxObject  *object  = NULL;
-static uint       oindex  = 0;
+static std::vector<std::string>  context;
+static cxSkin                   *skin    = NULL;
+static cxDisplay                *display = NULL;
+static std::vector<cxObject*>    parents;
+static cxObject                 *object  = NULL;
+static uint                      oindex  = 0;
 
 bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs) {
 	//Dprintf("start element: %s\n", name.c_str());
@@ -110,7 +110,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
           || context[context.size() - 1] == "list"
           || context[context.size() - 1] == "block") {
 		if      (object != NULL) {
-			parent = object;
+			parents.push_back(object);
 			object = NULL;
 		}
 
@@ -234,11 +234,11 @@ bool xEndElem(const std::string &name) {
 			display = NULL;
 			oindex = 0;
 		}
-		else if (object != NULL || parent != NULL) {
+		else if (object != NULL || parents.size() > 0) {
 			if (object == NULL) {
-				//Dprintf("rotating parent to object\n");
-				object = parent;
-				parent = NULL;
+				Dprintf("rotating parent to object\n");
+				object = parents[parents.size() - 1];
+				parents.pop_back();
 			}
 
 			if (object->mCondition == NULL) {
@@ -256,8 +256,9 @@ bool xEndElem(const std::string &name) {
 			}
 
 			object->mIndex = oindex++;
-			if (parent != NULL) {
-				//Dprintf("pushing to parent\n");
+			if (parents.size() > 0) {
+				Dprintf("pushing to parent\n");
+				cxObject *parent = parents[parents.size() - 1];
 				if (parent->mObjects == NULL)
 					parent->mObjects = new cxObjects();
 				parent->mObjects->push_back(object);
