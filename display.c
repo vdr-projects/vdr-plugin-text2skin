@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.5 2005/01/05 19:27:45 lordjaxom Exp $
+ * $Id: display.c,v 1.6 2005/01/07 22:56:08 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -105,7 +105,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 	
 	case tChannelBouquet:
 #if VDRVERSNUM < 10315
-		return cxType::False;
+		return false;
 #else
 		return mChannel != NULL
 		       ? (cxType)mChannel->Provider()
