@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.7 2005/01/02 20:04:39 lordjaxom Exp $
+ *  $Id: string.h,v 1.8 2005/01/07 21:48:51 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -11,6 +11,7 @@
 
 enum exToken {
 	tDateTime,
+	tFreeDiskSpace,
 
 	// Channel Display
 	tChannelNumber,

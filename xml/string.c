@@ -1,12 +1,12 @@
 /*
- *  $Id: string.c,v 1.6 2005/01/02 20:04:39 lordjaxom Exp $
+ *  $Id: string.c,v 1.7 2005/01/07 21:48:28 lordjaxom Exp $
  */
 
 #include "xml/string.h"
 #include "render.h"
 
 static const char *Tokens[__COUNT_TOKEN__] = {
-	"DateTime",
+	"DateTime", "FreeDiskSpace",
 
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
