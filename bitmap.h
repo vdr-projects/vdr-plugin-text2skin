@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.4 2005/01/26 20:44:06 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.5 2005/01/27 10:53:07 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -48,6 +48,14 @@ inline bool tBitmapSpec::operator==(const tBitmapSpec &Src) const
 		&& Colors == Src.Colors;
 }
 
+class cText2SkinBitmap;
+
+template<>
+void cxCache<tBitmapSpec,cText2SkinBitmap*>::Delete(const tBitmapSpec &Key, 
+                                                    cText2SkinBitmap *&Data);
+template<>
+void cxCache<tBitmapSpec,cText2SkinBitmap*>::Reset(cText2SkinBitmap *&Data);
+
 class cText2SkinBitmap {
 private:
 	static cxCache<tBitmapSpec,cText2SkinBitmap*> mCache;
@@ -87,11 +95,5 @@ public:
 inline void cText2SkinBitmap::SetColor(int Index, tColor Color) {
 	mBitmaps[mCurrent]->SetColor(Index, Color);
 }
-
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Delete(const tBitmapSpec &Key, 
-                                                    cText2SkinBitmap *&Data);
-template<>
-void cxCache<tBitmapSpec,cText2SkinBitmap*>::Reset(cText2SkinBitmap *&Data);
 
 #endif // VDR_TEXT2SKIN_BITMAP_H

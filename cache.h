@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.3 2005/01/26 20:43:30 lordjaxom Exp $
+ * $Id: cache.h,v 1.4 2005/01/27 10:53:07 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -13,9 +13,9 @@ template<class key_type, class data_type>
 class cxCache {
 private:
 	typedef std::vector<key_type> usage_list;
-	typedef usage_list::iterator usage_iterator;
+	typedef typename usage_list::iterator usage_iterator;
 	typedef std::map<key_type,data_type> item_map;
-	typedef item_map::iterator item_iterator;
+	typedef typename item_map::iterator item_iterator;
 
 	item_map   mItems;
 	usage_list mUsage;

@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.5 2005/01/26 20:44:18 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.6 2005/01/27 10:53:07 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -70,8 +70,8 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 	return res;
 }
 
-bool cText2SkinBitmap::Available(const std::string &Filename, int Alpha = 0, int height = 0, 
-	                             int width = 0, int colors = 0)
+bool cText2SkinBitmap::Available(const std::string &Filename, int Alpha, int height, int width, 
+                                 int colors)
 {
 	cText2SkinBitmap *bmp = Load(Filename, Alpha, height, width, colors, true);
 	return bmp != NULL;
