@@ -1,5 +1,5 @@
 /*
- * $Id: cache.h,v 1.5 2005/01/28 21:26:34 lordjaxom Exp $
+ * $Id: cache.h,v 1.6 2005/01/28 23:46:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
@@ -96,7 +96,7 @@ data_type &cxCache<key_type, data_type>::operator[](const key_type &Key)
 		mItems.erase(it);
 	}
 
-	it = mItems.insert(item_map::value_type(Key, data_type())).first;
+	it = mItems.insert(typename item_map::value_type(Key, data_type())).first;
 	return it->second;
 }
 
