@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.16 2005/01/05 19:30:14 lordjaxom Exp $
+ * $Id: render.c,v 1.17 2005/01/07 21:47:23 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -14,6 +14,7 @@
 #include <vdr/channels.h>
 #include <vdr/epg.h>
 #include <vdr/menu.h>
+#include <vdr/videodir.h>
 
 cText2SkinRender *cText2SkinRender::mRender = NULL;
 
@@ -519,7 +520,7 @@ std::string cText2SkinRender::ImagePath(const std::string &Filename)
 {
 	if (mRender)
 		return mRender->mBasePath + "/" + Filename;
-	return cxFunction::False;
+	return "";
 }
 
 cxType cText2SkinRender::GetToken(const txToken &Token) 
@@ -566,12 +567,22 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 
 		return res;
 	}
-	return cxType::False;
+	return false;
 }
 
 cxType cText2SkinRender::GetTokenData(const txToken &Token) 
 {
+#define MB_PER_MINUTE 25.75 // this is just an estimate!
 	switch (Token.Type) {
+	case tFreeDiskSpace: {
+			int FreeMB;
+			VideoDiskSpace(&FreeMB);
+			return Token.Attrib.Type == aString
+			       ? (cxType)DurationType((int)(FreeMB * 60 * FRAMESPERSEC / MB_PER_MINUTE), 
+			                              Token.Attrib.Text)
+			       : (cxType)FreeMB;
+		}
+
 	case tDateTime:      return TimeType(time(NULL), Token.Attrib.Text);
 
 	case tCanScrollUp:   return mScroller != NULL && mScroller->CanScrollUp();
