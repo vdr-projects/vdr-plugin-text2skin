@@ -1,5 +1,5 @@
 /*
- * $Id: font.c,v 1.1 2004/12/19 22:03:13 lordjaxom Exp $
+ * $Id: font.c,v 1.2 2004/12/28 14:35:54 lordjaxom Exp $
  */
 
 #include "font.h"
@@ -18,7 +18,8 @@ cText2SkinFont::~cText2SkinFont()
 {
 }
 
-const cFont *cText2SkinFont::Load(const std::string &Path, const std::string &Filename, int Size)
+const cFont *cText2SkinFont::Load(const std::string &Path, const std::string &Filename, int Size, 
+                                  int Width)
 {
 	if (Filename == "Osd")
 		return cFont::GetFont(fontOsd);
@@ -30,9 +31,9 @@ const cFont *cText2SkinFont::Load(const std::string &Path, const std::string &Fi
 	const cFont *res = NULL;
 #ifdef HAVE_FREETYPE
 	char *cachename;
-	asprintf(&cachename, "%s_%d_%d", Filename.c_str(), Size, Setup.OSDLanguage);
+	asprintf(&cachename, "%s_%d_%d_%d", Filename.c_str(), Size, Width, Setup.OSDLanguage);
 	Dprintf("trying now: %s %s\n", (Path + "/" + Filename).c_str(), cachename);
-	if (mFontCache.Load(Path + "/" + Filename, cachename, Size, Setup.OSDLanguage))
+	if (mFontCache.Load(Path + "/" + Filename, cachename, Size, Setup.OSDLanguage, Width))
 		res = mFontCache.GetFont(cachename);
 	else
 		esyslog("ERROR: Text2Skin: Couldn't load font %s:%d", Filename.c_str(), Size);

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.3 2004/12/28 02:03:00 lordjaxom Exp $
+ *  $Id: object.h,v 1.4 2004/12/28 14:35:54 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -82,6 +82,7 @@ private:
 	cxString       mTotal;
 	std::string    mFontFace;
 	int            mFontSize;
+	int            mFontWidth;
 	uint           mDelay;
 	uint           mIndex;
 	cxObjects     *mObjects; // used for block objects such as <list>

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.4 2004/12/28 02:03:00 lordjaxom Exp $
+ *  $Id: object.c,v 1.5 2004/12/28 14:35:54 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -100,15 +100,22 @@ bool cxObject::ParseAlignment(const std::string &Text)
 
 bool cxObject::ParseFontFace(const std::string &Text) 
 {
-	int size = 0, pos;
+	int size = 0, width = 0, pos;
 	std::string face = Text;
 	if ((pos = face.find(':')) != -1) {
-		size = atoi(face.substr(pos + 1).c_str());
+		std::string s = face.substr(pos + 1);
+		const char *p = s.c_str(); 
+		char *end;
+		size = strtol(p, &end, 10);
+		if (*end == ',')
+			width = strtol(end + 1, NULL, 10);
+		
 		face.erase(pos);
 	}
 
-	mFontFace = face;
-	mFontSize = size;
+	mFontFace  = face;
+	mFontSize  = size;
+	mFontWidth = width;
 	return true;
 }
 
@@ -130,10 +137,12 @@ const cFont *cxObject::Font(void) const
 {
 	const cFont *font;
 
-	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize)) != NULL)
+	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) 
+	        != NULL)
 		return font;
 	
-	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize)) != NULL)
+	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize, 
+	                                 mFontWidth)) != NULL)
 		return font;
 	
 	return cFont::GetFont(fontOsd);

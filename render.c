@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.7 2004/12/28 02:39:51 lordjaxom Exp $
+ * $Id: render.c,v 1.8 2004/12/28 14:35:54 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -340,7 +340,8 @@ void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const t
 		state = tState();
 		state.text = Text;
 	}
-	Dprintf("drawBlink state.text = %s, offset = %d\n", state.text.c_str(), state.offset);
+	Dprintf("drawBlink index = %d, state.text = %s, offset = %d\n", Index, state.text.c_str(), 
+	        state.offset);
 
 	if (state.nexttime == 0 || mNow >= state.nexttime) {
 		state.nexttime = mNow + Delay;
