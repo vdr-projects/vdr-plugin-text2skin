@@ -1,17 +1,19 @@
 /*
- * $Id: common.c,v 1.3 2004/12/21 21:22:41 lordjaxom Exp $
+ * $Id: common.c,v 1.4 2004/12/21 21:39:21 lordjaxom Exp $
  */
 
 #include "common.h"
 #include <vdr/plugin.h>
 
-const std::string &SkinPath(void) {
+const std::string &SkinPath(void) 
+{
 	// should never change
 	static std::string path = cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
 	return path;
 }
 
-const char *ChannelNumber(const cChannel *Channel, int Number) {
+const char *ChannelNumber(const cChannel *Channel, int Number) 
+{
 	static char buffer[256];
 	buffer[0] = '\0';
   if (Channel) {
@@ -23,7 +25,8 @@ const char *ChannelNumber(const cChannel *Channel, int Number) {
   return buffer;
 }
 
-const char *ChannelName(const cChannel *Channel, int Number) {
+const char *ChannelName(const cChannel *Channel, int Number) 
+{
 	static char buffer[256];
 	buffer[0] = '\0';
 	if (Channel)
@@ -40,7 +43,8 @@ const char *ChannelName(const cChannel *Channel, int Number) {
 	return buffer;
 }
 
-const char *ChannelShortName(const cChannel *Channel, int Number) {
+const char *ChannelShortName(const cChannel *Channel, int Number) 
+{
 	static char buffer[256];
 	buffer[0] = '\0';
 	if (Channel) 
