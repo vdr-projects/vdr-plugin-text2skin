@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.10 2004/12/29 00:38:08 lordjaxom Exp $
+ * $Id: render.c,v 1.11 2004/12/29 22:24:25 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -547,8 +547,8 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				Dprintf("MenuCurrent result: |%s|\n", res.String().c_str());
 			}
 			else if (Token.Type == tMenuTitle) {
-				if ((pos = str.find(" - ")) != -1
-						|| (pos = str.find(' ')) != -1) {
+				if ((pos = str.find(" - ")) != -1) {
+						//|| (pos = str.find(' ')) != -1) {
 					str.erase(pos);
 					while (str[str.length() - 1] == ' ')
 						str.erase(str.length() - 1);
