@@ -1,6 +1,10 @@
 Special thanks go to the following individuals (if your name is missing here,
 please send an email to sascha (at) akv-soft (dot) de):
 
+Lars Tegeler
+  for implementing true-type-font support
+  for implementing image-scaling and quantizing
+
 Monroe
   for creating and extending the german and english vdr-wiki with text2skin sections
   for creating plaintext conversions of the wiki pages for inclusion in this package
@@ -10,3 +14,4 @@ steffx
 
 Brougs78
   for doing much testing and skinning
+
