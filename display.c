@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.16 2005/01/21 23:18:34 lordjaxom Exp $
+ * $Id: display.c,v 1.17 2005/01/23 19:55:25 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -944,10 +944,14 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       && mCurrentItem != (uint)Token.Index;
 	
 	case tMenuCurrent:
-		if (Token.Index < 0)
-			return mItems.size() > mCurrentItem
-			       ? (cxType)mItems[mCurrentItem].text
-			       : (cxType)false;
+		if (Token.Index < 0) {
+			if (mItems.size() > mCurrentItem)
+				return Token.Attrib.Type == aNumber
+				       ? (cxType)mItems[Token.Index].tabs[Token.Attrib.Number]
+				       : (cxType)mItems[Token.Index].text;
+			else
+				return false;
+		}
 
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel
 		       && mCurrentItem == (uint)Token.Index
