@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.7 2005/01/27 11:19:44 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.8 2005/01/27 13:03:24 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -14,6 +14,7 @@
 #include <Magick++.h>
 using namespace Magick;
 #endif
+#include <glob.h>
 
 cxCache<tBitmapSpec,cText2SkinBitmap*> cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
 
@@ -33,32 +34,48 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
                                          int width, int colors, bool Quiet) {
 	tBitmapSpec spec(Filename, Alpha, height, width, colors);
 	Dprintf("checking image with spec %s_%d_%d_%d_%d..", Filename.c_str(),Alpha,height,width,colors);
+	std::string fname = Filename;
 
 	cText2SkinBitmap *res = NULL;
 	if (mCache.Contains(spec)) {
 		res = mCache[spec];
 		Dprintf("..cache ok\n");
 	} else {
+		int pos;
+		if ((pos = fname.find('*')) != -1) {
+			glob_t gbuf;
+			if (glob(fname.c_str(), 0, NULL, &gbuf) == 0){
+				Dprintf("GLOB: FOUND %s\n", gbuf.gl_pathv[0]);
+				fname = gbuf.gl_pathv[0];
+			} else {
+				if (!Quiet)
+					esyslog("ERROR: text2skin: No match for wildcard filename %s", 
+							Filename.c_str());
+				fname = "";
+			} 
+			globfree(&gbuf);
+		}
+
 		res = new cText2SkinBitmap;
-		int len = Filename.length();
+		int len = fname.length();
 		bool result = false;
 		if (len > 4) {
-			if (Filename.substr(len - 4, 4) == ".xpm")
-				result = res->LoadXpm(Filename.c_str());
+			if (fname.substr(len - 4, 4) == ".xpm")
+				result = res->LoadXpm(fname.c_str());
 			else {
 #ifdef HAVE_IMLIB2
-				result = res->LoadImlib(Filename.c_str(),height,width,colors, Quiet);
+				result = res->LoadImlib(fname.c_str(),height,width,colors, Quiet);
 #else
 #	ifdef HAVE_IMAGEMAGICK
-				result = res->LoadMagick(Filename.c_str(),height,width,colors, Quiet);
+				result = res->LoadMagick(fname.c_str(),height,width,colors, Quiet);
 #	else
 				if (!Quiet)
-					esyslog("ERROR: text2skin: unknown file format for %s", Filename);
+					esyslog("ERROR: text2skin: unknown file format for %s", fname);
 #	endif
 #endif
 			}
 		} else if (!Quiet)
-			esyslog("ERROR: text2skin: filename %s too short to identify format", Filename.c_str());
+			esyslog("ERROR: text2skin: filename %s too short to identify format", fname.c_str());
 	
 		Dprintf("..load %sok\n", result ? "" : "not ");
 		if (result)
