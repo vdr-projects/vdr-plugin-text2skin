@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.10 2005/01/15 20:54:08 lordjaxom Exp $
+ *  $Id: object.c,v 1.11 2005/01/26 20:39:34 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -10,21 +10,21 @@ static const std::string ObjectNames[] =
 	{ "image", "text", "marquee", "blink", "rectangle", "ellipse", "slope", "progress", 
 	  "scrolltext", "scrollbar", "block", "list", "item" };
 
-cxObject::cxObject(cxDisplay *parent):
-		mDisplay(parent),
-		mSkin(parent->Skin()),
+cxObject::cxObject(cxDisplay *Parent):
+		mDisplay(Parent),
+		mSkin(Parent->Skin()),
 		mType((eType)__COUNT_OBJECT__),
 		mPos1(0, 0),
 		mPos2(-1, -1),
 		mAlpha(255),
 		mColors(0),
 		mArc(0),
-		mPath(parent->Skin(), false),
-		mText(mSkin, true),
+		mPath(this, false),
+		mText(this, true),
 		mAlign(taDefault),
 		mCondition(NULL),
-		mCurrent(mSkin, false),
-		mTotal(mSkin, false),
+		mCurrent(this, false),
+		mTotal(this, false),
 		mFontFace("Osd"),
 		mFontSize(0),
 		mFontWidth(0),
@@ -45,6 +45,7 @@ cxObject::cxObject(const cxObject &Src):
 		mArc(Src.mArc),
 		mFg(Src.mFg),
 		mBg(Src.mBg),
+		mMask(Src.mMask),
 		mMark(Src.mMark),
 		mActive(Src.mActive),
 		mKeep(Src.mKeep),
@@ -85,7 +86,7 @@ bool cxObject::ParseType(const std::string &Text)
 
 bool cxObject::ParseCondition(const std::string &Text) 
 {
-	cxFunction *result = new cxFunction(mSkin);
+	cxFunction *result = new cxFunction(this);
 	if (result->Parse(Text)) {
 		delete mCondition;
 		mCondition = result;
@@ -179,6 +180,12 @@ const tColor *cxObject::Bg(void) const
 {
 	static tColor Bg;
 	return cText2SkinRender::ItemColor(mBg, Bg) ? &Bg : NULL;
+}
+
+const tColor *cxObject::Mask(void) const 
+{
+	static tColor Mask;
+	return cText2SkinRender::ItemColor(mMask, Mask) ? &Mask : NULL;
 }
 
 const tColor *cxObject::Mark(void) const 
