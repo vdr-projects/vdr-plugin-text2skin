@@ -1,5 +1,5 @@
 /*
- *  $Id: skin.h,v 1.2 2004/12/21 18:35:55 lordjaxom Exp $
+ *  $Id: skin.h,v 1.3 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_SKIN_H 
@@ -12,6 +12,9 @@
 #include <string>
 
 // --- cxSkin -----------------------------------------------------------------
+
+class cText2SkinI18n;
+class cText2SkinTheme;
 
 class cxSkin {
 	friend bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs);
@@ -28,17 +31,20 @@ public:
 	};
 
 private:
-	eScreenBase mBase;
-	txPoint     mBaseOffset;
-	txSize      mBaseSize;
-	std::string mName;
-	std::string mTitle;
-	std::string mVersion;
+	eScreenBase      mBase;
+	txPoint          mBaseOffset;
+	txSize           mBaseSize;
+	std::string      mName;
+	std::string      mTitle;
+	std::string      mVersion;
 	
-	cxDisplays  mDisplays;
+	cxDisplays       mDisplays;
+	
+	cText2SkinI18n  *mI18n; // TODO: should move here completely
+	cText2SkinTheme *mTheme;
 
 public:
-	cxSkin(const std::string &Name);
+	cxSkin(const std::string &Name, cText2SkinI18n *I18n, cText2SkinTheme *Theme);
 
 	cxDisplay *Get(cxDisplay::eType Type);
 
@@ -51,6 +57,9 @@ public:
 	const std::string &Name(void)       const { return mName; }
 	const std::string &Title(void)      const { return mTitle; }
 	const std::string &Version(void)    const { return mVersion; }
+
+	// functions for object classes to obtain dynamic item information
+	std::string        Translate(const std::string &Text);
 };
 
 inline cxDisplay *cxSkin::Get(cxDisplay::eType Type) {

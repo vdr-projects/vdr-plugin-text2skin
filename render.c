@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.11 2004/12/29 22:24:25 lordjaxom Exp $
+ * $Id: render.c,v 1.12 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -510,8 +510,7 @@ std::string cText2SkinRender::ImagePath(const std::string &Filename)
 	return cxFunction::False;
 }
 
-/* TODO: translation when parsing
-string cText2SkinRender::Translate(const string &Text) {
+/*std::string cText2SkinRender::Translate(const std::string &Text) {
 	if (mRender != NULL) {
 		string result;
 		if (mRender->mI18n != NULL)
@@ -521,8 +520,7 @@ string cText2SkinRender::Translate(const string &Text) {
 		return result;
 	}
 	return Text;
-}
-*/
+}*/
 
 cxType cText2SkinRender::GetToken(const txToken &Token) 
 {

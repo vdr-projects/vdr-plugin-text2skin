@@ -1,5 +1,5 @@
 /*
- *  $Id: parser.c,v 1.5 2004/12/29 00:38:08 lordjaxom Exp $
+ *  $Id: parser.c,v 1.6 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "xml/parser.h"
@@ -272,8 +272,9 @@ bool xEndElem(const std::string &name) {
 	return true;
 }
 
-cxSkin *xmlParse(const std::string &name, const std::string &fileName) {
-	skin = new cxSkin(name);
+cxSkin *xmlParse(const std::string &name, const std::string &fileName, cText2SkinI18n *I18n,
+                 cText2SkinTheme *Theme) {
+	skin = new cxSkin(name, I18n, Theme);
 	context.clear();
 
 	XML xml(fileName);

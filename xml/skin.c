@@ -1,18 +1,23 @@
 /*
- *  $Id: skin.c,v 1.2 2004/12/21 18:35:54 lordjaxom Exp $
+ *  $Id: skin.c,v 1.3 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "xml/skin.h"
+#include "i18n.h"
 #include <vdr/tools.h>
 #include <vdr/config.h>
 
 const std::string ScreenBases[] = { "relative", "absolute" };
 
-cxSkin::cxSkin(const std::string &Name):
-		mName(Name) {
+cxSkin::cxSkin(const std::string &Name, cText2SkinI18n *I18n, cText2SkinTheme *Theme):
+		mName(Name),
+		mI18n(I18n),
+		mTheme(Theme) 
+{
 }
 
-void cxSkin::SetBase(eScreenBase Base) {
+void cxSkin::SetBase(eScreenBase Base) 
+{
 	if (Base != (eScreenBase)-1)
 		mBase = Base;
 
@@ -32,7 +37,8 @@ void cxSkin::SetBase(eScreenBase Base) {
 	}
 }
 
-bool cxSkin::ParseBase(const std::string &Text) {
+bool cxSkin::ParseBase(const std::string &Text) 
+{
 	int i;
 	for (i = 0; i < (int)__COUNT_BASE__; ++i) {
 		if (ScreenBases[i] == Text)
@@ -43,4 +49,11 @@ bool cxSkin::ParseBase(const std::string &Text) {
 		return true;
 	}
 	return false;
+}
+	
+std::string cxSkin::Translate(const std::string &Text)
+{
+	if (mI18n != NULL)
+		return mI18n->Translate(Text);
+	return Text;
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.4 2004/12/28 01:24:35 lordjaxom Exp $
+ *  $Id: string.h,v 1.5 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -164,15 +164,20 @@ inline bool operator< (const txToken &A, const txToken &B)
 	       : A.Type < B.Type;
 }
 
+class cxSkin;
+
 class cxString {
 private:
 	std::string          mText;
+	std::string          mOriginal;
 	std::vector<txToken> mTokens;
+	cxSkin              *mSkin;
 
 public:
-	cxString(void);
+	cxString(cxSkin *Skin);
 
 	bool Parse(const std::string &Text);
+	bool Parse(void) { return Parse(mOriginal); }
 	cxType Evaluate(void) const;
 
 	void SetListIndex(uint Index, int Tab);

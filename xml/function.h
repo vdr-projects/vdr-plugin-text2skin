@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
+ *  $Id: function.h,v 1.3 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -35,6 +35,7 @@ public:
 	static const std::string True;
 	
 private:
+	cxSkin     *mSkin;
 	eType       mType;
 	cxString    mString;
 	int         mNumber;
@@ -46,7 +47,7 @@ protected:
 	std::string FunPlugin(const std::string &Param) const;
 
 public:
-	cxFunction(void);
+	cxFunction(cxSkin *Skin);
 	cxFunction(const cxString &String);
 	cxFunction(const cxFunction &Src);
 	~cxFunction();

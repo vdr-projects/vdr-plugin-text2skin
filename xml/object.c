@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.7 2004/12/29 00:38:08 lordjaxom Exp $
+ *  $Id: object.c,v 1.8 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -11,26 +11,32 @@ static const std::string ObjectNames[] =
 	  "scrolltext", "scrollbar", "block", "list", "item" };
 
 cxObject::cxObject(cxDisplay *parent):
+		mDisplay(parent),
+		mSkin(parent->Skin()),
 		mType((eType)__COUNT_OBJECT__),
 		mPos1(0, 0),
 		mPos2(-1, -1),
 		mAlpha(255),
 		mColors(0),
 		mArc(0),
+		mPath(parent->Skin()),
+		mText(mSkin),
 		mAlign(taDefault),
 		mCondition(NULL),
+		mCurrent(mSkin),
+		mTotal(mSkin),
 		mFontFace("Osd"),
 		mFontSize(0),
 		mFontWidth(0),
 		mDelay(150),
 		mIndex(0),
-		mObjects(NULL),
-		mDisplay(parent),
-		mSkin(parent->Skin()) 
+		mObjects(NULL)
 {
 }
 
 cxObject::cxObject(const cxObject &Src):
+		mDisplay(Src.mDisplay),
+		mSkin(Src.mSkin),
 		mType(Src.mType),
 		mPos1(Src.mPos1),
 		mPos2(Src.mPos2),
@@ -52,9 +58,7 @@ cxObject::cxObject(const cxObject &Src):
 		mFontSize(Src.mFontSize),
 		mFontWidth(Src.mFontSize),
 		mDelay(Src.mDelay),
-		mObjects(NULL),
-		mDisplay(Src.mDisplay),
-		mSkin(Src.mSkin)
+		mObjects(NULL)
 {
 	if (Src.mCondition)
 		mCondition = new cxFunction(*Src.mCondition);
@@ -81,7 +85,7 @@ bool cxObject::ParseType(const std::string &Text)
 
 bool cxObject::ParseCondition(const std::string &Text) 
 {
-	cxFunction *result = new cxFunction;
+	cxFunction *result = new cxFunction(mSkin);
 	if (result->Parse(Text)) {
 		delete mCondition;
 		mCondition = result;

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.6 2004/12/28 18:06:02 lordjaxom Exp $
+ * $Id: render.h,v 1.7 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -126,6 +126,7 @@ public:
 	virtual ~cText2SkinRender();
 
 	// functions for object classes to obtain dynamic item information
+	//static std::string Translate(const std::string &Text);
 	static txPoint Transform(const txPoint &Pos);
 	static bool ItemColor(const std::string &Color, tColor &Result);
 	static std::string ImagePath(const std::string &Filename);

@@ -1,5 +1,5 @@
 /*
- *  $Id: object.h,v 1.4 2004/12/28 14:35:54 lordjaxom Exp $
+ *  $Id: object.h,v 1.5 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
@@ -63,6 +63,8 @@ public:
 	};
 	
 private:
+	cxDisplay     *mDisplay;
+	cxSkin        *mSkin;
 	eType          mType;
 	txPoint        mPos1;
 	txPoint        mPos2;
@@ -86,8 +88,6 @@ private:
 	uint           mDelay;
 	uint           mIndex;
 	cxObjects     *mObjects; // used for block objects such as <list>
-	cxDisplay     *mDisplay;
-	cxSkin        *mSkin;
 
 public:
 	cxObject(cxDisplay *parent);

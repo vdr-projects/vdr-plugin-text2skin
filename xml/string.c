@@ -1,10 +1,9 @@
 /*
- *  $Id: string.c,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
+ *  $Id: string.c,v 1.4 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "xml/string.h"
 #include "render.h"
-#include <vdr/tools.h>
 
 static const char *Tokens[__COUNT_TOKEN__] = {
 	"DateTime",
@@ -37,7 +36,8 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"CanScrollDown"
 };
 
-std::string txToken::Token(const txToken &Token) {
+std::string txToken::Token(const txToken &Token) 
+{
 	std::string result = (std::string)"{" + Tokens[Token.Type];
 	//if (Token.Attrib.length() > 0)
 	//	result += ":" + Token.Attrib;
@@ -46,17 +46,22 @@ std::string txToken::Token(const txToken &Token) {
 	return result;
 }
 
-cxString::cxString(void) {
+cxString::cxString(cxSkin *Skin):
+		mSkin(Skin)
+{
 }
 
-bool cxString::Parse(const std::string &Text) {
-	const char *text = Text.c_str();
+bool cxString::Parse(const std::string &Text) 
+{
+	std::string trans = mSkin->Translate(Text);
+	const char *text = trans.c_str();
 	const char *ptr = text, *last = text;
 	bool inToken = false;
 	bool inAttrib = false;
 	int offset = 0;
 
 	Dprintf("parsing: %s\n", Text.c_str());
+	mOriginal = Text;
 
 	for (; *ptr; ++ptr) {
 		if (inToken && *ptr == '\\') {

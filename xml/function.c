@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.3 2004/12/29 22:22:16 lordjaxom Exp $
+ *  $Id: function.c,v 1.4 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -16,9 +16,10 @@ static const char *Internals[] = {
 const std::string cxFunction::False = "";
 const std::string cxFunction::True  = "1";
 
-cxFunction::cxFunction(void):
+cxFunction::cxFunction(cxSkin *Skin):
+		mSkin(Skin),
 		mType(string),
-		mString(),
+		mString(Skin),
 		mNumber(0),
 		mNumParams(0) 
 {
@@ -108,7 +109,7 @@ bool cxFunction::Parse(const std::string &Text)
 				}
 
 				if (inExpr == 1) {
-					expr = new cxFunction;
+					expr = new cxFunction(mSkin);
 					if (!expr->Parse(std::string(last, ptr - last))) {
 						delete expr;
 						return false;

@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
+ * $Id: loader.c,v 1.2 2005/01/01 23:44:36 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -50,7 +50,7 @@ void cText2SkinLoader::Load(const char *Skin) {
 	if (access(skinfile.c_str(), F_OK) == 0) {
 		isyslog("parsing %s", skinfile.c_str());
 
-		cxSkin *skin = xmlParse(Skin, skinfile);
+		cxSkin *skin = xmlParse(Skin, skinfile, translations, theme);
 		if (skin) {
 			if (skin->Version() == cText2SkinPlugin::SkinVersion()) {
 				new cText2SkinLoader(skin, translations, theme, Skin, skin->Title());
