@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.13 2005/01/23 19:44:09 lordjaxom Exp $
+ *  $Id: function.c,v 1.14 2005/01/26 20:40:28 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -13,16 +13,19 @@ static const char *Internals[] = {
 	"not", "and", "or", "equal", "file", "trans", "plugin", "gt",  "lt", "ge", "le", "ne", NULL
 };
 
-cxFunction::cxFunction(cxSkin *Skin):
-		mSkin(Skin),
+cxFunction::cxFunction(cxObject *Parent):
+		mObject(Parent),
+		mSkin(Parent->Skin()),
 		mType(string),
-		mString(Skin, false),
+		mString(mObject, false),
 		mNumber(0),
 		mNumParams(0) 
 {
 }
 
 cxFunction::cxFunction(const cxString &String):
+		mObject(String.Object()),
+		mSkin(String.Skin()),
 		mType(string),
 		mString(String),
 		mNumber(0),
@@ -31,6 +34,8 @@ cxFunction::cxFunction(const cxString &String):
 }
 
 cxFunction::cxFunction(const cxFunction &Src):
+		mObject(Src.mObject),
+		mSkin(Src.mSkin),
 		mType(Src.mType),
 		mString(Src.mString),
 		mNumber(Src.mNumber),
@@ -118,7 +123,7 @@ bool cxFunction::Parse(const std::string &Text)
 				}
 
 				if (inExpr == 1) {
-					expr = new cxFunction(mSkin);
+					expr = new cxFunction(mObject);
 					if (!expr->Parse(std::string(last, ptr - last))) {
 						delete expr;
 						return false;
@@ -180,8 +185,11 @@ bool cxFunction::Parse(const std::string &Text)
 cxType cxFunction::FunFile(const cxType &Param) const
 {
 	std::string path = cText2SkinRender::ImagePath(Param);
-	Dprintf("checking file(%s) in cache\n", path.c_str());
-	return cText2SkinBitmap::Available(path)
+	//Dprintf("checking file(%s) in cache\n", path.c_str());
+	return cText2SkinBitmap::Available(path, mObject->Alpha(), 
+	                                   mObject->Size().h > 1 ? mObject->Size().h : 0,
+	                                   mObject->Size().w > 1 ? mObject->Size().w : 0,
+									   mObject->Colors())
 	       ? (cxType)Param
 	       : (cxType)false;
 }
@@ -224,6 +232,8 @@ cxType cxFunction::Evaluate(void) const
 		return false;
 
 	case fun_eq:
+		if (mParams[1]->Evaluate() == "Stereo")
+			Dprintf("eq: |%s| |%s|\n", mParams[0]->Evaluate().String().c_str(), mParams[1]->Evaluate().String().c_str());
 		return mParams[0]->Evaluate() == mParams[1]->Evaluate();
 
 	case fun_ne:
