@@ -1,5 +1,5 @@
 /*
- *  $Id: display.h,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
+ *  $Id: display.h,v 1.3 2005/01/02 20:01:45 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DISPLAY_H 
@@ -20,6 +20,7 @@ public:
 		channelInfo,
 		channelSmall,
 		volume,
+		audioTracks,
 		message,
 		replayInfo,
 		replaySmall,

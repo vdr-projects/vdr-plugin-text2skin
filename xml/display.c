@@ -1,11 +1,12 @@
 /*
- *  $Id: display.c,v 1.1 2004/12/19 22:03:25 lordjaxom Exp $
+ *  $Id: display.c,v 1.2 2005/01/02 20:01:25 lordjaxom Exp $
  */
 
 #include "xml/display.h"
 
 static const std::string DisplayNames[] = 
-	{ "channelInfo", "channelSmall", "volume", "message", "replayInfo", "replaySmall", "menu" };
+	{ "channelInfo", "channelSmall", "volume", "audioTracks", "message", "replayInfo", 
+      "replaySmall", "menu" };
 
 cxDisplay::cxDisplay(cxSkin *parent):
 		mType((eType)__COUNT_DISPLAY__),
