@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.21 2005/01/12 18:07:03 lordjaxom Exp $
+ * $Id: render.c,v 1.22 2005/01/19 19:30:27 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -532,7 +532,7 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 			return (*it).second;
 
 		cxType res = mRender->GetTokenData(Token);
-		if (Token.Attrib.Type == aClean) {
+		if      (Token.Attrib.Type == aClean) {
 			std::string str = res.String();
 			int pos = -1;
 
@@ -548,13 +548,12 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 			}
 			else if (Token.Type == tMenuTitle) {
 				if ((pos = str.find(" - ")) != -1) {
-						//|| (pos = str.find(' ')) != -1) {
 					str.erase(pos);
 					while (str[str.length() - 1] == ' ')
 						str.erase(str.length() - 1);
 					res = str;
 				}
-				Dprintf("MenuTitle result: |%s|\n", res.String().c_str());
+				Dprintf("MenuTitle 'clean' result: |%s|\n", res.String().c_str());
 			}
 			else if (Token.Type == tReplayTitle) {
 				if (Text2SkinStatus.ReplayMode() == cText2SkinStatus::replayMP3) {
@@ -564,6 +563,21 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				Dprintf("ReplayTitle result: |%s|\n", res.String().c_str());
 			}
 		}
+		else if (Token.Attrib.Type == aRest) {
+			std::string str = res.String();
+			int pos = -1;
+
+			if (Token.Type == tMenuTitle) {
+				if ((pos = str.find(" - ")) != -1) {
+					str.erase(0, pos + 3);
+					while (str[0] == ' ')
+						str.erase(0, 1);
+					res = str;
+				}
+				Dprintf("MenuTitle 'rest' result: |%s|\n", res.String().c_str());
+			}
+		}
+
 		if (res.UpdateIn() > 0) {
 			Dprintf("Passing token without cacheing\n");
 			if (mRender->mUpdateIn == 0 || res.UpdateIn() < mRender->mUpdateIn) {
