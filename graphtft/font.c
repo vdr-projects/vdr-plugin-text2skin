@@ -1,5 +1,5 @@
 /*
- *  $Id: font.c,v 1.2 2005/01/02 14:34:05 lordjaxom Exp $
+ *  $Id: font.c,v 1.3 2005/01/02 23:18:42 lordjaxom Exp $
  *
  * Taken from GraphTFT 
  */
@@ -57,6 +57,9 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 
 	// set slot
 	_slot = _face->glyph;
+
+	if (Width > 0)
+		Width = Size * Width / 100;
 
 	// set Size
 	FT_Set_Char_Size
