@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.20 2005/01/11 18:02:11 lordjaxom Exp $
+ * $Id: render.c,v 1.21 2005/01/12 18:07:03 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -598,6 +598,7 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
 
+#if VDRVERSNUM >=10318
 	case tAudioTrack:    {
 			cDevice *dev = cDevice::PrimaryDevice();
 			const tTrackId *Track = dev->GetTrack(dev->GetCurrentAudioTrack());
@@ -608,6 +609,7 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tAudioChannel:
 		return cText2SkinDisplayTracks::ChannelName(cDevice::PrimaryDevice()->GetAudioChannel());
+#endif
 
 	default:             return Text2SkinStatus.GetTokenData(Token);
 	}
