@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.4 2005/01/02 19:55:36 lordjaxom Exp $
+ * $Id: display.c,v 1.5 2005/01/05 19:27:45 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -644,7 +644,7 @@ cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinLoader *Loader):
 	const cxObject *area = NULL;
 	for (uint i = 0; i < disp->Objects(); ++i) {
 		const cxObject *o = disp->GetObject(i);
-		if (disp->GetObject(i)->Type() == cxObject::list) {
+		if (o->Type() == cxObject::list) {
 			area = o;
 			break;
 		}
@@ -950,6 +950,8 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 }
 
 #if VDRVERSNUM >= 10318
+// --- cText2SkinDisplayTracks ------------------------------------------------
+
 cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title,
                                                  int NumTracks, const char * const *Tracks):
 		cText2SkinRender(Loader, cxDisplay::audioTracks),
@@ -957,6 +959,10 @@ cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const
 		mItems(),
 		mCurrentItem((uint)-1)
 {
+	for (int i = 0; i < NumTracks; ++i) {
+		tListItem item(Tracks[i]);
+		mItems.push_back(item);
+	}
 }
 
 cText2SkinDisplayTracks::~cText2SkinDisplayTracks()
@@ -965,11 +971,51 @@ cText2SkinDisplayTracks::~cText2SkinDisplayTracks()
 
 void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
 {
+	UpdateLock();
+	if (mCurrentItem != (uint)Index) {
+		mCurrentItem = Index;
+		SetDirty();
+	}
+	UpdateUnlock();
 }
 
 cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 {
-	return cText2SkinRender::GetTokenData(Token);
+	switch (Token.Type) {
+	case tMenuItem:
+		if (Token.Index < 0) return false;
+	case tMenuCurrent:
+		if (Token.Index >= 0 && Token.Tab == -1) return false;
+		break;
+		
+	default:
+		if (Token.Tab >= 0) return false;
+		break;
+	}
+
+	switch (Token.Type) {
+	case tMenuTitle:
+		return mTitle;
+
+	case tMenuItem:
+		return mItems.size() > (uint)Token.Index && mCurrentItem != (uint)Token.Index
+		       ? (cxType)mItems[Token.Index].text
+		       : (cxType)false;
+	
+	case tIsMenuItem:
+		return mItems.size() > (uint)Token.Index && mCurrentItem != (uint)Token.Index;
+
+	case tMenuCurrent:
+		return mItems.size() > (uint)Token.Index && mCurrentItem == (uint)Token.Index
+		       ? (cxType)mItems[Token.Index].text
+		       : (cxType)false;
+
+	case tIsMenuCurrent:
+		return mItems.size() > (uint)Token.Index && mCurrentItem == (uint)Token.Index;
+			
+	default:
+		return cText2SkinRender::GetTokenData(Token);
+	}
 }
 
 #endif
