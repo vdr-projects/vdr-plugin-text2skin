@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.18 2005/01/07 23:30:46 lordjaxom Exp $
+ * $Id: render.c,v 1.19 2005/01/07 23:57:17 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -365,10 +365,10 @@ void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const t
 	if (mUpdateIn == 0 || updatein < mUpdateIn)
 		mUpdateIn = updatein;
 
-	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), state.offset == 0 
-	                                              ? (Fg ? *Fg : 0) 
-	                                              : (Bg ? *Bg : 0),
-	                  clrTransparent, Font, Size.w, Size.h, Align);
+	const tColor *col = state.offset == 0 ? Fg : Bg;
+	if (col)
+		mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), *col, clrTransparent, Font, Size.w, Size.h, 
+		                  Align);
 }
 
 void cText2SkinRender::DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg) 
