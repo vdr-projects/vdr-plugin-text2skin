@@ -1,5 +1,5 @@
 /*
- * $Id: loader.c,v 1.2 2005/01/01 23:44:36 lordjaxom Exp $
+ * $Id: loader.c,v 1.3 2005/01/02 19:56:05 lordjaxom Exp $
  */
 
 #include "loader.h"
@@ -64,36 +64,52 @@ void cText2SkinLoader::Load(const char *Skin) {
 	}
 }
 
-cText2SkinLoader::cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, const std::string &Skin, const std::string &Description): cSkin(Skin.c_str(), Theme->Theme()) {
-	mData = Data;
-	mI18n = I18n;
-	mTheme = Theme;
-	mDescription = Description;
-	
+cText2SkinLoader::cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, 
+                                   const std::string &Skin, const std::string &Description): 
+		cSkin(Skin.c_str(), Theme->Theme()),
+		mData(Data),
+		mI18n(I18n),
+		mTheme(Theme),
+		mDescription(Description)
+{
 }
 
-cText2SkinLoader::~cText2SkinLoader() {
+cText2SkinLoader::~cText2SkinLoader() 
+{
 	delete mData;
 	delete mI18n;
 	delete mTheme;
 }
 
-cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {
+cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) 
+{
 	return new cText2SkinDisplayChannel(this, WithInfo);
 }
 
-cSkinDisplayMenu *cText2SkinLoader::DisplayMenu(void) {
+cSkinDisplayMenu *cText2SkinLoader::DisplayMenu(void) 
+{
 	return new cText2SkinDisplayMenu(this);
 }
 
-cSkinDisplayVolume *cText2SkinLoader::DisplayVolume(void) {
+cSkinDisplayVolume *cText2SkinLoader::DisplayVolume(void) 
+{
 	return new cText2SkinDisplayVolume(this);
 }
 
-cSkinDisplayReplay *cText2SkinLoader::DisplayReplay(bool ModeOnly) {
+cSkinDisplayReplay *cText2SkinLoader::DisplayReplay(bool ModeOnly) 
+{
 	return new cText2SkinDisplayReplay(this, ModeOnly);
 }
 
-cSkinDisplayMessage *cText2SkinLoader::DisplayMessage(void) {
+cSkinDisplayMessage *cText2SkinLoader::DisplayMessage(void) 
+{
 	return new cText2SkinDisplayMessage(this);
 }
+
+#if VDRVERSNUM >= 10318
+cSkinDisplayTracks *cText2SkinLoader::DisplayTracks(const char *Title, int NumTracks, 
+                                                    const char * const *Tracks)
+{
+	return new cText2SkinDisplayTracks(this, Title, NumTracks, Tracks);
+}
+#endif
