@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.10 2005/01/20 17:07:09 lordjaxom Exp $
+ * $Id: render.h,v 1.11 2005/01/20 20:45:46 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -96,7 +96,7 @@ protected:
 	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
 	void DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
 	void DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, int Total, 
-	                     const tColor *Fg, const tColor *Bg, const tColor *Selected, 
+	                     const tColor *Bg, const tColor *Fg, const tColor *Selected, 
 	                     const tColor *Mark, const tColor *Cur, const cMarks *Marks = NULL);
 	void DrawMark(const txPoint &Pos, const txSize &Size, bool Start, bool Current, bool Horizontal,
 	              const tColor *Mark, const tColor *Cur);
