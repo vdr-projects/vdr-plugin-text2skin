@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.2 2004/12/21 22:15:45 lordjaxom Exp $
+ * $Id: display.h,v 1.3 2004/12/21 22:19:58 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -139,9 +139,9 @@ private:
 
 	// list view
 	struct tListItem {
-		std::string     text;
-		std::string     tabs[MaxTabs];
-		bool            sel;
+		std::string   text;
+		std::string   tabs[MaxTabs];
+		bool          sel;
 
 		tListItem(const std::string &Text, bool Sel): text(Text), sel(Sel) {}
 
@@ -149,8 +149,8 @@ private:
 	};
 	typedef std::vector<tListItem> tListItems;
 
-	tListItems mItems;
-	uint       mCurrentItem;
+	tListItems        mItems;
+	uint              mCurrentItem;
 
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
