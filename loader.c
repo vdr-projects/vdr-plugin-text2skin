@@ -1,19 +1,20 @@
 /*
- * $Id: loader.c,v 1.12 2004/06/22 16:48:03 lordjaxom Exp $
+ * $Id: loader.c,v 1.4 2004/12/08 17:13:25 lordjaxom Exp $
  */
 
 #include "loader.h"
-#include "data.h"
 #include "i18n.h"
 #include "theme.h"
 #include "display.h"
 #include "text2skin.h"
+#include "xml/parser.h"
+#include "xml/skin.h"
 #include <vdr/plugin.h>
 #include <sys/types.h>
 #include <dirent.h>
 
 void cText2SkinLoader::Start(void) {
-	DIR *d = opendir(SkinPath());
+	DIR *d = opendir(SkinPath().c_str());
 	if (d) {
 		struct dirent *ent;
 		while ((ent = readdir(d)) != NULL) {
@@ -21,7 +22,7 @@ void cText2SkinLoader::Start(void) {
 			struct stat buf;
 			if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
 				continue;
-			asprintf(&path, "%s/%s", SkinPath(), ent->d_name);
+			asprintf(&path, "%s/%s", SkinPath().c_str(), ent->d_name);
 			if (stat(path, &buf) == 0 && S_ISDIR(buf.st_mode))
 				Load(ent->d_name);
 			free(path);
@@ -32,7 +33,7 @@ void cText2SkinLoader::Start(void) {
 
 void cText2SkinLoader::Load(const char *Skin) {
 	cText2SkinI18n *translations = NULL;
-	string transfile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".trans";
+	std::string transfile = (std::string)SkinPath() + "/" + Skin + "/" + Skin + ".trans";
 	if (access(transfile.c_str(), F_OK) == 0) {
 		translations = new cText2SkinI18n(Skin);
 		if (!translations->Load(transfile))
@@ -40,34 +41,33 @@ void cText2SkinLoader::Load(const char *Skin) {
 	}
 
 	cText2SkinTheme *theme = new cText2SkinTheme(Skin);
-	string themefile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".colors";
+	std::string themefile = SkinPath() + "/" + Skin + "/" + Skin + ".colors";
 	theme->Load(themefile);
 	
-	string skinfile = (string)SkinPath() + "/" + Skin + "/" + Skin + ".skin";
+	std::string skinfile = SkinPath() + "/" + Skin + "/" + Skin + ".skin";
 	if (access(skinfile.c_str(), F_OK) == 0) {
-		cText2SkinData *data = new cText2SkinData(Skin);
-		if (data->Load(skinfile)) {
-			cText2SkinItem *skin = data->Get(sectionSkin, itemSkin);
-			if (skin) {
-				if (skin->Version() == cText2SkinPlugin::ThemeVersion()) {
-					new cText2SkinLoader(data, translations, theme, Skin, skin->Name());
-					return;
-				} else
-					esyslog("ERROR: text2skin: Skin is version %s, expecting %s", skin->Version().c_str(), cText2SkinPlugin::ThemeVersion());
+		isyslog("parsing %s", skinfile.c_str());
+
+		cxSkin *skin = xmlParse(Skin, skinfile);
+		if (skin) {
+			if (skin->Version() == cText2SkinPlugin::SkinVersion()) {
+				new cText2SkinLoader(skin, translations, theme, Skin, skin->Title());
 				return;
 			} else
-				esyslog("ERROR: text2skin: Item=Skin is missing in Skin");
-		}
-		delete data;
-	} else
-		esyslog("ERROR: text2skin: %s/%s is not a valid skin directory", SkinPath(), Skin);
+				esyslog("ERROR: text2skin: Skin is version %s, expecting %s", skin->Version().c_str(), 
+				        cText2SkinPlugin::SkinVersion());
+		} else
+			esyslog("ERROR: error in skin file");
+		delete skin;
+	}
 }
 
-cText2SkinLoader::cText2SkinLoader(cText2SkinData *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, const string &Skin, const string &Description): cSkin(Skin.c_str(), Theme->Theme()) {
+cText2SkinLoader::cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, const std::string &Skin, const std::string &Description): cSkin(Skin.c_str(), Theme->Theme()) {
 	mData = Data;
 	mI18n = I18n;
 	mTheme = Theme;
 	mDescription = Description;
+	
 }
 
 cText2SkinLoader::~cText2SkinLoader() {
@@ -77,7 +77,6 @@ cText2SkinLoader::~cText2SkinLoader() {
 }
 
 cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {
-	Dprintf("WithInfo: %d\n", WithInfo);
 	return new cText2SkinDisplayChannel(this, WithInfo);
 }
 

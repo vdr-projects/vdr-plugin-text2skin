@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.h,v 1.3 2004/06/22 16:48:03 lordjaxom Exp $
+ * $Id: i18n.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_I18N_H
@@ -13,7 +13,7 @@ extern const tI18nPhrase Phrases[];
 
 class cText2SkinI18n: public cText2SkinFile {
 private:
-	string       mIdentity;
+	std::string  mIdentity;
 	tI18nPhrase *mPhrases;
 	int          mNumPhrases;
 
@@ -24,8 +24,8 @@ public:
 	cText2SkinI18n(const char *Skin);
 	virtual ~cText2SkinI18n();
 
-	virtual bool Load(const string &Filename);
-	string Translate(const string &Text) { return I18nTranslate(Text.c_str(), mIdentity.c_str()); }
+	virtual bool Load(const std::string &Filename);
+	std::string Translate(const std::string &Text) { return I18nTranslate(Text.c_str(), mIdentity.c_str()); }
 };
 
 #endif // VDR_TEXT2SKIN_I18N_H

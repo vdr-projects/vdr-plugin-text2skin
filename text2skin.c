@@ -3,16 +3,17 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.25 2004/07/14 16:01:38 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.2 2004/12/08 17:13:26 lordjaxom Exp $
  */
 
 #include "text2skin.h"
 #include "setup.h"
+#include "menu.h"
 #include "i18n.h"
 #include "loader.h"
 
-const char *cText2SkinPlugin::VERSION        = "0.0.8.1";
-const char *cText2SkinPlugin::THEMEVERSION   = "0.0.3";
+const char *cText2SkinPlugin::VERSION        = "1.0-pre1";
+const char *cText2SkinPlugin::SKINVERSION    = "1.0";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
 cText2SkinPlugin::cText2SkinPlugin(void) {
@@ -24,7 +25,7 @@ cText2SkinPlugin::~cText2SkinPlugin() {
 bool cText2SkinPlugin::Start(void) {
 	RegisterI18n(Phrases);
 	cText2SkinLoader::Start();
-  return true;
+	return true;
 }
 
 cMenuSetupPage *cText2SkinPlugin::SetupMenu(void) {

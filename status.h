@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.2 2004/06/12 19:17:06 lordjaxom Exp $
+ * $Id: status.h,v 1.2 2004/12/08 17:13:26 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H
@@ -9,18 +9,36 @@
 #include <vdr/status.h>
 
 class cText2SkinStatus: public cStatus {
+public:
+	enum eReplayMode {
+		replayNone,
+		replayNormal,
+		replayMP3,
+		replayMPlayer,
+		replayDVD,
+		replayVCD,
+		replayImage,
+
+#define __REPLAY_COUNT__ (replayImage+1)
+	};
+
 private:
-	static cText2SkinStatus mStatus;
+	static cText2SkinStatus *mStatus;
+	static const std::string ReplayNames[__REPLAY_COUNT__];
 
 	eReplayMode mReplayMode;
 
 protected:
-	cText2SkinStatus(void);
-
 	virtual void Replaying(const cControl *Control, const char *Name);
 
 public:
-	static eReplayMode ReplayMode(void) { return mStatus.mReplayMode; }
+	cText2SkinStatus(void);
+
+	static const std::string &ReplayMode(void);
 };
+
+inline const std::string &cText2SkinStatus::ReplayMode(void) {
+	return ReplayNames[mStatus->mReplayMode];
+}
 
 #endif // VDR_TEXT2SKIN_STATUS_H

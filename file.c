@@ -1,5 +1,5 @@
 /*
- * $Id: file.c,v 1.1 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: file.c,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */
 
 #include "file.h"
@@ -12,7 +12,7 @@ cText2SkinFile::cText2SkinFile(const char *Skin) {
 cText2SkinFile::~cText2SkinFile() {
 }
 
-bool cText2SkinFile::Load(const string &Filename) {
+bool cText2SkinFile::Load(const std::string &Filename) {
 	bool result = true;
 	if (access(Filename.c_str(), F_OK) == 0) {
 		isyslog("text2skin: loading %s", Filename.c_str());

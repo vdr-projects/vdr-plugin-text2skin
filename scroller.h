@@ -1,5 +1,5 @@
 /*
- *  $Id: scroller.h,v 1.1 2004/07/05 17:55:34 lordjaxom Exp $
+ *  $Id: scroller.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SCROLLER_H

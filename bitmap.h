@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.h,v 1.12 2004/06/18 16:08:11 lordjaxom Exp $
+ * $Id: bitmap.h,v 1.2 2004/12/08 18:47:37 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_BITMAP_H
@@ -13,16 +13,16 @@ class cText2SkinBitmap {
 private:
 	static cText2SkinCache mCache;
 
-	vector<cBitmap*>   mBitmaps;
-	int                mCurrent;
-	time_t             mDelay;
-	time_t             mLastGet;
+	std::vector<cBitmap*> mBitmaps;
+	int                   mCurrent;
+	time_t                mDelay;
+	time_t                mLastGet;
 
 	// disallow direct construction
 	cText2SkinBitmap(void);
 
 public:
-	static cText2SkinBitmap *Load(const char *Filename, int Alpha = 0);
+	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0);
 	static void ResetCache(void) { mCache.Reset(); }
 	static void FlushCache(void) { mCache.Flush(); }
 	
@@ -33,12 +33,12 @@ public:
 	void SetColor(int Index, tColor Color);
 	void SetAlpha(int Alpha);
 
-	bool LoadXpm(const char *Filename, int Alpha);
+	bool LoadXpm(const char *Filename);
 #ifdef HAVE_IMLIB2
-	bool LoadImlib(const char *Filename, int Alpha);
+	bool LoadImlib(const char *Filename);
 #endif
 #ifdef HAVE_IMAGEMAGICK
-	bool LoadMagick(const char *Filename, int Alpha);
+	bool LoadMagick(const char *Filename);
 #endif
 };
 

@@ -1,5 +1,5 @@
 /*
- * $Id: theme.h,v 1.1 2004/06/02 20:43:05 lordjaxom Exp $
+ * $Id: theme.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */ 
 
 #ifndef VDR_TEXT2SKIN_THEME_H
@@ -7,12 +7,13 @@
 
 #include "common.h"
 #include "file.h"
+#include <map>
 #include <vdr/themes.h>
 
 class cText2SkinTheme: public cText2SkinFile {
 private:
-	cTheme          mTheme;
-	map<string,int> mMap;
+	cTheme                    mTheme;
+	std::map<std::string,int> mMap;
 
 protected:
 	bool Parse(const char *Text);
@@ -22,10 +23,10 @@ public:
 	virtual ~cText2SkinTheme();
 
 	cTheme *Theme(void) { return &mTheme; }
-	tColor Color(const string &Name);
+	tColor Color(const std::string &Name);
 };
 
-inline tColor cText2SkinTheme::Color(const string &Name) {
+inline tColor cText2SkinTheme::Color(const std::string &Name) {
 	if (mMap.find(Name) != mMap.end())
 		return mTheme.Color(mMap[Name]);
 	else

@@ -1,23 +1,25 @@
 /*
- * $Id: cache.h,v 1.5 2004/06/18 16:08:11 lordjaxom Exp $
+ * $Id: cache.h,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
 #define VDR_TEXT2SKIN_CACHE_HPP
 
 #include "common.h"
+#include <map>
+#include <vector>
 #include <vdr/tools.h>
 
 class cText2SkinBitmap;
 
 class cText2SkinCache {
 private:
-	typedef string            key_type;
+	typedef std::string       key_type;
 	typedef cText2SkinBitmap* data_type;
 
-	typedef map<key_type,data_type> item_map;
+	typedef std::map<key_type,data_type> item_map;
 	typedef item_map::iterator item_iterator;
-	typedef vector<key_type> usage_list;
+	typedef std::vector<key_type> usage_list;
 	typedef usage_list::iterator usage_iterator;
 
 	item_map   mItems;

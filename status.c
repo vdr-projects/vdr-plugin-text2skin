@@ -1,16 +1,21 @@
 /* 
- * $Id: status.c,v 1.2 2004/06/12 19:17:06 lordjaxom Exp $
+ * $Id: status.c,v 1.3 2004/12/08 18:47:37 lordjaxom Exp $
  */
  
 #include "status.h"
 
-cText2SkinStatus cText2SkinStatus::mStatus;
+cText2SkinStatus *cText2SkinStatus::mStatus = NULL;
+const std::string cText2SkinStatus::ReplayNames[__REPLAY_COUNT__] =
+	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image" };
+
+cText2SkinStatus Text2SkinStatus;
 
 cText2SkinStatus::cText2SkinStatus(void) {
+	mStatus = this;
 	mReplayMode = replayNone;
 }
 
-void cText2SkinStatus::Replaying(const cControl *Control, const char *Name) {
+void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) {
 	if (Name != NULL) {
 		mReplayMode = replayNormal;
 		if (strlen(Name) > 6 && Name[0]=='[' && Name[3]==']' && Name[5]=='(') {
@@ -27,6 +32,8 @@ void cText2SkinStatus::Replaying(const cControl *Control, const char *Name) {
 			mReplayMode = replayVCD;
 		else if (access(Name, F_OK) == 0)
 			mReplayMode = replayMPlayer;
+		else if (strncmp(Name, "[image]", 7) == 0)
+			mReplayMode = replayImage;
 		else if (strlen(Name) > 7) {
 			int i, n;
 			for (i = 0, n = 0; Name[i]; ++i) {

@@ -1,5 +1,5 @@
 /*
- *  $Id: scroller.c,v 1.1 2004/07/05 17:55:34 lordjaxom Exp $
+ *  $Id: scroller.c,v 1.3 2004/12/08 17:13:26 lordjaxom Exp $
  */
 
 #include "scroller.h"
@@ -56,14 +56,12 @@ void cText2SkinScroller::Scroll(bool Up, bool Page)
       mOffset -= Page ? mShown : 1;
       if (mOffset < 0)
         mOffset = 0;
-      DrawText();
     }
   } else {
     if (CanScrollDown()) {
       mOffset += Page ? mShown : 1;
       if (mOffset + mShown > Total())
         mOffset = Total() - mShown;
-      DrawText();
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: screen.h,v 1.2 2004/07/13 13:52:51 lordjaxom Exp $
+ *  $Id: screen.h,v 1.2 2004/12/06 15:01:02 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SCREEN_H
@@ -8,14 +8,21 @@
 #include "common.h"
 #include <vdr/osd.h>
 
+#undef DIRECTBLIT
+
 class cText2SkinScreen {
+	/* Skin Editor */
+	friend class VSkinnerScreen;
+
 private:
 	cOsd    *mOsd;
+	cBitmap *mScreen;
 	cBitmap *mRegions[MAXOSDAREAS];
+	bool     mOffScreen;
 	int      mNumRegions;
 
 public:
-	cText2SkinScreen(int x, int y);
+	cText2SkinScreen(bool OffScreen = false);
 	~cText2SkinScreen();
 
 	eOsdError SetAreas(const tArea *Areas, int NumAreas);

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 $ITEMFILE="common.h";
-$PARMFILE="data.h";
+$PARMFILE="xml/object.h";
 
 sub printo {
 	my $text = shift;

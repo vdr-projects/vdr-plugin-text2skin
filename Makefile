@@ -5,11 +5,15 @@
 HAVE_IMAGEMAGICK=1
 #HAVE_IMLIB2=1
 
+# comment this out if you don't want to use FreeType font rendering
+
+HAVE_FREETYPE=1
+
 
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.15 2004/07/02 19:00:22 lordjaxom Exp $
+# $Id: Makefile,v 1.7 2004/12/08 18:47:37 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -25,7 +29,7 @@ VERSION = $(shell grep 'const char \*cText2SkinPlugin::VERSION *=' $(PLUGIN).c |
 ### The C++ compiler and options:
 
 CXX      ?= g++
-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
+CXXFLAGS ?= -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
@@ -43,9 +47,20 @@ VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print
 ARCHIVE = $(PLUGIN)-$(VERSION)
 PACKAGE = vdr-$(ARCHIVE)
 
-### Includes and Defines (add further entries here):
+### Allow user defined options to overwrite defaults:
 
 -include $(VDRDIR)/Make.config
+
+### The object files (add further files here):
+
+OBJS = $(PLUGIN).o loader.o display.o render.o common.o bitmap.o \
+       file.o i18n.o theme.o cache.o setup.o status.o scroller.o screen.o \
+       menu.o font.o \
+       \
+       xml/skin.o xml/parser.o xml/string.o xml/object.o xml/function.o \
+       xml/type.o xml/display.o xml/xml.o
+
+### Includes and Defines (add further entries here):
 
 ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2
@@ -54,31 +69,32 @@ endif
 
 ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
-#	LIBS += -lMagick -lMagick++
-	LIBS += $(shell Magick++-config --ldflags --libs)
+	LIBS += -lMagick -lMagick++
+#	LIBS += $(shell Magick++-config --ldflags --libs)
+endif
+
+ifdef HAVE_FREETYPE
+	INCLUDES += $(shell freetype-config --cflags)
+	LIBS += $(shell freetype-config --libs)
+	DEFINES += -DHAVE_FREETYPE
+	OBJS += graphtft/font.o
 endif
 
 ifdef DEBUG
+	CXXFLAGS += -O2 -g
 	DEFINES += -DDEBUG
+else
+	CXXFLAGS += -O2
 endif
 
-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
+INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include -I.
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
-
-### Allow user defined options to overwrite defaults:
-
--include $(VDRDIR)/Make.config
-
-### The object files (add further files here):
-
-OBJS = $(PLUGIN).o loader.o data.o display.o render.o common.o bitmap.o \
-       file.o i18n.o theme.o cache.o setup.o status.o scroller.o screen.o
 
 ### Implicit rules:
 
 %.o: %.c
-	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
+	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
 
 # Dependencies:
 
@@ -107,8 +123,9 @@ dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@mkdir $(TMPDIR)/$(ARCHIVE)
 	@cp -a * $(TMPDIR)/$(ARCHIVE)
-	@tar czf $(PACKAGE).tgz -C $(TMPDIR) $(ARCHIVE)
-	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+	@ln -s $(ARCHIVE) $(TMPDIR)/$(PLUGIN)
+	@tar czf $(PACKAGE).tgz -C $(TMPDIR) $(ARCHIVE) $(PLUGIN)
+	@-rm -rf $(TMPDIR)/$(ARCHIVE) $(TMPDIR)/$(PLUGIN)
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:

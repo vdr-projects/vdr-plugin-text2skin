@@ -1,5 +1,5 @@
 /*
- * $Id: theme.c,v 1.2 2004/06/16 18:46:50 lordjaxom Exp $
+ * $Id: theme.c,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */
 #include "theme.h"
 #include <vdr/osd.h>
@@ -16,7 +16,7 @@ bool cText2SkinTheme::Parse(const char *Text) {
 	if (l) {
 		if (strncmp(Text, "Item=Color,", 11) == 0) {
 			Text += 11;
-			string name;
+			std::string name;
 			tColor value;
 			if (ParseVar(Text, "name", name) && ParseVar(Text, "default", &value)) {
 				mMap[name] = mTheme.AddColor(name.c_str(), value);

@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.9 2004/06/22 16:48:03 lordjaxom Exp $
+ * $Id: i18n.c,v 1.1.1.1 2004/11/19 16:45:31 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -85,7 +85,7 @@ const tI18nPhrase Phrases[] = {
 };
 
 cText2SkinI18n::cText2SkinI18n(const char *Skin): cText2SkinFile(Skin) {
-	mIdentity   = (string)"text2skin_" + Skin;
+	mIdentity   = (std::string)"text2skin_" + Skin;
 	mNumPhrases = 0;
 	mPhrases    = (tI18nPhrase*)malloc(sizeof(tI18nPhrase));
 	memset(mPhrases[mNumPhrases], 0, sizeof(tI18nPhrase));
@@ -112,7 +112,7 @@ bool cText2SkinI18n::Parse(const char *Text) {
 			for (i = 0; i < I18nNumLanguages; ++i) {
 				char *langs = strdup(I18nLanguageCode(i));
 				char *ptr = langs, *ep;
-				string text;
+				std::string text;
 				p[i] = strdup("");
 				do {
 					if ((ep = strchr(ptr, ',')) != NULL)
@@ -139,7 +139,7 @@ bool cText2SkinI18n::Parse(const char *Text) {
 	return result;
 }
 
-bool cText2SkinI18n::Load(const string &Filename) {
+bool cText2SkinI18n::Load(const std::string &Filename) {
 	if (cText2SkinFile::Load(Filename)) {
 		I18nRegister(mPhrases, mIdentity.c_str());
 		return true;

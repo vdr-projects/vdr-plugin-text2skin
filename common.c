@@ -1,43 +1,11 @@
 /*
- * $Id: common.c,v 1.12 2004/06/25 17:51:34 lordjaxom Exp $
+ * $Id: common.c,v 1.2 2004/12/06 22:35:54 lordjaxom Exp $
  */
 
-#include "data.h"
 #include "common.h"
 #include <vdr/plugin.h>
 
-const string SectionNames[__SECTION_COUNT__] =
-	{ "Skin", "ChannelSmall", "Channel", "Volume", "ReplayMode", "Replay", 
-	  "Message", "Menu" };
-
-const string ItemNames[__ITEM_COUNT__] = 
-	{ "Unknown", "Skin", "Background", "Text", "Scrolltext", "Image", "Rectangle",
-	  "Ellipse", "Slope", "Progress", "Logo", "Symbol", "MenuArea", "MenuItem",
-		"Scrollbar" };
-
-const string DisplayNames[__DISPLAY_COUNT__] = 
-	{ "Always", "DateTimeF", "DateTime", "Date", "Time", "ChannelNumberName", 
-	  "ChannelNumber", "ChannelName", "Language", "PresentDateTimeF", 
-	  "PresentStartTime", "PresentDate", "PresentVPSTime", "PresentEndTime", 
-	  "PresentDuration", "PresentVPS", "PresentRunning", "PresentTimer", 
-	  "PresentTitle", "PresentShortText", "PresentDescription", 
-	  "FollowingStartTime", "FollowingEndTime", "FollowingDuration", 
-	  "FollowingTitle", "FollowingShortText", "Teletext", "Audio", "Dolby", 
-	  "Encrypted", "Recording", "Radio", "VolumeCurrent", "VolumeTotal", "Mute", 
-	  "ReplayTime", "ReplayDuration", "ReplayTitle", "ReplayPrompt", "Play", 
-	  "Pause", "FastFwd", "FastRew", "SlowFwd", "SlowRew", "Message", 
-	  "MessageStatus", "MessageInfo", "MessageWarning", "MessageError", 
-	  "MenuTitle", "MenuRed", "MenuGreen", "MenuYellow", "MenuBlue", "MenuText", 
-	  "MenuRecording", "MenuScrollUp", "MenuScrollDown", "MenuItems", 
-		"MenuCurrent", "MenuGroups", "ReplayMode", "PresentTextDescription" };
-
-const string ReplayNames[__REPLAY_COUNT__] =
-	{ "", "normal", "mp3", "mplayer", "dvd", "vcd" };
-
-const string BaseNames[__BASE_COUNT__] =
-	{ "rel", "abs" };
-	
-const char *SkinPath(void) {
+std::string SkinPath(void) {
 	return cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
 }
 
@@ -56,67 +24,69 @@ const char *ChannelNumber(const cChannel *Channel, int Number) {
 const char *ChannelName(const cChannel *Channel, int Number) {
 	static char buffer[256];
 	buffer[0] = '\0';
-  if (Channel) 
-		 snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
-  else if (!Number)
-     snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
-  return buffer;
+	if (Channel) 
+		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
+	else if (!Number)
+		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
+
+	char *ptr;
+	if ((ptr = strchr(buffer, ',')) != NULL
+			|| (ptr = strchr(buffer, ';')) != NULL)
+		*ptr = '\0';
+	return buffer;
 }
 
-string ItemText(cText2SkinItem *Item, const string &Content) {
-	string s;
-	if (Item->Text() != "") {
-		s = Item->Text();
-		int pos;
-		while ((pos = s.find('$')) != -1)
-			s.replace(pos, 1, Content);
-	} else
-		s = Content;
-	return s;
+const char *ChannelShortName(const cChannel *Channel, int Number) {
+	static char buffer[256];
+	buffer[0] = '\0';
+	if (Channel) 
+		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
+	else if (!Number)
+		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
+
+	char *ptr;
+	if ((ptr = strchr(buffer, ',')) != NULL) {
+		char *start = ptr + 1;
+		if ((ptr = strchr(start, ';')) != NULL)
+			*ptr = '\0';
+		return start;
+	} else if ((ptr = strchr(buffer, ';')) != NULL)
+		*ptr = '\0';
+	
+	return buffer;
 }
 
-bool ParseVar(const char *Text, const char *Name, eSkinItem *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		int i;
-		for (i = 0; i < __ITEM_COUNT__; ++i) {
-			if (ItemNames[i] == value) {
-				*Value = (eSkinItem)i;
-				return true;
-			}
-			if (i == __ITEM_COUNT__)
-				esyslog("ERROR: text2skin: unknown item %s", value.c_str());
-		}
+const char *ChannelBouquet(const cChannel *Channel, int Number) {
+	static char buffer[256];
+	buffer[0] = '\0';
+	if (Channel) 
+		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
+	else if (!Number)
+		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
+
+	char *ptr;
+	if ((ptr = strchr(buffer, ';')) != NULL)
+		return ptr + 1;
+	else
+		return "";
+}
+
+cxType TimeType(time_t Time, const std::string &Format) {
+	static char result[1000];
+	struct tm tm_r, *tm;
+	tm = localtime_r(&Time, &tm_r);
+
+	if (Time > 0) {
+		if (Format.length() > 0) {
+			strftime(result, sizeof(result), Format.c_str(), tm);
+			return result;
+		} else
+			return Time;
 	}
-	return false;
+	return "";
 }
 
-bool ParseVar(const char *Text, const char *Name, eSkinDisplay *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		int i;
-		for (i = 0; i < __DISPLAY_COUNT__; ++i) {
-			if (DisplayNames[i] == value) {
-				*Value = (eSkinDisplay)i;
-				return true;
-			}
-			if (i == __DISPLAY_COUNT__)
-				esyslog("ERROR: text2skin: unknown display parameter %s", value.c_str());
-		}
-	}
-	return false;
-}
-
-bool ParseVar(const char *Text, const char *Name, int *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		*Value = atoi(value.c_str());
-		return true;
-	}
-	return false;
-}
-
-bool ParseVar(const char *Text, const char *Name, string &Value){
+bool ParseVar(const char *Text, const char *Name, std::string &Value) {
 	const char *ptr1, *ptr2;
 	char *str;
 	bool res = false;
@@ -141,7 +111,7 @@ bool ParseVar(const char *Text, const char *Name, string &Value){
 }
 
 bool ParseVar(const char *Text, const char *Name, tColor *Value) {
-	string value;
+	std::string value;
 	if (ParseVar(Text, Name, value) && value[0] == '#') {
 		*Value = (tColor)strtoul(value.c_str() + 1, NULL, 16);
 		return true;
@@ -149,48 +119,7 @@ bool ParseVar(const char *Text, const char *Name, tColor *Value) {
 	return false;
 }
 
-bool ParseVar(const char *Text, const char *Name, eTextAlignment *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		int v = atoi(value.c_str());
-		if (v == 0)
-			*Value = (eTextAlignment)(taTop|taLeft);
-		else if (v == 1)
-			*Value = (eTextAlignment)(taTop|taCenter);
-		else if (v == 2)
-			*Value = (eTextAlignment)(taTop|taRight);
-		return true;
-	}
-	return false;
-}
-
-bool ParseVar(const char *Text, const char *Name, const cFont **Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		if      (value == "Sml") *Value = cFont::GetFont(fontSml);
-		else if (value == "Fix") *Value = cFont::GetFont(fontFix);
-		return true;
-	}
-	return false;
-}
-
-bool ParseVar(const char *Text, const char *Name, eBaseCoordinate *Value) {
-	string value;
-	if (ParseVar(Text, Name, value)) {
-		int i;
-		for (i = 0; i < __BASE_COUNT__; ++i) {
-			if (BaseNames[i] == value) {
-				*Value = (eBaseCoordinate)i;
-				return true;
-			}
-			if (i == __BASE_COUNT__)
-				esyslog("ERROR: text2skin: unknown coordinate base %s", value.c_str());
-		}
-	}
-	return false;
-}
-
-void SkipQuotes(string &Value) {
+void SkipQuotes(std::string &Value) {
 	char quote = Value[0];
 	int i;
 	Value.erase(0, 1);

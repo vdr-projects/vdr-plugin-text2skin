@@ -1,23 +1,31 @@
 /*
- * $Id: display.h,v 1.6 2004/06/07 18:23:11 lordjaxom Exp $
+ * $Id: display.h,v 1.4 2004/12/08 18:47:37 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
 #define VDR_TEXT2SKIN_SKIN_H
 
 #include "common.h"
+#include "render.h"
+#include "xml/string.h"
 #include <vdr/skins.h>
+#include <string>
 
 class cText2SkinData;
 class cText2SkinI18n;
-class cText2SkinRender;
 class cText2SkinLoader;
 
-class cText2SkinDisplayChannel: public cSkinDisplayChannel {
+class cText2SkinDisplayChannel: public cSkinDisplayChannel, public cText2SkinRender {
 private:
-	bool              mWithInfo;
-	cText2SkinRender *mRender;
-	bool              mDirty;
+	const cChannel *mChannel;
+	int             mNumber;
+	const cEvent   *mPresent;
+	const cEvent   *mFollowing;
+	eMessageType    mType;
+	std::string     mText;
+
+protected:
+	virtual cxType GetTokenData(const txToken &Token);
 
 public:
 	cText2SkinDisplayChannel(cText2SkinLoader *Loader, bool WithInfo);
@@ -25,14 +33,18 @@ public:
 
 	virtual void SetChannel(const cChannel *Channel, int Number);
 	virtual void SetEvents(const cEvent *Present, const cEvent *Following);
-  virtual void SetMessage(eMessageType Type, const char *Text);
+	virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void Flush(void);
 };
 
-class cText2SkinDisplayVolume: public cSkinDisplayVolume {
+class cText2SkinDisplayVolume: public cSkinDisplayVolume, public cText2SkinRender {
 private:
-	cText2SkinRender *mRender;
-	bool              mDirty;
+	int mCurrent;
+	int mTotal;
+	int mMute;
+
+protected:
+	virtual cxType GetTokenData(const txToken &Token);
 
 public:
 	cText2SkinDisplayVolume(cText2SkinLoader *Loader);
@@ -41,10 +53,26 @@ public:
 	virtual void Flush(void);
 };
 
-class cText2SkinDisplayReplay: public cSkinDisplayReplay {
+class cText2SkinDisplayReplay: public cSkinDisplayReplay, public cText2SkinRender {
 private:
-	cText2SkinRender *mRender;
-	bool              mDirty;
+	std::string   mTitle;
+	bool          mStateInfo;
+	bool          mPlay;
+	bool          mForward;
+	int           mSpeed;
+	int           mCurrent;
+	int           mTotal;
+	std::string   mPosition;
+	std::string   mDuration;
+	const cMarks *mMarks;
+	std::string   mPrompt;
+	eMessageType  mType;
+	std::string   mText;
+
+protected:
+	virtual cxType GetTokenData(const txToken &Token);
+	virtual const cMarks *GetMarks(void) const { return mMarks; }
+
 public:
 	cText2SkinDisplayReplay(cText2SkinLoader *Loader, bool ModeOnly);
 	virtual ~cText2SkinDisplayReplay();
@@ -55,14 +83,17 @@ public:
 	virtual void SetCurrent(const char *Current);
 	virtual void SetTotal(const char *Total);
 	virtual void SetJump(const char *Jump);
-  virtual void SetMessage(eMessageType Type, const char *Text);
+	virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void Flush(void);
 };
 
-class cText2SkinDisplayMessage: public cSkinDisplayMessage {
+class cText2SkinDisplayMessage: public cSkinDisplayMessage, public cText2SkinRender {
 private:
-	cText2SkinRender *mRender;
-	bool              mDirty;
+	eMessageType mType;
+	std::string  mText;
+
+protected:
+	virtual cxType GetTokenData(const txToken &Token);
 
 public:
 	cText2SkinDisplayMessage(cText2SkinLoader *Loader);
@@ -71,18 +102,50 @@ public:
 	virtual void Flush(void);
 };
 
-class cText2SkinDisplayMenu: public cSkinDisplayMenu {
+class cText2SkinDisplayMenu: public cSkinDisplayMenu, public cText2SkinRender {
 private:
-	cText2SkinRender *mRender;
-	bool              mDirty;
 	int               mMaxItems;
+
+	// common for all menus
+	std::string       mTitle;
+	std::string       mButtonRed;
+	std::string       mButtonGreen;
+	std::string       mButtonYellow;
+	std::string       mButtonBlue;
+	eMessageType      mMessageType;
+	std::string       mMessageText;
+
+	// detailed event view
+	const cEvent     *mEvent;
+	// detailed recording
+	const cRecording *mRecording;
+	// long text
+	std::string       mText;
+
+	// list view
+	struct tListItem {
+		std::string     text;
+		std::string     tabs[MaxTabs];
+		bool            sel;
+
+		bool operator!=(const tListItem &b) { return b.text != text || b.sel != sel; }
+	};
+
+	std::vector<tListItem> mItems;
+	int                    mCurrentItem;
+
+protected:
+	virtual cxType GetTokenData(const txToken &Token);
+	virtual int GetTab(int n) { return cSkinDisplayMenu::Tab(n); }
+	virtual bool HasTabText(int Index, int n);
+	virtual void SetEditableWidth(int Width) { printf("seteditablewidth: %d\n", Width); cSkinDisplayMenu::SetEditableWidth(Width); }
 
 public:
 	cText2SkinDisplayMenu(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayMenu();
 
-  virtual int MaxItems(void) { return mMaxItems; }
-  virtual void Clear(void);
+	virtual int MaxItems(void) { return mMaxItems; }
+	virtual void Clear(void);
 	virtual void SetTitle(const char *Title);
 	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
 	virtual void SetMessage(eMessageType Type, const char *Text);
@@ -94,5 +157,14 @@ public:
 	virtual void Scroll(bool Up, bool Page);
 	virtual void Flush(void);
 };
+
+inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
+{
+	if (Index < 0 || mItems.size () > (uint)Index)
+		return n == -1 
+		       ? mItems[Index].text.length() > 0
+					 : mItems[Index].tabs[n].length() > 0;
+	return false;
+}
 
 #endif // VDR_TEXT2SKIN_SKIN_H

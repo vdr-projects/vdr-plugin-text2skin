@@ -1,5 +1,5 @@
 /*
- * $Id: text2skin.h,v 1.4 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: text2skin.h,v 1.2 2004/12/08 17:13:26 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_H
@@ -11,11 +11,11 @@
 class cText2SkinPlugin : public cPlugin {
 private:
 	static const char *VERSION;
-	static const char *THEMEVERSION;
+	static const char *SKINVERSION;
 	static const char *DESCRIPTION;
 
 public:
-	static const char *ThemeVersion(void) { return THEMEVERSION; }
+	static const char *SkinVersion(void) { return SKINVERSION; }
 
   cText2SkinPlugin(void);
   virtual ~cText2SkinPlugin();
