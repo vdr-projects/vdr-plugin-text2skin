@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.4 2005/01/02 16:54:41 lordjaxom Exp $
+ * $Id: status.c,v 1.5 2005/01/07 21:49:23 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -138,7 +138,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		break;
 	};
 
-	return cxType::False;
+	return false;
 }
 
 void cText2SkinStatus::OsdClear(void) {
