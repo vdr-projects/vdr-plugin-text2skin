@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.1 2004/12/19 22:03:27 lordjaxom Exp $
+ *  $Id: object.c,v 1.2 2004/12/21 20:36:41 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -21,6 +21,7 @@ cxObject::cxObject(cxDisplay *parent):
 		mCondition(NULL),
 		mFontFace("Osd"),
 		mFontSize(0),
+		mIndex(0),
 		mObjects(NULL),
 		mDisplay(parent),
 		mSkin(parent->Skin()) 
