@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.8 2005/01/11 17:59:04 lordjaxom Exp $
+ * $Id: display.c,v 1.9 2005/01/12 21:23:20 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -1032,7 +1032,7 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 		return mItems.size() > (uint)Token.Index && mCurrentItem == (uint)Token.Index;
 
 	case tAudioChannel:
-		return mAudioChannel;
+		return ChannelName(mAudioChannel);
 			
 	default:
 		return cText2SkinRender::GetTokenData(Token);
