@@ -1,5 +1,5 @@
 /*
- * $Id: common.c,v 1.8 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: common.c,v 1.9 2004/06/12 18:00:05 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -28,7 +28,10 @@ const string DisplayNames[__DISPLAY_COUNT__] =
 	  "MessageStatus", "MessageInfo", "MessageWarning", "MessageError", 
 	  "MenuTitle", "MenuRed", "MenuGreen", "MenuYellow", "MenuBlue", "MenuText", 
 	  "MenuRecording", "MenuScrollUp", "MenuScrollDown", "MenuItems", 
-		"MenuCurrent", "MenuGroups" };
+		"MenuCurrent", "MenuGroups", "ReplayMode" };
+
+const string ReplayNames[__REPLAY_COUNT__] =
+	{ "", "normal", "mp3", "mplayer", "dvd", "vcd" };
 	
 const char *SkinPath(void) {
 	return cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);

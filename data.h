@@ -1,5 +1,5 @@
 /*
- * $Id: data.h,v 1.15 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: data.h,v 1.16 2004/06/12 18:00:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
@@ -21,6 +21,7 @@ private:
 	SIZE            mSize;
 	int             mBpp;
 	int             mArc;
+	int             mAlpha;
 	string          mFg;
 	string          mBg;
 	const cFont    *mFont;
@@ -48,6 +49,7 @@ public:
 	const SIZE     &Size(void)    const { return mSize; }
 	int             Bpp(void)     const { return mBpp; }
 	int             Arc(void)     const { return mArc; }
+	int             Alpha(void)   const { return mAlpha; }
 	const string   &Fg(void)      const { return mFg; }
 	const string   &Bg(void)      const { return mBg; }
 	const cFont    *Font(void)    const { return mFont; }

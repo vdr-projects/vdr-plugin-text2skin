@@ -9,7 +9,7 @@ HAVE_IMAGEMAGICK=1
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.9 2004/06/08 20:45:52 lordjaxom Exp $
+# $Id: Makefile,v 1.10 2004/06/12 18:00:05 lordjaxom Exp $
 #
 
 # The official name of this plugin.
@@ -70,7 +70,7 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 ### The object files (add further files here):
 
 OBJS = $(PLUGIN).o loader.o data.o display.o render.o common.o bitmap.o \
-       file.o i18n.o theme.o cache.o setup.o
+       file.o i18n.o theme.o cache.o setup.o status.o
 
 ### Implicit rules:
 

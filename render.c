@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.26 2004/06/11 15:02:57 lordjaxom Exp $
+ * $Id: render.c,v 1.30 2004/06/13 18:19:18 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -7,6 +7,7 @@
 #include "i18n.h"
 #include "theme.h"
 #include "bitmap.h"
+#include "status.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>
 #include <vdr/menu.h>
@@ -46,6 +47,8 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, eSkinSection Sectio
 	mMenuScrollPage    = false;
 	mActive            = false;
 	mUpdateIn          = 0;
+
+	cText2SkinBitmap::FlushCache();
 
 	cText2SkinData::tIterator it = mData->First(mSection);
 	for (; it != mData->Last(mSection); ++it) {
@@ -200,6 +203,9 @@ void cText2SkinRender::Update(void) {
 		case displaySlowRew:
 			DisplayReplaySymbol(*it);
 			break;
+		case displayReplayMode:
+			DisplayReplayMode(*it);
+			break;
 		case displayMessage:
 		case displayMessageStatus:
 		case displayMessageInfo:
@@ -236,12 +242,12 @@ void cText2SkinRender::Update(void) {
 	mOsd->Flush();
 }
 
-void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path) {
+void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, int Alpha, const string &Path) {
 	cText2SkinBitmap *bmp = NULL;
 	if (Path != "") {
 		char *p;
 		asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
-		if ((bmp = cText2SkinBitmap::Load(p)) != NULL) {
+		if ((bmp = cText2SkinBitmap::Load(p, Alpha)) != NULL) {
 			if (Bg) bmp->SetColor(0, *Bg);
 			if (Fg) bmp->SetColor(1, *Fg);
 		}
@@ -254,12 +260,12 @@ void cText2SkinRender::DrawBackground(const POINT &Pos, const SIZE &Size, const 
 		mOsd->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, Bg ? *Bg : 0);
 }
 
-void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path) {
+void cText2SkinRender::DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, int Alpha, const string &Path) {
 	cText2SkinBitmap *bmp;
 	char *p;
 	asprintf(&p, "%s/%s/%s", SkinPath(), mData->Skin().c_str(), Path.c_str());
 	Dprintf("Trying to load image: %s\n", p);
-	if ((bmp = cText2SkinBitmap::Load(p)) != NULL) {
+	if ((bmp = cText2SkinBitmap::Load(p, Alpha)) != NULL) {
 		if (Bg) bmp->SetColor(0, *Bg);
 		if (Fg) bmp->SetColor(1, *Fg);
 		mOsd->DrawBitmap(Pos.x, Pos.y, bmp->Get(mUpdateIn));
@@ -370,7 +376,7 @@ void cText2SkinRender::DisplayItem(cText2SkinItem *Item, const ItemData *Data) {
 	if (Data == NULL) Data = &dummyData;
 	switch (Item->Item()) {
 	case itemBackground:
-		DrawBackground(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Path()); 
+		DrawBackground(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Alpha(), Item->Path()); 
 		break;
 	case itemText:
 		DrawText(Item->Pos(), Item->Size(), ItemFg(Item), ItemText(Item, Data->text), Item->Font(), Item->Align());
@@ -379,11 +385,11 @@ void cText2SkinRender::DisplayItem(cText2SkinItem *Item, const ItemData *Data) {
 		DrawScrollText(Item->Pos(), Item->Size(), ItemFg(Item), Data->text, Item->Font(), Item->Align());
 		break;
 	case itemImage:
-		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Path());
+		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Alpha(), Item->Path());
 		break;
 	case itemLogo:
 	case itemSymbol:
-		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Data->path);
+		DrawImage(Item->Pos(), Item->Size(), ItemBg(Item), ItemFg(Item), Item->Alpha(), Data->path);
 		break;
 	case itemRectangle:
 		DrawRectangle(Item->Pos(), Item->Size(), ItemFg(Item));
@@ -488,7 +494,7 @@ void cText2SkinRender::DisplayPresentTime(cText2SkinItem *Item) {
 			t = event->StartTime();
 			break;
 		case displayPresentVPSTime:
-			t = event->Vps();
+			t = event->StartTime() != event->Vps() ? event->Vps() : 0;
 			break;
 		case displayPresentEndTime:
 			t = event->EndTime();
@@ -774,6 +780,15 @@ void cText2SkinRender::DisplayReplaySymbol(cText2SkinItem *Item) {
 	DisplayItem(Item, &data);
 }
 
+void cText2SkinRender::DisplayReplayMode(cText2SkinItem *Item) {
+	if (cText2SkinStatus::ReplayMode() != replayNone) {
+		ItemData data;
+		Dprintf("Replay Type is %s\n", ReplayNames[cText2SkinStatus::ReplayMode()].c_str());
+		data.path = Item->Path() + "/" + ReplayNames[cText2SkinStatus::ReplayMode()] + "." + Item->Type();
+		DisplayItem(Item, &data);
+	}
+}
+
 void cText2SkinRender::DisplayMessage(cText2SkinItem *Item) {
 	if (mMessageText != "" && (Item->Display() == displayMessage || (Item->Display() - displayMessageStatus) == mMessageType)) {
 		ItemData data;
@@ -877,17 +892,29 @@ void cText2SkinRender::DisplayMenuItems(cText2SkinItem *Item) {
 			POINT itempos = pos;
 			itempos.y += i * item->Size().h;
 			itempos += Item->Pos();
-			for (int t = 0; t < cSkinDisplayMenu::MaxTabs; ++t) {
-				if (mMenuItems[i].tabs[t] != "") {
-					POINT abspos = { itempos.x + mMenuTabs[t], itempos.y };
-					ItemData data;
-					cText2SkinItem cur = *Item;
-					cur.mPos = abspos;
-					data.text = mMenuItems[i].tabs[t];
-					DisplayItem(&cur, &data);
+			if (Item->Item() == itemText) { // draw tabs
+				for (int t = 0; t < cSkinDisplayMenu::MaxTabs; ++t) {
+					if (mMenuItems[i].tabs[t] != "") {
+						ItemData data;
+						cText2SkinItem cur = *Item;
+						cur.mPos = itempos;
+						cur.mPos.x += mMenuTabs[t];
+						cur.mSize.w -= mMenuTabs[t];
+						/*if (t == cSkinDisplayMenu::MaxTabs || !mMenuTabs[t + 1])
+							cur.mSize.w -= mMenuTabs[t];
+						else
+							cur.mSize.w = mMenuTabs[t + 1] - mMenuTabs[t];*/
+						data.text = mMenuItems[i].tabs[t];
+						DisplayItem(&cur, &data);
+					}
+					if (!mMenuTabs[t + 1])
+						break;
 				}
-				if (!mMenuTabs[t + 1])
-					break;
+			} else {
+				ItemData data;
+				cText2SkinItem cur = *Item;
+				cur.mPos = itempos;
+				DisplayItem(&cur, &data);
 			}
 		}
 	}
@@ -934,12 +961,7 @@ tColor *cText2SkinRender::ItemBg(cText2SkinItem *Item) {
 }
 
 int cText2SkinRender::GetEditableWidth(MenuItem Item, bool Current) {
-	/*cText2SkinItem *current;
-	if (Current)
-		current = mData->Get(sectionMenu, itemMenuCurrent);
-	else
-		current = mData->Get(sectionMenu, itemMenuItem);
-	return current->Size().w - mMenuTabs[1];
-	*/
-	return 0;
+	cText2SkinItem *item;
+	item = mData->Get(sectionMenu, itemMenuItem);
+	return item->Size().w - mMenuTabs[1];
 }

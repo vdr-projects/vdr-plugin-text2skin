@@ -3,7 +3,7 @@
  *
  * See the README file for copyright information and how to reach the author.
  *
- * $Id: text2skin.c,v 1.15 2004/06/11 15:02:57 lordjaxom Exp $
+ * $Id: text2skin.c,v 1.19 2004/06/13 18:20:17 lordjaxom Exp $
  */
 
 #include "text2skin.h"
@@ -11,7 +11,7 @@
 #include "i18n.h"
 #include "loader.h"
 
-const char *cText2SkinPlugin::VERSION        = "0.0.3";
+const char *cText2SkinPlugin::VERSION        = "0.0.4";
 const char *cText2SkinPlugin::THEMEVERSION   = "0.0.2";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
@@ -37,7 +37,7 @@ cMenuSetupPage *cText2SkinPlugin::SetupMenu(void)
 
 bool cText2SkinPlugin::SetupParse(const char *Name, const char *Value)
 {
-  return false;
+  return Text2SkinSetup.SetupParse(Name, Value);
 }
 
 VDRPLUGINCREATOR(cText2SkinPlugin); // Don't touch this!

@@ -1,5 +1,5 @@
 /*
- * $Id: render.h,v 1.20 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: render.h,v 1.21 2004/06/12 18:00:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
@@ -105,8 +105,8 @@ protected:
 	virtual void Action(void);
 
 	// Basic operations
-	void DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
-	void DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
+	void DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, int Alpha, const string &Path);
+	void DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, int Alpha, const string &Path);
 	void DrawText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
 	void DrawRectangle(const POINT &Pos, const SIZE &Size, const tColor *Fg);
 	void DrawEllipse(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
@@ -135,6 +135,7 @@ protected:
 	void DisplayReplayTitle(cText2SkinItem *Item);
 	void DisplayReplayPrompt(cText2SkinItem *Item);
 	void DisplayReplaySymbol(cText2SkinItem *Item);
+	void DisplayReplayMode(cText2SkinItem *Item);
 	void DisplayMessage(cText2SkinItem *Item);
 	void DisplayMenuTitle(cText2SkinItem *Item);
 	void DisplayMenuButton(cText2SkinItem *Item);

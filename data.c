@@ -1,5 +1,5 @@
 /*
- * $Id: data.c,v 1.17 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: data.c,v 1.18 2004/06/12 18:00:05 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -14,6 +14,7 @@ cText2SkinItem::cText2SkinItem(void) {
 	mSize.h  = 0;
 	mBpp     = 4;
 	mArc     = 0;
+	mAlpha   = 0;
 	mFont    = cFont::GetFont(fontOsd);
 	mAlign   = taDefault;
 }
@@ -53,6 +54,7 @@ bool cText2SkinItem::ParseItem(const char *Text) {
 	ParseVar(Text, "height",  &mSize.h);
 	ParseVar(Text, "bpp",     &mBpp);
 	ParseVar(Text, "arc",     &mArc);
+	ParseVar(Text, "alpha",   &mAlpha);
 	ParseVar(Text, "fg",       mFg);
 	ParseVar(Text, "bg",       mBg);
 	ParseVar(Text, "font",    &mFont);

@@ -1,8 +1,9 @@
 /*
- * $Id: bitmap.c,v 1.13 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.15 2004/06/12 19:16:11 lordjaxom Exp $
  */
 
 #include "bitmap.h"
+#include "setup.h"
 #include <vdr/tools.h>
 #define X_DISPLAY_MISSING
 #ifdef HAVE_IMLIB2
@@ -20,9 +21,9 @@ void cImageCache::Delete(string &key, cText2SkinBitmap *&value) {
 	delete value;
 }
 
-cImageCache cText2SkinBitmap::mCache(10);
+cImageCache cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
 
-cText2SkinBitmap::cText2SkinBitmap(void)/*: cBitmap(1, 1, 1)*/ {
+cText2SkinBitmap::cText2SkinBitmap(void) {
 	mCurrent = 0;
 	mLastGet = 0;
 }
@@ -39,6 +40,7 @@ cBitmap &cText2SkinBitmap::Get(int &UpdateIn) {
 	time_t upd, cur = time_ms();
 	int diff;
 	if (mLastGet == 0) {
+		Dprintf("lastget was %d\n", mLastGet);
 		mLastGet = cur;
 		upd = mDelay;
 	} else if ((diff = cur - mLastGet) >= mDelay) {
@@ -49,13 +51,16 @@ cBitmap &cText2SkinBitmap::Get(int &UpdateIn) {
 		upd = mDelay - diff;
 	}
 
+	Dprintf("delay: %d, diff %d\n", mDelay, diff);
+
 	if (UpdateIn == 0 || UpdateIn > upd)
 		UpdateIn = upd;
 
+	Dprintf("Get: returning frame %d\n", mCurrent);
 	return *mBitmaps[mCurrent];
 }
 
-cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename) {
+cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename, int Alpha) {
 	if (mCache.Contains(Filename)) {
 		return mCache[Filename];
 	} else {
@@ -64,13 +69,13 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename) {
 		bool result = false;
 		if (len > 4) {
 			if (strcmp(Filename + len - 4, ".xpm") == 0)
-				result = bmp->LoadXpm(Filename);
+				result = bmp->LoadXpm(Filename, Alpha);
 			else {
 #ifdef HAVE_IMLIB2
-				result = bmp->LoadImlib(Filename);
+				result = bmp->LoadImlib(Filename, Alpha);
 #else
 #	ifdef HAVE_IMAGEMAGICK
-				result = bmp->LoadMagick(Filename);
+				result = bmp->LoadMagick(Filename, Alpha);
 #	endif
 #endif
 			}
@@ -85,9 +90,14 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const char *Filename) {
 	return false;
 }
 
-bool cText2SkinBitmap::LoadXpm(const char *Filename) {
+bool cText2SkinBitmap::LoadXpm(const char *Filename, int Alpha) {
 	cBitmap *bmp = new cBitmap(1,1,1);
 	if (bmp->LoadXpm(Filename)) {
+		int count;
+		if (Alpha && bmp->Colors(count)) {
+			for (int i = 0; i < count; ++i) 
+				bmp->SetColor(i, (bmp->Color(i) & 0x00FFFFFF) | (Alpha << 24));
+		}
 		mBitmaps.push_back(bmp);
 		return true;
 	}
@@ -96,7 +106,7 @@ bool cText2SkinBitmap::LoadXpm(const char *Filename) {
 }
 
 #ifdef HAVE_IMLIB2
-bool cText2SkinBitmap::LoadImlib(const char *Filename) {
+bool cText2SkinBitmap::LoadImlib(const char *Filename, int Alpha) {
 	Imlib_Image image;
 	cBitmap *bmp = NULL;
 	image = imlib_load_image(Filename);
@@ -111,6 +121,8 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 	for (int y = 0; y < bmp->Height(); ++y) {
 		for (int x = 0; x < bmp->Width(); ++x) {
 			tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
+			if (Alpha)
+				col = (col & 0x00FFFFFF) | (Alpha << 24);
 			int res = bmp->Index(col);
 			if (pal > 0 && res == 0)
 				;//esyslog("ERROR: text2skin: Too many colors used in palette");
@@ -127,7 +139,7 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename) {
 #endif
 
 #ifdef HAVE_IMAGEMAGICK
-bool cText2SkinBitmap::LoadMagick(const char *Filename) {
+bool cText2SkinBitmap::LoadMagick(const char *Filename, int Alpha) {
 	vector<Image> images;
 	cBitmap *bmp = NULL;
 	try {
@@ -138,7 +150,7 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename) {
 			esyslog("ERROR: text2skin: Couldn't load %s", Filename);
 			return false;
 		}
-		mDelay = images[0].animationDelay();
+		mDelay = images[0].animationDelay() * 10;
 		for (it = images.begin(); it != images.end(); ++it) {
 			w = (*it).columns();
 			h = (*it).rows();
@@ -148,6 +160,8 @@ bool cText2SkinBitmap::LoadMagick(const char *Filename) {
 			for (int iy = 0; iy < h; ++iy) {
 				for (int ix = 0; ix < w; ++ix) {
 					tColor col = (((~ptr->opacity & 0xFF00) << 16) | ((ptr->red & 0xFF00) << 8) | (ptr->green & 0xFF00) | ((ptr->blue & 0xFF00) >> 8));
+					if (Alpha)
+						col = (col & 0x00FFFFFF) | (Alpha << 24);
 					bmp->DrawPixel(ix, iy, col);
 					++ptr;
 				}

@@ -1,5 +1,5 @@
 /*
- * $Id: common.h,v 1.8 2004/06/11 15:01:58 lordjaxom Exp $
+ * $Id: common.h,v 1.9 2004/06/12 18:00:05 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_COMMON_H
@@ -112,15 +112,27 @@ enum eSkinDisplay {
 	displayMenuRecording,              // exc: text
 	displayMenuScrollUp,               // exc: symbol
 	displayMenuScrollDown,             // exc: symbol
-	displayMenuItems,
-	displayMenuCurrent,
-	displayMenuGroups,
+	displayMenuItems,                  // exc: text (TODO: logo?)
+	displayMenuCurrent,                // exc: text (TODO: logo?)
+	displayMenuGroups,                 // exc: text (TODO: logo?)
+	displayReplayMode,                 // exc: text, logo
 	__DISPLAY_COUNT__
+};
+
+enum eReplayMode {
+	replayNone,
+	replayNormal,
+	replayMP3,
+	replayMPlayer,
+	replayDVD,
+	replayVCD,
+	__REPLAY_COUNT__
 };
 	
 extern const string SectionNames[__SECTION_COUNT__];
 extern const string ItemNames[__ITEM_COUNT__];
 extern const string DisplayNames[__DISPLAY_COUNT__];
+extern const string ReplayNames[__REPLAY_COUNT__];
 
 // geometrical structures
 

@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.15 2004/06/07 19:08:42 lordjaxom Exp $
+ * $Id: display.c,v 1.16 2004/06/12 18:00:05 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -246,6 +246,7 @@ void cText2SkinDisplayMenu::Clear(void) {
 	mRender->mMenuEvent     = NULL;
 	mRender->mMenuRecording = NULL;
 	mRender->mMenuText      = "";
+	//mRender->mMessageText   = "";
 	DELETENULL(mRender->mScroller);
 	mRender->Unlock();
 	mDirty = true;

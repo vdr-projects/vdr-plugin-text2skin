@@ -1,12 +1,12 @@
 /*
- * $Id: i18n.c,v 1.5 2004/06/08 20:45:52 lordjaxom Exp $
+ * $Id: i18n.c,v 1.6 2004/06/12 21:16:18 lordjaxom Exp $
  */
 
 #include "i18n.h"
 
 const tI18nPhrase Phrases[] = {
   { "Loader for text-based skins",
-    "",
+    "Lader für textbasierte Skins",
     "",
     "",
     "",
@@ -24,34 +24,15 @@ const tI18nPhrase Phrases[] = {
     "",
     ""
   },
-  { "Flush image cache",
-    "Bildspeicher leeren",
+  { "Max. image cache size",
+    "Max. Größe des Bildspeichers",
     "",
     "",
     "",
     "",
     "",
     "",
-    "Tyhjennä kuvat välimuistista",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
-  },
-  { "Flushing image cache...",
-    "Bildspeicher wird geleert...",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Tyhjennetään välimuistia...",
+    "Välimuistin maksimikoko",
     "",
     "",
     "",

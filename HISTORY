@@ -1,6 +1,20 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-06-13: Version 0.0.4
+
+- added parameter alpha for images
+- added ReplayMode as Logo to display a replaylogo (normal, vcd, mp3, dvd, ...)
+- added some german and finnish (thx to Rolf Ahrenberg) translations
+- fixed VPSTime which was displayed although is was equal to the StartTime
+- fixed MenuItems which displayed non-Text items periodically
+- fixed calculation of the editable width in the main menu
+- fixed animation delay (specified in 1/100th, used 1/1000th)
+- flushing cache when entering a new display (now the cache basically holds 
+  all items necessary in one display)
+- removed "flush image cache" from setup menu
+- added "max. cache size" to setup menu
+
 2004-06-11: Version 0.0.3
 
 - fixed VPSTime which was displayed on channels that didn't even have VPS
