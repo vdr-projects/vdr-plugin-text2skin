@@ -1,13 +1,18 @@
 /*
- * $Id: data.h,v 1.2 2004/05/23 19:20:26 lordjaxom Exp $
+ * $Id: data.h,v 1.9 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_DATA_H
 #define VDR_TEXT2SKIN_DATA_H
 
+#define __STL_CONFIG_H
 #include <vdr/tools.h>
 #include <vdr/osd.h>
 #include <vdr/config.h>
+#undef __STL_CONFIG_H
+#include <string>
+
+using std::string;
 
 // sections and items known by skin files
 
@@ -26,16 +31,19 @@ enum eSkinItem {
 	itemUnknown,
 	itemSkin, // item identifying the Skin itself
 	itemBackground,
-	itemLogo,
 	itemText,
+	itemImage,
+	itemRectangle,
+	itemEllipse,
+	itemSlope,
 	itemDateTime,
 	itemDate,
 	itemTime,
+	itemChannelLogo,
 	itemChannelNumberName,
 	itemChannelNumber,
 	itemChannelName,
-	itemRectangle,
-	itemEllipse,
+	itemLanguage,
 	itemTimebar,
 	itemPresentTime,
 	itemPresentTitle,
@@ -47,20 +55,41 @@ enum eSkinItem {
 	itemSymbolAudio,
 	itemSymbolDolby,
 	itemSymbolEncrypted,
+	itemSymbolRecording,
+	itemSymbolRadio,
 	itemVolumebar,
 	itemMute,
-	itemProgressbar,
+	itemReplaybar,
 	itemReplayTitle,
 	itemReplayCurrent,
 	itemReplayTotal,
 	itemReplayJump,
+	itemSymbolPlay,
+	itemSymbolPause,
+	itemSymbolFastFwd,
+	itemSymbolFastRew,
+	itemSymbolSlowFwd,
+	itemSymbolSlowRew,
 	itemMessageStatus,
 	itemMessageInfo,
 	itemMessageWarning,
 	itemMessageError,
 	itemMenuArea,
 	itemMenuItem,
-	itemMenuCurrent
+	itemMenuCurrent,
+	itemMenuTitle,
+	itemMenuRed,
+	itemMenuGreen,
+	itemMenuYellow,
+	itemMenuBlue,
+};
+
+struct POINT {
+	int x, y;
+};
+
+struct SIZE {
+	int w, h;
 };
 
 class cText2SkinItem: public cListObject {
@@ -71,23 +100,26 @@ private:
 
 	eSkinSection    mSection;
 	eSkinItem       mItem;
-	int             mX, mY;
-	int             mWidth, mHeight;
+	POINT           mPos;
+	SIZE            mSize;
 	int             mBpp;
+	int             mArc;
 	tColor         *mFg;
 	tColor         *mBg;
-	char           *mName;
-	char           *mVersion;
-	char           *mFont;
-	char           *mPath;
-	char           *mAltPath;
-	char           *mText;
+	const cFont    *mFont;
+	string          mName;
+	string          mVersion;
+	string          mPath;
+	string          mAltPath;
+	string          mText;
+	string          mType;
 	eTextAlignment  mAlign;
 
 protected:
 	bool ParseItem(const char *Text);
 	bool ParseVar(const char *Text, const char *Name, int *Value);
-	bool ParseVar(const char *Text, const char *Name, char **Value);
+	bool ParseVar(const char *Text, const char *Name, const cFont **Value);
+	bool ParseVar(const char *Text, const char *Name, string &Value);
 	bool ParseVar(const char *Text, const char *Name, tColor **Value);
 	bool ParseVar(const char *Text, const char *Name, eTextAlignment *Value);
 
@@ -99,21 +131,19 @@ public:
 
 	eSkinSection    Section(void) const { return mSection; }
 	eSkinItem       Item(void)    const { return mItem; }
-	int             X(void)       const { return mX; }
-	int             Y(void)       const { return mY; }
-	int             Width(void)   const { return mWidth; }
-	int             Height(void)  const { return mHeight; }
+	const POINT    &Pos(void)     const { return mPos; }
+	const SIZE     &Size(void)    const { return mSize; }
 	int             Bpp(void)     const { return mBpp; }
-	bool            HasFg(void)   const { return mFg != NULL; }
-	tColor          Fg(void)      const { return mFg ? *mFg : 0xFFFFFFFF; }
-	bool            HasBg(void)   const { return mBg != NULL; }
-	tColor          Bg(void)      const { return mBg ? *mBg : 0xFF000000; }
-	const char     *Name(void)    const { return mName; }
-	const char     *Version(void) const { return mVersion; }
-	const char     *Font(void)    const { return mFont; }
-	const char     *Path(void)    const { return mPath; }
-	const char     *AltPath(void) const { return mAltPath; }
-	const char     *Text(void)    const { return mText; }
+	int             Arc(void)     const { return mArc; }
+	const tColor   *Fg(void)      const { return mFg; }
+	const tColor   *Bg(void)      const { return mBg; }
+	const cFont    *Font(void)    const { return mFont; }
+	const string   &Name(void)    const { return mName; }
+	const string   &Version(void) const { return mVersion; }
+	const string   &Path(void)    const { return mPath; }
+	const string   &AltPath(void) const { return mAltPath; }
+	const string   &Text(void)    const { return mText; }
+	const string   &Type(void)    const { return mType; }
 	eTextAlignment  Align(void)   const { return mAlign; }
 };
 

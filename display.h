@@ -1,11 +1,13 @@
 /*
- * $Id: display.h,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: display.h,v 1.2 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
 #define VDR_TEXT2SKIN_SKIN_H
 
+#define __STL_CONFIG_H
 #include <vdr/skins.h>
+#undef __STL_CONFIG_H
 
 class cText2SkinData;
 class cText2SkinRender;
@@ -23,6 +25,7 @@ public:
 
 	virtual void SetChannel(const cChannel *Channel, int Number);
 	virtual void SetEvents(const cEvent *Present, const cEvent *Following);
+  virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void Flush(void);
 };
 
@@ -50,9 +53,11 @@ public:
 	virtual void SetTitle(const char *Title);
 	virtual void SetMode(bool Play, bool Forward, int Speed);
 	virtual void SetProgress(int Current, int Total);
+	virtual void SetMarks(const cMarks *Marks);
 	virtual void SetCurrent(const char *Current);
 	virtual void SetTotal(const char *Total);
 	virtual void SetJump(const char *Jump);
+  virtual void SetMessage(eMessageType Type, const char *Text);
 	virtual void Flush(void);
 };
 

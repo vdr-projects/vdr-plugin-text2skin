@@ -1,10 +1,10 @@
 /*
- * $Id: display.c,v 1.2 2004/05/23 19:20:26 lordjaxom Exp $
+ * $Id: display.c,v 1.6 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
-#include "display.h"
-#include "data.h"
 #include "render.h"
+#include "data.h"
+#include "display.h"
 
 // --- cText2SkinDisplayChannel -----------------------------------------------
 
@@ -22,17 +22,26 @@ cText2SkinDisplayChannel::~cText2SkinDisplayChannel() {
 
 void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number) {
 	printf("SetChannel\n");
-	if (mRender->mChannel != Channel || mRender->mNumber != Number) {
+	if (mRender->mChannel != Channel || mRender->mChannelNumber != Number) {
 		mRender->mChannel = Channel;
-		mRender->mNumber = Number;
+		mRender->mChannelNumber = Number;
 		mDirty = true;
 	}
 }
 
 void cText2SkinDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following) {
-	if (mRender->mPresent != Present || mRender->mFollowing != Following) {
-		mRender->mPresent = Present;
-		mRender->mFollowing = Following;
+	if (mRender->mChannelPresent != Present || mRender->mChannelFollowing != Following) {
+		mRender->mChannelPresent = Present;
+		mRender->mChannelFollowing = Following;
+		mDirty = true;
+	}
+}
+
+void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text) {
+	if (Text == NULL) Text = "";
+	if (mRender->mMessageType != Type || mRender->mMessageText != Text) {
+		mRender->mMessageType = Type;
+		mRender->mMessageText = Text;
 		mDirty = true;
 	}
 }
@@ -78,7 +87,7 @@ void cText2SkinDisplayVolume::Flush(void) {
 // --- cText2SkinDisplayReplay ------------------------------------------------
 
 cText2SkinDisplayReplay::cText2SkinDisplayReplay(cText2SkinData *Data, bool ModeOnly) {
-	printf("cText2SkinDisplayVolume\n");
+	printf("cText2SkinDisplayReplay\n");
 	mData     = Data;
 	mRender   = new cText2SkinRender(mData, ModeOnly ? sectionReplayMode : sectionReplay);
 	mDirty    = false;
@@ -112,6 +121,14 @@ void cText2SkinDisplayReplay::SetProgress(int Current, int Total) {
 	}
 }
 
+void cText2SkinDisplayReplay::SetMarks(const cMarks *Marks) {
+	printf("SetMarks: %p\n", Marks);
+	if (mRender->mReplayMarks != Marks) {
+		mRender->mReplayMarks = Marks;
+		mDirty = true;
+	}
+}
+
 void cText2SkinDisplayReplay::SetCurrent(const char *Current) {
 	if (mRender->mReplayCurrentText != Current) {
 		mRender->mReplayCurrentText = Current;
@@ -127,8 +144,18 @@ void cText2SkinDisplayReplay::SetTotal(const char *Total) {
 }
 
 void cText2SkinDisplayReplay::SetJump(const char *Jump) {
+	if (Jump == NULL) Jump = "";
 	if (mRender->mReplayJump != Jump) {
-		mRender->mReplayJump = NULL;
+		mRender->mReplayJump = Jump;
+		mDirty = true;
+	}
+}
+
+void cText2SkinDisplayReplay::SetMessage(eMessageType Type, const char *Text) {
+	if (Text == NULL) Text = "";
+	if (mRender->mMessageType != Type || mRender->mMessageText != Text) {
+		mRender->mMessageType = Type;
+		mRender->mMessageText = Text;
 		mDirty = true;
 	}
 }
@@ -155,6 +182,7 @@ cText2SkinDisplayMessage::~cText2SkinDisplayMessage() {
 }
 
 void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) {
+	if (Text == NULL) Text = "";
 	if (mRender->mMessageType != Type || mRender->mMessageText != Text) {
 		mRender->mMessageType = Type;
 		mRender->mMessageText = Text;
@@ -182,7 +210,7 @@ cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinData *Data) {
 	cText2SkinItem *area = mData->Get(itemMenuArea);
 	cText2SkinItem *item = mData->Get(itemMenuItem);
 	if (area && item)
-		mMaxItems = area->Height() / item->Height();
+		mMaxItems = area->Size().h / item->Size().h;
 	else
 		esyslog("ERROR: text2skin: Skin is missing the items MenuArea and/or MenuItem");
 }
@@ -192,35 +220,53 @@ cText2SkinDisplayMenu::~cText2SkinDisplayMenu() {
 }
 
 void cText2SkinDisplayMenu::Clear(void) {
-	mRender->mItems.clear();
-	mRender->mCurrent = -1;
+	mRender->mMenuItems.clear();
+	mRender->mMenuCurrent = -1;
 	mDirty = true;
 }
 
 void cText2SkinDisplayMenu::SetTitle(const char *Title) {
-	if (mRender->mTitle != Title) {
-		mRender->mTitle = Title;
+	if (mRender->mMenuTitle != Title) {
+		mRender->mMenuTitle = Title;
 		mDirty = true;
 	}
 }
 
 void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue) {
+	if (Red    == NULL) Red    = "";
+	if (Green  == NULL) Green  = "";
+	if (Yellow == NULL) Yellow = "";
+	if (Blue   == NULL) Blue   = "";
+	if (mRender->mMenuRed != Red || mRender->mMenuGreen != Green || mRender->mMenuYellow != Yellow || mRender->mMenuBlue != Blue) {
+		mRender->mMenuRed    = Red;
+		mRender->mMenuGreen  = Green;
+		mRender->mMenuYellow = Yellow;
+		mRender->mMenuBlue   = Blue;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
+	printf("SetMessage: %d, %s\n", Type, Text);
+	if (Text == NULL) Text = "";
+	if (mRender->mMessageType != Type || mRender->mMessageText != Text) {
+		mRender->mMessageType = Type;
+		mRender->mMessageText = Text;
+		mDirty = true;
+	}
 }
 
 void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) {
 	cText2SkinRender::MenuItem item = { Text, Selectable };
-	if ((int)mRender->mItems.size() <= Index) {
-		mRender->mItems.push_back(item);
+	if ((int)mRender->mMenuItems.size() <= Index) {
+		mRender->mMenuItems.push_back(item);
 		mDirty = true;
-	} else if (mRender->mItems[Index] != item) {
-		mRender->mItems[Index] = item;
+	} else if (mRender->mMenuItems[Index] != item) {
+		mRender->mMenuItems[Index] = item;
 		mDirty = true;
 	}
-	if (Current && mRender->mCurrent != Index) {
-		mRender->mCurrent = Index;
+	if (Current && mRender->mMenuCurrent != Index) {
+		mRender->mMenuCurrent = Index;
 		mDirty = true;
 	}
 }

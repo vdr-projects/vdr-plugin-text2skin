@@ -1,5 +1,5 @@
 /*
- * $Id: data.c,v 1.2 2004/05/23 19:20:26 lordjaxom Exp $
+ * $Id: data.c,v 1.10 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
 #include "data.h"
@@ -9,29 +9,19 @@ eSkinSection cText2SkinItem::mParseSection = sectionUnknown;
 cText2SkinItem::cText2SkinItem(void) {
 	mSection = sectionUnknown;
 	mItem    = itemUnknown;
-	mX       = -1;
-	mY       = -1;
-	mWidth   = 0;
-	mHeight  = 0;
+	mPos.x   = -1;
+	mPos.y   = -1;
+	mSize.w  = 0;
+	mSize.h  = 0;
 	mBpp     = 4;
+	mArc     = 0;
 	mFg      = NULL;
 	mBg      = NULL;
-	mName    = NULL;
-	mVersion = NULL;
-	mFont    = NULL;
-	mPath    = NULL;
-	mAltPath = NULL;
-	mText    = NULL;
+	mFont    = cFont::GetFont(fontOsd);
 	mAlign   = taDefault;
 }
 
 cText2SkinItem::~cText2SkinItem() {
-	free(mText);
-	free(mPath);
-	free(mAltPath);
-	free(mFont);
-	free(mVersion);
-	free(mName);
 	delete mBg;
 	delete mFg;
 }
@@ -60,55 +50,69 @@ bool cText2SkinItem::Parse(const char *Text) {
 	}
 
 	// check if this is an item
-	char *item;
-	if (ParseVar(ptr, "Item", &item)) {
+	string item;
+	if (ParseVar(ptr, "Item", item)) {
 		mSection = mParseSection;
-		if (strcmp(item, "Skin") == 0) { // the Skin item
-			if (ParseVar(ptr, "name", &mName) && ParseVar(ptr, "version", &mVersion))
+		if (item == "Skin") { // the Skin item
+			if (ParseVar(ptr, "name", mName) && ParseVar(ptr, "version", mVersion))
 				mItem = itemSkin;
 			else
 				esyslog("ERROR: text2skin: Skin doesn't contain Item=Skin keyphrase");
 		}
-		else if (strcmp(item, "Background")         == 0) mItem = itemBackground;
-		else if (strcmp(item, "Logo")               == 0) mItem = itemLogo;
-		else if (strcmp(item, "Text")               == 0) mItem = itemText;
-		else if (strcmp(item, "DateTime")           == 0) mItem = itemDateTime;
-		else if (strcmp(item, "Date")               == 0) mItem = itemDate;
-		else if (strcmp(item, "Time")               == 0) mItem = itemTime;
-		else if (strcmp(item, "ChannelNumberName")  == 0) mItem = itemChannelNumberName;
-		else if (strcmp(item, "ChannelNumber")      == 0) mItem = itemChannelNumber;
-		else if (strcmp(item, "ChannelName")        == 0) mItem = itemChannelName;
-		else if (strcmp(item, "Rectangle")          == 0) mItem = itemRectangle;
-		else if (strcmp(item, "Ellipse")            == 0) mItem = itemEllipse;
-		else if (strcmp(item, "Timebar")            == 0) mItem = itemTimebar;
-		else if (strcmp(item, "PresentTime")        == 0) mItem = itemPresentTime;
-		else if (strcmp(item, "PresentTitle")       == 0) mItem = itemPresentTitle;
-		else if (strcmp(item, "PresentShortText")   == 0) mItem = itemPresentShortText;
-		else if (strcmp(item, "FollowingTime")      == 0) mItem = itemFollowingTime;
-		else if (strcmp(item, "FollowingTitle")     == 0) mItem = itemFollowingTitle;
-		else if (strcmp(item, "FollowingShortText") == 0) mItem = itemFollowingShortText;
-		else if (strcmp(item, "SymbolTeletext")     == 0) mItem = itemSymbolTeletext;
-		else if (strcmp(item, "SymbolAudio")        == 0) mItem = itemSymbolAudio;
-		else if (strcmp(item, "SymbolDolby")        == 0) mItem = itemSymbolDolby;
-		else if (strcmp(item, "SymbolEncrypted")    == 0) mItem = itemSymbolEncrypted;
-		else if (strcmp(item, "Volumebar")          == 0) mItem = itemVolumebar;
-		else if (strcmp(item, "Mute")               == 0) mItem = itemMute;
-		else if (strcmp(item, "Progressbar")        == 0) mItem = itemProgressbar;
-		else if (strcmp(item, "ReplayTitle")        == 0) mItem = itemReplayTitle;
-		else if (strcmp(item, "ReplayCurrent")      == 0) mItem = itemReplayCurrent;
-		else if (strcmp(item, "ReplayTotal")        == 0) mItem = itemReplayTotal;
-		else if (strcmp(item, "ReplayJump")         == 0) mItem = itemReplayJump;
-		else if (strcmp(item, "MessageStatus")      == 0) mItem = itemMessageStatus;
-		else if (strcmp(item, "MessageInfo")        == 0) mItem = itemMessageInfo;
-		else if (strcmp(item, "MessageWarning")     == 0) mItem = itemMessageWarning;
-		else if (strcmp(item, "MessageError")       == 0) mItem = itemMessageError;
-		else if (strcmp(item, "MenuArea")           == 0) mItem = itemMenuArea;
-		else if (strcmp(item, "MenuItem")           == 0) mItem = itemMenuItem;
-		else if (strcmp(item, "MenuCurrent")        == 0) mItem = itemMenuCurrent;
+		else if (item == "Background")         mItem = itemBackground;
+		else if (item == "ChannelLogo")        mItem = itemChannelLogo;
+		else if (item == "Language")           mItem = itemLanguage;
+		else if (item == "Text")               mItem = itemText;
+		else if (item == "Image")              mItem = itemImage;
+		else if (item == "DateTime")           mItem = itemDateTime;
+		else if (item == "Date")               mItem = itemDate;
+		else if (item == "Time")               mItem = itemTime;
+		else if (item == "ChannelNumberName")  mItem = itemChannelNumberName;
+		else if (item == "ChannelNumber")      mItem = itemChannelNumber;
+		else if (item == "ChannelName")        mItem = itemChannelName;
+		else if (item == "Rectangle")          mItem = itemRectangle;
+		else if (item == "Ellipse")            mItem = itemEllipse;
+		else if (item == "Slope")              mItem = itemSlope;
+		else if (item == "Timebar")            mItem = itemTimebar;
+		else if (item == "PresentTime")        mItem = itemPresentTime;
+		else if (item == "PresentTitle")       mItem = itemPresentTitle;
+		else if (item == "PresentShortText")   mItem = itemPresentShortText;
+		else if (item == "FollowingTime")      mItem = itemFollowingTime;
+		else if (item == "FollowingTitle")     mItem = itemFollowingTitle;
+		else if (item == "FollowingShortText") mItem = itemFollowingShortText;
+		else if (item == "SymbolTeletext")     mItem = itemSymbolTeletext;
+		else if (item == "SymbolAudio")        mItem = itemSymbolAudio;
+		else if (item == "SymbolDolby")        mItem = itemSymbolDolby;
+		else if (item == "SymbolEncrypted")    mItem = itemSymbolEncrypted;
+		else if (item == "SymbolRecording")    mItem = itemSymbolRecording;
+		else if (item == "SymbolRadio")        mItem = itemSymbolRadio;
+		else if (item == "Volumebar")          mItem = itemVolumebar;
+		else if (item == "Mute")               mItem = itemMute;
+		else if (item == "Replaybar")          mItem = itemReplaybar;
+		else if (item == "ReplayTitle")        mItem = itemReplayTitle;
+		else if (item == "ReplayCurrent")      mItem = itemReplayCurrent;
+		else if (item == "ReplayTotal")        mItem = itemReplayTotal;
+		else if (item == "ReplayJump")         mItem = itemReplayJump;
+		else if (item == "SymbolPlay")         mItem = itemSymbolPlay;
+		else if (item == "SymbolPause")        mItem = itemSymbolPause;
+		else if (item == "SymbolFastFwd")      mItem = itemSymbolFastFwd;
+		else if (item == "SymbolFastRew")      mItem = itemSymbolFastRew;
+		else if (item == "SymbolSlowFwd")      mItem = itemSymbolSlowFwd;
+		else if (item == "SymbolFastFwd")      mItem = itemSymbolFastFwd;
+		else if (item == "MessageStatus")      mItem = itemMessageStatus;
+		else if (item == "MessageInfo")        mItem = itemMessageInfo;
+		else if (item == "MessageWarning")     mItem = itemMessageWarning;
+		else if (item == "MessageError")       mItem = itemMessageError;
+		else if (item == "MenuArea")           mItem = itemMenuArea;
+		else if (item == "MenuItem")           mItem = itemMenuItem;
+		else if (item == "MenuCurrent")        mItem = itemMenuCurrent;
+		else if (item == "MenuTitle")          mItem = itemMenuTitle;
+		else if (item == "MenuRed")            mItem = itemMenuRed;
+		else if (item == "MenuGreen")          mItem = itemMenuGreen;
+		else if (item == "MenuYellow")         mItem = itemMenuYellow;
+		else if (item == "MenuBlue")           mItem = itemMenuBlue;
 		else
-			esyslog("ERROR: text2skin: %s is not a valid theme item\n", item);
-
-		free(item);
+			esyslog("ERROR: text2skin: %s is not a valid theme item\n", item.c_str());
 
 		if (mItem != itemUnknown) {
 			if (mItem != itemSkin)
@@ -123,39 +127,41 @@ bool cText2SkinItem::Parse(const char *Text) {
 }
 
 bool cText2SkinItem::ParseItem(const char *Text) {
-	ParseVar(Text, "x",       &mX);
-	ParseVar(Text, "y",       &mY);
-	ParseVar(Text, "width",   &mWidth);
-	ParseVar(Text, "height",  &mHeight);
+	ParseVar(Text, "x",       &mPos.x);
+	ParseVar(Text, "y",       &mPos.y);
+	ParseVar(Text, "width",   &mSize.w);
+	ParseVar(Text, "height",  &mSize.h);
 	ParseVar(Text, "bpp",     &mBpp);
+	ParseVar(Text, "arc",     &mArc);
 	ParseVar(Text, "fg",      &mFg);
 	ParseVar(Text, "bg",      &mBg);
 	ParseVar(Text, "font",    &mFont);
-	ParseVar(Text, "path",    &mPath);
-	ParseVar(Text, "altpath", &mAltPath);
-	ParseVar(Text, "text",    &mText);
+	ParseVar(Text, "path",     mPath);
+	ParseVar(Text, "altpath",  mAltPath);
+	ParseVar(Text, "text",     mText);
+	ParseVar(Text, "type",     mType);
 	ParseVar(Text, "align",   &mAlign);
 	return true;
 }
 
 bool cText2SkinItem::ParseVar(const char *Text, const char *Name, int *Value) {
-	char *value;
-	if (ParseVar(Text, Name, &value)) {
-		*Value = atoi(value);
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		*Value = atoi(value.c_str());
 		return true;
 	}
 	return false;
 }
 
-bool cText2SkinItem::ParseVar(const char *Text, const char *Name, char **Value){
+bool cText2SkinItem::ParseVar(const char *Text, const char *Name, string &Value){
 	char *ptr1, *ptr2;
 	char *str;
 	asprintf(&str, "%s=", Name);
 	if ((ptr1 = strstr(Text, str))) {
 		ptr1 += strlen(str);
 		if ((ptr2 = strchr(ptr1, ',')) || (ptr2 = strchr(ptr1, ';'))) {
-			asprintf(Value, "%.*s", ptr2 - ptr1, ptr1);
-			free(str);
+			Value = ptr1;
+			Value.erase(ptr2 - ptr1);
 			return true;
 		}
 	}
@@ -164,25 +170,34 @@ bool cText2SkinItem::ParseVar(const char *Text, const char *Name, char **Value){
 }
 
 bool cText2SkinItem::ParseVar(const char *Text, const char *Name, tColor **Value) {
-	char *value;
-	if (ParseVar(Text, Name, &value) && *value == '#') {
-		*Value = new tColor(strtoul(value + 1, NULL, 16));
+	string value;
+	if (ParseVar(Text, Name, value) && value[0] == '#') {
+		*Value = new tColor(strtoul(value.c_str() + 1, NULL, 16));
 		return true;
 	}
 	return false;
 }
 
 bool cText2SkinItem::ParseVar(const char *Text, const char *Name, eTextAlignment *Value) {
-	char *value;
-	if (ParseVar(Text, Name, &value)) {
-		int v = atoi(value);
-		free(value);
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		int v = atoi(value.c_str());
 		if (v == 0)
 			*Value = (eTextAlignment)(taTop|taLeft);
 		else if (v == 1)
 			*Value = (eTextAlignment)(taTop|taCenter);
 		else if (v == 2)
 			*Value = (eTextAlignment)(taTop|taRight);
+		return true;
+	}
+	return false;
+}
+
+bool cText2SkinItem::ParseVar(const char *Text, const char *Name, const cFont **Value) {
+	string value;
+	if (ParseVar(Text, Name, value)) {
+		if      (value == "Sml") *Value = cFont::GetFont(fontSml);
+		else if (value == "Fix") *Value = cFont::GetFont(fontFix);
 		return true;
 	}
 	return false;

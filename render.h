@@ -1,16 +1,20 @@
 /*
- * $Id: render.h,v 1.3 2004/05/23 19:20:26 lordjaxom Exp $
+ * $Id: render.h,v 1.10 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_RENDER_H
 #define VDR_TEXT2SKIN_RENDER_H
 
-#include <vector>
+#define __STL_CONFIG_H
 #include <vdr/osd.h>
 #include <vdr/skins.h>
+#undef __STL_CONFIG_H
 #include "data.h"
+#include <vector>
+#include <string>
 
 using std::vector;
+using std::string;
 
 class cChannel;
 class cEvent;
@@ -27,12 +31,11 @@ private:
 	eSkinSection      mSection;
 	cOsd             *mOsd;
 
-	// TODO: rename or restructure items
 	// channel display
 	const cChannel   *mChannel;
-	int               mNumber;
-	const cEvent     *mPresent;
-	const cEvent     *mFollowing;
+	int               mChannelNumber;
+	const cEvent     *mChannelPresent;
+	const cEvent     *mChannelFollowing;
 
 	// volume display
 	int               mVolumeCurrent;
@@ -40,34 +43,51 @@ private:
 	bool              mVolumeMute;
 
 	// replay display
-	const char       *mReplayTitle;
+	string            mReplayTitle;
 	bool              mReplayPlay;
 	bool              mReplayForward;
 	int               mReplaySpeed;
 	int               mReplayCurrent;
 	int               mReplayTotal;
-	const char       *mReplayCurrentText;
-	const char       *mReplayTotalText;
-	const char       *mReplayJump;
+	const cMarks     *mReplayMarks;
+	string            mReplayCurrentText;
+	string            mReplayTotalText;
+	string            mReplayJump;
 
 	// message display
 	eMessageType      mMessageType;
-	const char       *mMessageText;
+	string            mMessageText;
 
 	// menu
 	struct MenuItem {
-		const char     *mName;
-		bool            mSelectable;
-		bool operator!=(const MenuItem &b) { return b.mName != mName || b.mSelectable != mSelectable; }
+		string          name;
+		bool            sel;
+		bool operator!=(const MenuItem &b) { return b.name != name || b.sel != sel; }
 	};
-	const char       *mTitle;
-	vector<MenuItem>  mItems;
-	int               mCurrent;
+	string            mMenuTitle;
+	vector<MenuItem>  mMenuItems;
+	int               mMenuCurrent;
+	string            mMenuRed;
+	string            mMenuGreen;
+	string            mMenuYellow;
+	string            mMenuBlue;
 
 protected:
+	// Basic operations
+	void DrawBackground(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
+	void DrawImage(const POINT &Pos, const SIZE &Size, const tColor *Bg, const tColor *Fg, const string &Path);
+	void DrawText(const POINT &Pos, const SIZE &Size, const tColor *Fg, const string &Text, const cFont *Font, int Align);
+	void DrawRectangle(const POINT &Pos, const SIZE &Size, const tColor *Fg);
+	void DrawEllipse(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
+	void DrawSlope(const POINT &Pos, const SIZE &Size, const tColor *Fg, int Arc);
+	void DrawProgressbar(const POINT &Pos, const SIZE &Size, int Current, int Total, const tColor *Fg, const tColor *Bg, const cMarks *Marks = NULL);
+ 	void DrawMark(const POINT &Pos, const SIZE &Size, bool Start, bool Current, bool Horizontal);
+
 	void DisplayBackground(cText2SkinItem *Item); 
-	void DisplayLogo(cText2SkinItem *Item); 
+	void DisplayChannelLogo(cText2SkinItem *Item); 
+	void DisplayLanguage(cText2SkinItem *Item); 
 	void DisplayText(cText2SkinItem *Item); 
+	void DisplayImage(cText2SkinItem *Item); 
 	void DisplayDateTime(cText2SkinItem *Item); 
 	void DisplayDate(cText2SkinItem *Item); 
 	void DisplayTime(cText2SkinItem *Item); 
@@ -76,6 +96,7 @@ protected:
 	void DisplayChannelName(cText2SkinItem *Item); 
 	void DisplayRectangle(cText2SkinItem *Item); 
 	void DisplayEllipse(cText2SkinItem *Item); 
+	void DisplaySlope(cText2SkinItem *Item); 
 	void DisplayTimebar(cText2SkinItem *Item); 
 	void DisplayPresentTime(cText2SkinItem *Item); 
 	void DisplayPresentTitle(cText2SkinItem *Item); 
@@ -86,16 +107,16 @@ protected:
 	void DisplaySymbol(cText2SkinItem *Item);
 	void DisplayVolumebar(cText2SkinItem *Item); 
 	void DisplayMute(cText2SkinItem *Item); 
-	void DisplayProgressbar(cText2SkinItem *Item); 
+	void DisplayReplaybar(cText2SkinItem *Item); 
 	void DisplayReplayTitle(cText2SkinItem *Item);
 	void DisplayReplayCurrent(cText2SkinItem *Item);
 	void DisplayReplayTotal(cText2SkinItem *Item);
 	void DisplayReplayJump(cText2SkinItem *Item);
-	void DisplayMessageStatus(cText2SkinItem *Item);
-	void DisplayMessageInfo(cText2SkinItem *Item);
-	void DisplayMessageWarning(cText2SkinItem *Item);
-	void DisplayMessageError(cText2SkinItem *Item);
+	void DisplayMessage(cText2SkinItem *Item);
 	void DisplayMenuItems(cText2SkinItem *Item);
+	void DisplayMenuTitle(cText2SkinItem *Item);
+	void DisplayMenuColorbutton(cText2SkinItem *Item);
+	void DisplayMenuMessage(cText2SkinItem *Item);
 
 public:
 	cText2SkinRender(cText2SkinData *Data, eSkinSection Section);

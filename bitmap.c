@@ -1,8 +1,10 @@
 /*
- * $Id: bitmap.c,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.3 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
+#define __STL_CONFIG_H
 #include <vdr/tools.h>
+#undef __STL_CONFIG_H
 #include "bitmap.h"
 #define X_DISPLAY_MISSING
 #include <Imlib2.h>
@@ -24,7 +26,7 @@ bool cText2SkinBitmap::Load(const char *Filename) {
 	if (len > 4) {
 		if (strcmp(Filename + len - 4, ".xpm") == 0)
 			return LoadXpm(Filename);
-#ifdef HAVE_IMLIB
+#ifdef HAVE_IMLIB2
 		else if (strcmp(Filename + len - 4, ".png") == 0)
 			return LoadPng(Filename);
 #endif
@@ -35,7 +37,7 @@ bool cText2SkinBitmap::Load(const char *Filename) {
 	return false;
 }
 
-#ifdef HAVE_IMLIB
+#ifdef HAVE_IMLIB2
 bool cText2SkinBitmap::LoadPng(const char *Filename) {
 	Imlib_Image image;
 	image = imlib_load_image(Filename);
@@ -48,8 +50,9 @@ bool cText2SkinBitmap::LoadPng(const char *Filename) {
 	int pal = 0, pos = 0;
 	for (int y = 0; y < Height(); ++y) {
 		for (int x = 0; x < Width(); ++x) {
-			tColor col = (data[pos + 0] << 24) | (data[pos + 1] << 16) | (data[pos + 2] << 8) | data[pos + 3];
+			tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
 			int res = Index(col);
+			//printf("color: r=%d,g=%d,b=%d,a=%d\n", data[pos], data[pos+1], data[pos+2], data[pos+3]);
 			if (pal > 0 && res == 0)
 				;//esyslog("ERROR: text2skin: Too many colors used in palette");
 			else

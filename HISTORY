@@ -1,9 +1,32 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2004-05-31: Version 0.0.1-rc1
+
+- "Background" may be initialized with a color now
+- fixed channel name/number display
+- added parameter type (to store logo's filetype)
+- "Timebar", "Progressbar" and "Volumebar": Background is only drawn if bg is 
+  specified
+- fixed timebar (was running backwards)
+- renamed "Progressbar" to "Replaybar" for more consistency
+- renamed "Logo" to "ChannelLogo"
+- introduced items "Language" (for audio language texts or symbols) and "Image"
+  (foreground images)
+- adopted SKINS document (SKINS.de is not up-to-date yet)
+- introduced item "MenuTitle"
+- introduced items "MenuRed", "MenuGreen", "MenuYellow" and "MenuBlue"
+- activated message items for display in menu
+- introcuded parameter "arc" and item "Slope"
+- fixed possible segfault in Item=Message
+- implemented items "SymbolReplaying" and "SymbolRadio"
+- added "text" parameter for all text like Items (explanation follows)
+- added "SymbolPlay", "SymbolPause", "SymbolFastFwd", "SymbolFastRew", 
+  "SymbolSlowFwd", "SymbolSlowRew" items.
+
 2004-05-23: Version 0.0.1-pre2
 
-- added "ChannelSmall" section
+- added "ChannelSmall" section (apparently VDR doesn't use it)
 - added replay and message items
 - added a german translation of the SKINS document (incomplete)
 

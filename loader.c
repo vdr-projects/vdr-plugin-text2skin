@@ -1,8 +1,10 @@
 /*
- * $Id: loader.c,v 1.1.1.1 2004/05/23 00:08:03 lordjaxom Exp $
+ * $Id: loader.c,v 1.4 2004/05/31 19:54:12 lordjaxom Exp $
  */
 
+#define __STL_CONFIG_H
 #include <vdr/plugin.h>
+#undef __STL_CONFIG_H
 #include "loader.h"
 #include "data.h"
 #include "display.h"
@@ -49,7 +51,7 @@ void cText2SkinLoader::Load(const char *Skin) {
 		esyslog("ERROR: text2skin: %s/%s is not a valid skin directory\n", SkinPath(), Skin);
 }
 
-cText2SkinLoader::cText2SkinLoader(cText2SkinData *Data, const char *Skin, const char *Description): cSkin(Skin, &::Theme) {
+cText2SkinLoader::cText2SkinLoader(cText2SkinData *Data, const string &Skin, const string &Description): cSkin(Skin.c_str(), &::Theme) {
 	mData = Data;
 	mDescription = Description;
 }
@@ -60,6 +62,7 @@ cText2SkinLoader::~cText2SkinLoader() {
 }
 
 cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) {
+	printf("WithInfo: %d\n", WithInfo);
 	return new cText2SkinDisplayChannel(mData, WithInfo);
 }
 
