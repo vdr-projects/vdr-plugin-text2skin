@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.14 2005/01/20 17:07:09 lordjaxom Exp $
+ * $Id: display.c,v 1.15 2005/01/21 18:13:59 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -281,7 +281,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return mPresent != NULL && mPresent->Vps() != 0;
 
 	case tPresentHasVPS:
-		return mPresent != NULL && mPresent->Vps() != mPresent->StartTime();
+		return mPresent != NULL && mPresent->Vps() != 0 && mPresent->Vps() != mPresent->StartTime();
 
 	case tHasTimer:
 	case tPresentHasTimer:
@@ -298,7 +298,8 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return mFollowing != NULL && mFollowing->IsRunning();
 
 	case tFollowingHasVPS:
-		return mFollowing != NULL && mFollowing->Vps() != mFollowing->StartTime();
+		return mFollowing != NULL && mFollowing->Vps() != 0 
+		    && mFollowing->Vps() != mFollowing->StartTime();
 
 	case tMessage:
 		return mText;
@@ -1052,7 +1053,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return mEvent != NULL && mEvent->Vps() != 0;
 
 	case tPresentHasVPS:
-		return mEvent != NULL && mEvent->Vps() != mEvent->StartTime();
+		return mEvent != NULL && mEvent->Vps() != 0 && mEvent->Vps() != mEvent->StartTime();
 
 	case tHasTimer:
 	case tPresentHasTimer:
