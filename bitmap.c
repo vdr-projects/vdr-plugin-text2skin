@@ -1,5 +1,5 @@
 /*
- * $Id: bitmap.c,v 1.4 2005/01/11 17:55:31 lordjaxom Exp $
+ * $Id: bitmap.c,v 1.5 2005/01/26 20:44:18 lordjaxom Exp $
  */
 
 #include "bitmap.h"
@@ -15,15 +15,30 @@
 using namespace Magick;
 #endif
 
-cText2SkinCache cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
+cxCache<tBitmapSpec,cText2SkinBitmap*> cText2SkinBitmap::mCache(Text2SkinSetup.MaxCacheFill);
 
-cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height, int width, int colors) {
+template<>
+void cxCache<tBitmapSpec,cText2SkinBitmap*>::Delete(const tBitmapSpec &Key, cText2SkinBitmap *&Data)
+{
+	delete Data;
+}
+
+template<>
+void cxCache<tBitmapSpec,cText2SkinBitmap*>::Reset(cText2SkinBitmap *&Data)
+{
+	Data->Reset();
+}
+
+cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height, 
+                                         int width, int colors, bool Quiet) {
 	tBitmapSpec spec(Filename, Alpha, height, width, colors);
+	Dprintf("checking image with spec %s_%d_%d_%d_%d..", Filename.c_str(),Alpha,height,width,colors);
 
 	cText2SkinBitmap *res = NULL;
-	if (mCache.Contains(spec))
+	if (mCache.Contains(spec)) {
 		res = mCache[spec];
-	else {
+		Dprintf("..cache ok\n");
+	} else {
 		res = new cText2SkinBitmap;
 		int len = Filename.length();
 		bool result = false;
@@ -32,51 +47,34 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 				result = res->LoadXpm(Filename.c_str());
 			else {
 #ifdef HAVE_IMLIB2
-				result = res->LoadImlib(Filename.c_str(),height,width,colors, false);
+				result = res->LoadImlib(Filename.c_str(),height,width,colors, Quiet);
 #else
 #	ifdef HAVE_IMAGEMAGICK
-				result = res->LoadMagick(Filename.c_str(),height,width,colors, false);
+				result = res->LoadMagick(Filename.c_str(),height,width,colors, Quiet);
 #	else
-				esyslog("ERROR: text2skin: unknown file format for %s", Filename);
+				if (!Quiet)
+					esyslog("ERROR: text2skin: unknown file format for %s", Filename);
 #	endif
 #endif
 			}
-		} else
+		} else if (!Quiet)
 			esyslog("ERROR: text2skin: filename %s too short to identify format", Filename.c_str());
 	
-		if (result) {
+		Dprintf("..load %sok\n", result ? "" : "not ");
+		if (result)
 			res->SetAlpha(Alpha);
-			mCache[spec] = res;
-		} else
+		else
 			DELETENULL(res);
+		mCache[spec] = res;
 	}
 	return res;
 }
 
-bool cText2SkinBitmap::Available(const std::string &Filename)
+bool cText2SkinBitmap::Available(const std::string &Filename, int Alpha = 0, int height = 0, 
+	                             int width = 0, int colors = 0)
 {
-	bool res = false;
-	if (mCache.Contains(Filename))
-		res = true;
-	else {
-		cText2SkinBitmap *bmp = new cText2SkinBitmap;
-		int len = Filename.length();
-		if (len > 4) {
-			if (Filename.substr(len - 4, 4) == ".xpm")
-				res = bmp->LoadXpm(Filename.c_str());
-			else {
-#ifdef HAVE_IMLIB2
-				res = bmp->LoadImlib(Filename.c_str(), 0, 0, 0, true);
-#else
-#	ifdef HAVE_IMAGEMAGICK
-				res = bmp->LoadMagick(Filename.c_str(), 0, 0, 0, true);
-#	endif
-#endif
-			}
-		}
-		delete bmp;
-	}
-	return res;
+	cText2SkinBitmap *bmp = Load(Filename, Alpha, height, width, colors, true);
+	return bmp != NULL;
 }
 
 cText2SkinBitmap::cText2SkinBitmap(void) {
