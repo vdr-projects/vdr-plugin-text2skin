@@ -1,0 +1,314 @@
+
+How To create text-based skins
+------------------------------
+
+[ TODO remove this ]
+You may encounter bracketed phrases in this document. Please ignore them, they
+are comments for me which will be removed in official release versions.
+
+[ TODO move this to manual ]
+The Skin itself is located in a subdirectory "text2skin" inside the "plugins" 
+directory of your VDR configuration directory. This usually is the video 
+directory, if you didn't specify -c on the commandline. If you did, the 
+subdirectory is located there.  Each skin has an own subdirectory there, which 
+holds the skin description file and the needed image files. The skin 
+description file must have the same name as the skin directory, with the 
+extension ".skin"
+
+Example:
+/video0/plugins/text2skin
+/video0/plugins/text2skin/myskin
+/video0/plugins/text2skin/msykin/msykin.skin
+/video0/plugins/text2skin/myskin/channeldisplay.png
+
+It is important that you understand the limitations of the OSD memory. If there
+are too many objects with too many colors defined, VDR will throw an error and
+some areas will not be displayed. For other output devices this limitations may
+not apply, so if you are planning to design a skin for another output device,
+feel free to use more colors, but remember that VDR can handle a maximum of 256
+areas per object.
+
+An object is defined to be a specific area with a specific palette and color 
+depth. Those objects will be referred to as 'backgrounds' later on. Calculate
+the dimensions of them wisely, since overlapping areas or oversized areas will
+lead to an error. Also, the widht and height of each area has to be a multiple
+of four [ TODO may not apply to different output devices ].
+
+
+Creation of an image
+--------------------
+
+I used gimp to create some test images displaying things on screen, although
+I don't know much about image processing :-). To give an advice, I will point
+out how I created those test images with GIMP.
+
+I've used a template for a menu provided by a community member, tiled it into
+sections fully covered by the image. That made three images in this case. Then
+I added a little bit of transparency to the image covering the middle part. I've
+resized the image so that it's width and height were multiples of four. Now I've
+added 50% transparency to the top layer of the image. Then I've reduced the 
+colordepth of the image (Image->Mode->Indexed) to 14 colors (of course the 
+image may not be too extensive, but 14 colors can give some nice gradients). 
+That leaves two colors for text and progress bar in the same display. Reduce 
+the number of colors according to the background depth and additional 
+decoration you intend to use. I saved the results to a png file and placed the
+result into the skin.
+
+If you intend to use xpm's, be aware that VDR doesn't know about named colors,
+so most images GIMP creates will not be read on-the-fly, because GIMP always
+uses the color "None". [ TODO at least None will be supported by VDR 1.3.8 ]
+
+
+The Description File Format
+---------------------------
+
+It is a simple configuration file, consisting of Sections and items. 
+Commentary lines can be added when they are lead in by a '#'. Blank lines will
+be ignored. A section is placed in '[]' brackets. An item is lead in by an 
+'Item=object' phrase.
+
+Example:
+Item=Skin,name=Test,version=0.0.1;
+[Channel]
+Item=Background,path=channeltop.xpm,x=42,y=350,width=540,height=32,bg=#00FFFFFF;
+Item=Background,path=channel.png,x=48,y=382,width=528,height=84;
+Item=ChannelNumberName,x=50,y=355,fg=#FFFFFFFF,bg=#FF1965FF,font=Sml;
+Item=PresentTime,x=52,y=387,fg=#FFFFFFFF,bg=#7F002254,font=Osd;
+[Volume]
+Item=Background,x=10,y=10,width=10,height=100;
+Item=Volumebar,x=10,y=10,width=10,height=100,bg=#FF000000,fg=#FFFFFFFF;
+
+
+Known Sections
+--------------
+
+Section:     [Channel]
+Description: The channel display. It displays the current programme and number,
+             together with the currently running programme and possibly a 
+             timebar and (not implemented yet) channel logo [ TODO remove 
+						 comment ].
+
+Section:     [Volume]
+Description: The volume display. It displays the volumebar and possibly a mute
+             symbol, along with decorative items.
+
+Section:     [ReplayMode]
+Description: The replay modes display. Will be shown if only the replay mode
+             symbol shall be shown.
+
+Section:     [Replay]
+Description: [ TODO ] Full replay display.
+
+Section:     [Message]
+Description: [ TODO ] Message only display.
+
+Section:     [Menu]
+Description: [ TODO ] Full menu.
+
+
+Known Items
+-----------
+Item:        Item=Skin
+Description: This identifies the skin and adds a description to it.
+Parameters:  name, version
+
+Item:        Item=Background
+Description: This adds a background area for the specific display. This area 
+             will be used to draw anything else, so you have to define a 
+             background for everything that will be drawn later on. You can 
+             define a background image for that area here, too. That picture
+             has to be the same width and height as the area. If you don't use
+             a background image, the area will not be initialized with any 
+             content. The background color will replace the color 0 in the 
+             images palette, and the foreground color will replace color 1.
+Parameters:  x, y, width, height, bpp, path, bg, fg
+
+Item:        Item=Text
+Description: Draws plain text into the given area, using the given foreground
+             color. The background color is ignored, so no initializing 
+             rectangle will be drawn. If no width or height are given, the
+             limits are the background areas.
+Parameters:  x, y, text, width, height, fg, font, align
+
+
+Item:        Item=DateTime
+Description: Draws a date and time string into the given area. Otherwise, see
+             Item=Text
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=Date
+Description: Draws a date string into the given area. Otherwise, see Item=Text
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=Time
+Description: Draws a time string into the given area. Otherwise, see Item=Text
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=ChannelNumberName
+Description: Draws the channel number and name into the given area. Otherwise, 
+             see Item=Text
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=ChannelNumber
+Description: Draws the channel number into the given area. Otherwise, see 
+             Item=Text
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=ChannelName
+Description: Draws the channel name into the given area. Otherwise, see 
+             Item=Text
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=Rectangle
+Description: Draws a filled rectangle into the defined area.
+Parameters:  x, y, width, height, fg
+
+Item:        Item=Ellipse
+Description: Draws a filled ellipse or a part of an ellipse into the defined 
+             area.
+Parameters:  x, y, width, height, fg
+
+Item:        Item=Timebar
+Description: Draws a timebar displaying the progress of the current programme.
+             The area will be filled with the background color and the bar will
+             be drawn using the foreground color. If width is greater than 
+             height, the bar will be drawn vertically, otherwise horizontally.
+Parameters:  x, y, width, height, fg, bg
+
+Item:        Item=PresentTime
+Description: Draws the start time of the present programme. 
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=PresentTitle
+Description: Draws the title of the present programme. 
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=PresentShortText
+Description: Draws the short text (or episode name) of the present programme. 
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=FollowingTime
+Description: Draws the start time of the following programme. 
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=FollowingTitle
+Description: Draws the title of the following programme. 
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=FollowingShortText
+Description: Draws the short text (or episode name) of the following programme. 
+Parameters:  x, y, width, height, fg, font, align
+
+Item:        Item=SymbolTeletext
+Description: Draws the specified image into the specified location if the 
+             current channel has teletext. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolAudio
+Description: Draws the specified image into the specified location if the 
+             current channel has multiple languages. If that is not the case, 
+             the alternative image (if given) will be displayed. For details on
+             the image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolDolby
+Description: Draws the specified image into the specified location if the 
+             current channel has ac3 sound. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=SymbolEncrypted
+Description: Draws the specified image into the specified location if the 
+             current channel is encrypted. If that is not the case, the 
+             alternative image (if given) will be displayed. For details on the
+             image handling, see Item=Background.
+Parameters:  x, y, width, height, path, altpath, fg, bg
+
+Item:        Item=Volumebar
+Description: Draws a volumebar into the specified area. For more details, see
+             Item=Timebar.
+Parameters:  x, y, width, height, fg, bg
+
+Item:        Item=Mute
+Description: Draws a mute symbol and/or text (if given) into the specified area.
+             See Item=Text and Item=Background for more on text and image 
+             handling.
+Parameters:  x, y, width, height, fg, bg, text, font, align, path
+
+Item:        Item=Progressbar
+Description: Draws a progressbar displaying the replay progress into the 
+             specified area. For more details, see Item=Timebar.
+Parameters:  x, y, width, height, fg, bg
+
+Item:        Item=ReplayTitle
+Description: Draws the title of the current replay.
+Parameters:  x, y, width, height, fg, font, align
+
+
+Known Parameters
+----------------
+
+Parameter:   x
+Description: A positive number representing the vertical offset in pixels.
+Default:     MANDATORY
+
+Parameter:   y
+Description: A positive number representing the horizontal offset in pixels.
+Default:     MANDATORY
+
+Parameter:   width
+Description: A positive number representing the width in pixels.
+Default:     not given (sometimes mandatory)
+
+Parameter:   height
+Description: A positive number representing the height in pixels.
+Default:     not given (sometimes mandatory)
+
+Parameter:   bpp
+Description: A positive number representing the depth of a background area.
+             Possible values are 1, 2, 4 and 8 mapping to 2, 4, 8, 16 and 256
+             colors.
+Default:     4 (16 colors)
+
+Parameter:   fg
+Description: A hex quadriplet [ TODO is this word correct?! ] introduced by '#'
+             representing a 32-bit foreground color in the order ARGB.
+Default:     not given
+Example:     #ff000000
+
+Parameter:   bg
+Description: A hex quadriplet [ TODO is this word correct?! ] introduced by '#'
+             representing a 32-bit background color in the order ARGB.
+Default:     not given
+
+Parameter:   font
+Description: A string representing one of VDR's skins, possible values are 
+             'Osd', 'Sml' and 'Fix'.
+Default:     Osd
+
+Parameter:   path
+Description: A string representing a path- and filename relative to the skin
+             directory. Currently, xpm images and png files (with alphachannel
+             support) can be loaded, but the number of different colors used
+             in the image must not exceed those possible in the corresponding
+             background area.
+Default:     not given
+
+Parameter:   altpath
+Description: A string representing a path- and filename relative to the skin
+             directory. This is used for for displaying alternate images i.e. 
+             for symbols. For more information, see path=...
+Default:     not given
+
+Parameter:   text
+Description: The string that will be displayed.
+Default:     not given
+
+Parameter:   align
+Description: A number describing the text alignment. Possible values are '0'
+             for left aligned, '1' for centered and '2' for right aligned.
+Default:     0
+
