@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.9 2005/01/12 21:23:20 lordjaxom Exp $
+ * $Id: display.c,v 1.10 2005/01/15 21:00:57 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -124,6 +124,11 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 	case tChannelSource:
 		return mChannel != NULL
 		       ? (cxType)Sources.Get(mChannel->Source())->Description()
+		       : (cxType)false;
+
+	case tTChannelID:
+		return mChannel != NULL
+		       ? (cxType)(const char*)mChannel->GetChannelID().ToString()
 		       : (cxType)false;
 
 	case tPresentStartDateTime:

@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.10 2005/01/15 20:54:37 lordjaxom Exp $
+ *  $Id: string.h,v 1.11 2005/01/15 21:00:57 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -22,6 +22,7 @@ enum exToken {
 	tChannelBouquet,
 	tChannelPortal,
 	tChannelSource,
+	tTChannelID, // (name clash)
 	// next 8 also in Menu
 	tPresentStartDateTime,
 	tPresentVPSDateTime,
