@@ -1,5 +1,5 @@
 /*
- * $Id: display.h,v 1.4 2005/01/02 19:55:36 lordjaxom Exp $
+ * $Id: display.h,v 1.5 2005/01/05 19:28:52 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_SKIN_H
@@ -157,12 +157,13 @@ protected:
 	virtual int GetTab(int n) { return cSkinDisplayMenu::Tab(n); }
 	virtual bool HasTabText(int Index, int n);
 	virtual void SetEditableWidth(int Width) { cSkinDisplayMenu::SetEditableWidth(Width); }
+	virtual int MaxItems(void) { return mMaxItems;}
+	virtual void SetMaxItems(int MaxItems) { mMaxItems = MaxItems; }
 
 public:
 	cText2SkinDisplayMenu(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayMenu();
 
-	virtual int MaxItems(void) { return mMaxItems; }
 	virtual void Clear(void);
 	virtual void SetTitle(const char *Title);
 	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue);
@@ -182,7 +183,7 @@ inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
 	if (Index < 0 || mItems.size () > (uint)Index)
 		return n == -1 
 		       ? mItems[Index].text.length() > 0
-					 : mItems[Index].tabs[n].length() > 0;
+		       : mItems[Index].tabs[n].length() > 0;
 	return false;
 }
 
@@ -205,6 +206,7 @@ private:
 	
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
+	virtual bool HasTabText(int Index, int n);
 
 public:
 	cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title, int NumTracks, 
@@ -215,6 +217,13 @@ public:
 
 	virtual void Flush(void) { cText2SkinRender::Flush(); }
 };
+
+inline bool cText2SkinDisplayTracks::HasTabText(int Index, int n)
+{
+	if (Index < 0 || mItems.size () > (uint)Index && n <= 0)
+		return mItems[Index].text.length() > 0;
+	return false;
+}
 #endif
 
 #endif // VDR_TEXT2SKIN_SKIN_H
