@@ -1,15 +1,21 @@
 /*
- *  $Id: type.c,v 1.1 2004/12/19 22:03:28 lordjaxom Exp $
+ *  $Id: type.c,v 1.2 2005/01/05 19:32:43 lordjaxom Exp $
  */
 
 #include "xml/type.h"
 #include "xml/function.h"
+#include <vdr/tools.h>
 #include <stdio.h>
 
 cxType cxType::False(false);
 cxType cxType::True(true);
 
-const std::string &cxType::String(void) {
+std::string cxType::String(void) const {
+	if (mType == number)
+		return (const char*)itoa(mNumber);
+	return mString;
+
+#if 0
 	if (mType == number) {
 		char *buffer;
 		asprintf(&buffer, "%d", mNumber);
@@ -21,4 +27,5 @@ const std::string &cxType::String(void) {
 		mType = string;
 	}
 	return mString;
+#endif
 }

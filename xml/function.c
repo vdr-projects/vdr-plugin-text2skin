@@ -1,5 +1,5 @@
 /*
- *  $Id: function.c,v 1.6 2005/01/02 20:33:53 lordjaxom Exp $
+ *  $Id: function.c,v 1.7 2005/01/05 19:32:43 lordjaxom Exp $
  */
 
 #include "xml/function.h"
@@ -163,49 +163,51 @@ bool cxFunction::Parse(const std::string &Text)
 	return true;
 }
 
-const std::string &cxFunction::FunFile(const std::string &Param) const
+cxType cxFunction::FunFile(const cxType &Param) const
 {
 	std::string path = cText2SkinRender::ImagePath(Param);
 	Dprintf("checking file(%s) in cache\n", path.c_str());
- 	return cText2SkinBitmap::Available(path) ? Param : False;
+	return cText2SkinBitmap::Available(path)
+	       ? (cxType)Param
+	       : (cxType)false;
 }
 
-std::string cxFunction::FunPlugin(const std::string &Param) const
+cxType cxFunction::FunPlugin(const cxType &Param) const
 {
-	cPlugin *p = cPluginManager::GetPlugin(Param.c_str());
+	cPlugin *p = cPluginManager::GetPlugin(Param);
 	if (p) {
 		const char *entry = p->MainMenuEntry();
 		if (entry)
 			return entry;
 	}
-	return False;
+	return false;
 }
 
-std::string cxFunction::Evaluate(void) const
+cxType cxFunction::Evaluate(void) const
 {
 	switch (mType) {
 	case string:
 		return mString.Evaluate();
 
 	case fun_not:
-		return mParams[0]->EvaluateToBool() ? False : True;
+		return !mParams[0]->Evaluate();
 
 	case fun_and:
 		for (uint i = 0; i < mNumParams; ++i) {
-			if (!mParams[i]->EvaluateToBool())
-				return False;
+			if (!mParams[i]->Evaluate())
+				return false;
 		}
-		return True;
+		return true;
 
 	case fun_or:
 		for (uint i = 0; i < mNumParams; ++i) {
-			if (mParams[i]->EvaluateToBool())
-				return True;
+			if (mParams[i]->Evaluate())
+				return true;
 		}
-		return False;
+		return false;
 
 	case fun_eq:
-		return mParams[0]->Evaluate() == mParams[1]->Evaluate() ? True : False;
+		return mParams[0]->Evaluate() == mParams[1]->Evaluate();
 
 	case fun_file:
 		return FunFile(mParams[0]->Evaluate());
@@ -213,7 +215,7 @@ std::string cxFunction::Evaluate(void) const
 	case fun_trans:
 		//Dprintf("|%s| translates to |%s|\n", mParams[0]->Evaluate().c_str(), tr(mParams[0]->Evaluate().c_str()));
 		//return tr(mParams[0]->Evaluate().c_str());
-		return mParams[0]->Evaluate().c_str();
+		return mParams[0]->Evaluate();
 	
 	case fun_plugin:
 		return FunPlugin(mParams[0]->Evaluate());
@@ -226,11 +228,13 @@ std::string cxFunction::Evaluate(void) const
 	return False;
 }
 
+#if 0
 bool cxFunction::EvaluateToBool(void) 
 {
-	std::string result = Evaluate();
+	cxType result = Evaluate();
 	if (result == False/* || result == "0"*/)
 		return false;
 	return true;
 }
+#endif
 

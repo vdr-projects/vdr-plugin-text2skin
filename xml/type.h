@@ -1,5 +1,5 @@
 /*
- *  $Id: type.h,v 1.3 2004/12/21 20:26:25 lordjaxom Exp $
+ *  $Id: type.h,v 1.4 2005/01/05 19:32:43 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
@@ -15,6 +15,8 @@ public:
 		number,
 		boolean
 	};
+
+	friend class cxFunction;
 
 private:
 	eType       mType;
@@ -34,15 +36,74 @@ public:
 	cxType(time_t Number): mType(number), mNumber(Number), mUpdateIn(0) {}
 	cxType(bool Value): mType(boolean), mNumber(Value ? 1 : 0), mUpdateIn(0) {}
 
-	const std::string &String(void);
-	int Number(void) const { return mType == number ? mNumber : 0; }
+	std::string String(void) const;
+	int         Number(void) const { return mType == number ? mNumber : 0; }
 
 	void SetUpdate(uint UpdateIn) { mUpdateIn = UpdateIn; }
 	uint UpdateIn(void) const { return mUpdateIn; }
 
-	operator std::string () { return String(); }
-	operator int         () { return Number(); }
-	operator bool        () { return Number(); }
+	operator std::string () const { return String(); }
+	operator int         () const { return Number(); }
+	operator bool        () const;
+
+	friend bool operator== (const cxType &a, const cxType &b);
+	friend bool operator!= (const cxType &a, const cxType &b);
+	friend bool operator<  (const cxType &a, const cxType &b);
+	friend bool operator>  (const cxType &a, const cxType &b);
+	friend bool operator<= (const cxType &a, const cxType &b);
+	friend bool operator>= (const cxType &a, const cxType &b);
 };
+
+inline cxType::operator bool () const
+{
+	switch (mType) {
+	case string:
+		return mString != "";
+	default:
+		return mNumber != 0;
+	}
+}
+
+inline bool operator== (const cxType &a, const cxType &b)
+{
+	if (a.mType == cxType::string || b.mType == cxType::string)
+		return a.String() == b.String();
+	return a.mNumber == b.mNumber;
+}
+
+inline bool operator!= (const cxType &a, const cxType &b)
+{
+	if (a.mType == cxType::string || b.mType == cxType::string)
+		return a.String() != b.String();
+	return a.mNumber != b.mNumber;
+}
+
+inline bool operator< (const cxType &a, const cxType &b)
+{
+	if (a.mType == cxType::string || b.mType == cxType::string)
+		return a.String() < b.String();
+	return a.mNumber < b.mNumber;
+}
+
+inline bool operator> (const cxType &a, const cxType &b)
+{
+	if (a.mType == cxType::string || b.mType == cxType::string)
+		return a.String() > b.String();
+	return a.mNumber > b.mNumber;
+}
+
+inline bool operator<= (const cxType &a, const cxType &b)
+{
+	if (a.mType == cxType::string || b.mType == cxType::string)
+		return a.String() <= b.String();
+	return a.mNumber <= b.mNumber;
+}
+
+inline bool operator>= (const cxType &a, const cxType &b)
+{
+	if (a.mType == cxType::string || b.mType == cxType::string)
+		return a.String() >= b.String();
+	return a.mNumber >= b.mNumber;
+}
 
 #endif // VDR_TEXT2SKIN_XML_TYPE_H

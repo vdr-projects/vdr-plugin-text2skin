@@ -1,5 +1,5 @@
 /*
- *  $Id: function.h,v 1.4 2005/01/02 20:33:20 lordjaxom Exp $
+ *  $Id: function.h,v 1.5 2005/01/05 19:32:43 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_FUNCTION_H
@@ -43,8 +43,8 @@ private:
 	uint        mNumParams;
 	
 protected:
-	const std::string &FunFile(const std::string &Param) const;
-	std::string FunPlugin(const std::string &Param) const;
+	cxType FunFile  (const cxType &Param) const;
+	cxType FunPlugin(const cxType &Param) const;
 
 public:
 	cxFunction(cxSkin *Skin);
@@ -53,8 +53,7 @@ public:
 	~cxFunction();
 
 	bool Parse(const std::string &Text);
-	std::string Evaluate(void) const;
-	bool EvaluateToBool(void);
+	cxType Evaluate(void) const;
 
 	void SetListIndex(uint Index, int Tab);
 };
