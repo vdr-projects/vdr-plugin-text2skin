@@ -1,5 +1,5 @@
 /*
- *  $Id: object.c,v 1.9 2005/01/03 09:01:07 lordjaxom Exp $
+ *  $Id: object.c,v 1.10 2005/01/15 20:54:08 lordjaxom Exp $
  */
 
 #include "xml/object.h"
@@ -19,12 +19,12 @@ cxObject::cxObject(cxDisplay *parent):
 		mAlpha(255),
 		mColors(0),
 		mArc(0),
-		mPath(parent->Skin()),
-		mText(mSkin),
+		mPath(parent->Skin(), false),
+		mText(mSkin, true),
 		mAlign(taDefault),
 		mCondition(NULL),
-		mCurrent(mSkin),
-		mTotal(mSkin),
+		mCurrent(mSkin, false),
+		mTotal(mSkin, false),
 		mFontFace("Osd"),
 		mFontSize(0),
 		mFontWidth(0),
