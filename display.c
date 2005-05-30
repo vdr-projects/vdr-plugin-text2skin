@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.20 2005/05/30 09:23:41 lordjaxom Exp $
+ * $Id: display.c,v 1.21 2005/05/30 10:07:45 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -1066,6 +1066,33 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tMenuText:
 		return mText;
+
+#if VDRVERSNUM >= 10325
+	case tRecordingName:
+		return mRecording != NULL
+		       ? (cxType)mRecording->Name()
+		       : (cxType)false;
+
+	case tRecordingDateTime:
+		return mRecording != NULL
+		       ? (cxType)TimeType(mRecording->start, Token.Attrib.Text)
+		       : (cxType)false;
+
+	case tRecordingTitle:
+		return mRecording != NULL
+		       ? (cxType)mRecording->Info()->Title()
+		       : (cxType)false;
+
+	case tRecordingShortText:
+		return mRecording != NULL
+		       ? (cxType)mRecording->Info()->ShortText()
+		       : (cxType)false;
+
+	case tRecordingDescription:
+		return mRecording != NULL
+		       ? (cxType)mRecording->Info()->Description()
+		       : (cxType)false;
+#endif
 
 	default:
 		return cText2SkinRender::GetTokenData(Token);

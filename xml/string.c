@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.15 2005/01/26 20:38:45 lordjaxom Exp $
+ *  $Id: string.c,v 1.16 2005/05/30 10:07:45 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -38,8 +38,9 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 
 	// Menu Page
 	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", 
-	"IsMenuCurrent", "MenuText", "ButtonRed", "ButtonGreen", "ButtonYellow", "ButtonBlue", 
-	"CanScrollUp", "CanScrollDown"
+	"IsMenuCurrent", "MenuText", "RecordingName", "RecordingDateTime", "RecordingTitle",
+	"RecordingShortText", "RecordingDescription", "ButtonRed", "ButtonGreen", 
+	"ButtonYellow", "ButtonBlue", "CanScrollUp", "CanScrollDown"
 };
 
 std::string txToken::Token(const txToken &Token) 
