@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.21 2005/05/30 10:07:45 lordjaxom Exp $
+ * $Id: display.c,v 1.22 2005/05/30 13:03:13 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -1092,6 +1092,26 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return mRecording != NULL
 		       ? (cxType)mRecording->Info()->Description()
 		       : (cxType)false;
+
+	case tRecordingLanguageCode: 
+		if (mRecording != NULL) {
+			const tComponent *c 
+				= mRecording->Info()->Components()->Component(Token.Attrib.Number);
+			return c != NULL
+			       ? (cxType)c->language
+			       : (cxType)false;
+		}
+		return false;
+			       
+	case tRecordingLanguageDescription: 
+		if (mRecording != NULL) {
+			const tComponent *c 
+				= mRecording->Info()->Components()->Component(Token.Attrib.Number);
+			return c != NULL
+			       ? (cxType)c->description
+			       : (cxType)false;
+		}
+		return false;
 #endif
 
 	default:

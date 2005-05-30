@@ -1,5 +1,5 @@
 /*
- *  $Id: string.h,v 1.17 2005/05/30 10:07:45 lordjaxom Exp $
+ *  $Id: string.h,v 1.18 2005/05/30 13:03:13 lordjaxom Exp $
  */
 
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
@@ -119,6 +119,8 @@ enum exToken {
 	tRecordingTitle,
 	tRecordingShortText,
 	tRecordingDescription,
+	tRecordingLanguageCode,
+	tRecordingLanguageDescription,
 	// next four also in Channel and Replay display (if supported by vdr/plugin)
 	tButtonRed,
 	tButtonGreen,

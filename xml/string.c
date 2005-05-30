@@ -1,5 +1,5 @@
 /*
- *  $Id: string.c,v 1.16 2005/05/30 10:07:45 lordjaxom Exp $
+ *  $Id: string.c,v 1.17 2005/05/30 13:03:13 lordjaxom Exp $
  */
 
 #include "xml/string.h"
@@ -39,7 +39,8 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	// Menu Page
 	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", 
 	"IsMenuCurrent", "MenuText", "RecordingName", "RecordingDateTime", "RecordingTitle",
-	"RecordingShortText", "RecordingDescription", "ButtonRed", "ButtonGreen", 
+	"RecordingShortText", "RecordingDescription", "RecordingLanguageCode",
+	"RecordingLanguageDescription", "ButtonRed", "ButtonGreen", 
 	"ButtonYellow", "ButtonBlue", "CanScrollUp", "CanScrollDown"
 };
 

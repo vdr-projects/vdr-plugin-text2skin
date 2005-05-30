@@ -7,7 +7,7 @@ VDR Plugin 'text2skin' Revision History
 - updated finnish translations (thanks to Rolf Ahrenberg)
 - added tokens for Recording Info Display
   (RecordingName, RecordingDateTime, RecordingTitle, RecordingShortText,
-  RecordingDescription)
+  RecordingDescription, RecordingLanguageCode, RecordingLanguageDescription)
 
 2005-02-06: Version 1.0
 
