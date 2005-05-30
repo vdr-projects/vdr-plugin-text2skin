@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.19 2005/01/26 20:43:12 lordjaxom Exp $
+ * $Id: display.c,v 1.20 2005/05/30 09:23:41 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -810,28 +810,25 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 	}
 
 	UpdateLock();
-	if (Text == NULL)
-		return;
-
-	tListItem *item = new tListItem(Text, Selectable);
+	if (Text == NULL) Text = "";
+	tListItem item(Text, Selectable);
 
 	for (int i = 0; i < MaxTabs; ++i) {
 		const char *tab = GetTabbedText(Text, i);
 		if (tab)
-			item->tabs[i] = tab;
+			item.tabs[i] = tab;
 		if (!Tab(i + 1))
 			break;
 	}
 
 	if (mItems.size() <= (uint)Index) {
-		mItems.push_back(*item);
+		mItems.push_back(item);
 		SetDirty();
 	}
-	else if (mItems[Index] != *item) {
-		mItems[Index] = *item;
+	else if (mItems[Index] != item) {
+		mItems[Index] = item;
 		SetDirty();
 	}
-	delete item;
 
 	if (Current && mCurrentItem != (uint)Index) {
 		mCurrentItem = Index;

@@ -1,5 +1,5 @@
 /*
- * $Id: i18n.c,v 1.3 2005/01/20 17:07:28 lordjaxom Exp $
+ * $Id: i18n.c,v 1.4 2005/05/30 09:23:41 lordjaxom Exp $
  */
 
 #include "i18n.h"
@@ -137,7 +137,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "",
+    "Ulkoasu on liian suuri tai v‰‰rin asemoitu",
     "",
     "",
     "",

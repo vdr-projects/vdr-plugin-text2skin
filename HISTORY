@@ -1,6 +1,11 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2005-06-xx: Version 1.1
+
+- fixed a race condition (thanks to Reinhard Nissl for pointing this out)
+- updated finnish translations (thanks to Rolf Ahrenberg)
+
 2005-02-06: Version 1.0
 
 - major rewrite

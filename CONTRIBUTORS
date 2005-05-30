@@ -5,7 +5,7 @@ Lars Tegeler
   for implementing true-type-font support
   for implementing image-scaling and quantizing
 
-Monroe (VDR-Portal)
+Thomas Wehrspann
   for creating and extending the german and english vdr-wiki with text2skin 
   sections
   for creating plaintext conversions of the wiki pages for inclusion in this 
@@ -15,3 +15,5 @@ Andreas Brugger and Stefan Schenk
   for doing much testing and skinning and for getting the last out of a DVB-Card
   for all the suggestions and requests that finally made 1.0 this powerful
 
+Reinhard Nissl
+  for pointing out a deadly race condition in cText2SkinDisplayMenu::SetItem

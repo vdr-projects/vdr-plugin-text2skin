@@ -1,5 +1,5 @@
 /*
- *  $Id: screen.c,v 1.3 2005/01/26 20:42:21 lordjaxom Exp $
+ *  $Id: screen.c,v 1.4 2005/05/30 09:23:41 lordjaxom Exp $
  */
 
 #include "screen.h"
@@ -65,7 +65,7 @@ void cText2SkinScreen::DrawBitmap(int x, int y, const cBitmap &Bitmap, const tCo
 #ifndef DIRECTBLIT
 	for (int i = 0; i < mNumRegions; ++i)
 		DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorMask);
-		//mRegions[i]->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
+		//mRegions[i]->DrawBitmap(x, y, Bitmap);
 #else
 	mOsd->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
 #endif
