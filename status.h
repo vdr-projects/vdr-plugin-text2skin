@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.6 2005/01/25 15:15:53 lordjaxom Exp $
+ * $Id: status.h,v 1.7 2005/06/03 08:53:13 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H
@@ -33,6 +33,7 @@ private:
 	bool              mReplayIsLoop;
 	bool              mReplayIsShuffle;
 	tRecordings       mRecordings;
+	cMutex            mRecordingsLock;
 	uint              mCurrentRecording;
 	uint              mNextRecording;
 	int               mLastLanguage;

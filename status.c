@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.9 2005/01/31 14:40:55 lordjaxom Exp $
+ * $Id: status.c,v 1.10 2005/06/03 08:53:13 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -88,12 +88,14 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name)
 	if (mRender != NULL)
 		mRender->UpdateLock();
 
+	mRecordingsLock.Lock();
 	mRecordings.clear();
 	cTimer *t = Timers.First();
 	for (; t != NULL; t = Timers.Next(t)) {
 		if (t->Recording())
 			mRecordings.push_back(t->File());
 	}
+	mRecordingsLock.Unlock();
 
 	if (mRender != NULL) {
 		Dprintf("\nFlushing from cStatus\n\n");
@@ -123,6 +125,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			       ? (cxType)mRecordings[Token.Attrib.Number]
 			       : (cxType)false;
 		} else if (mRecordings.size() > 0) {
+			mRecordingsLock.Lock();
 			uint now = time_ms();
 			if (mNextRecording == 0)
 				mNextRecording = now + 2000;
@@ -138,6 +141,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			}
 
 			cxType res = mRecordings[mCurrentRecording];
+			mRecordingsLock.Unlock();
 			res.SetUpdate(next);
 			return res;
 		}
