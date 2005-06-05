@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.22 2005/05/30 13:03:13 lordjaxom Exp $
+ * $Id: display.c,v 1.23 2005/06/05 21:39:02 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -184,10 +184,12 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tPresentRemaining:
-		return mPresent != NULL
-		       ? (cxType)DurationType((mPresent->Duration() - (time(NULL) - mPresent->StartTime()))
-		                              * FRAMESPERSEC, Token.Attrib.Text)
-		       : (cxType)false;
+		if (mPresent != NULL && time(NULL) - mPresent->StartTime() 
+		                        <= mPresent->Duration()) {
+			return (cxType)DurationType((mPresent->Duration() - (time(NULL) - mPresent->StartTime()))
+		                                * FRAMESPERSEC, Token.Attrib.Text);
+		}
+		return false;
 
 	case tPresentTitle:
 		return mPresent != NULL
