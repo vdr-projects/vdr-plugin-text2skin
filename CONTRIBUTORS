@@ -17,3 +17,6 @@ Andreas Brugger and Stefan Schenk
 
 Reinhard Nissl
   for pointing out a deadly race condition in cText2SkinDisplayMenu::SetItem
+
+Frank Enderle
+  for sending a patch to fix a crash due to uninitialized pointer

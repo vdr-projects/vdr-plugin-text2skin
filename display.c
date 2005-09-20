@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.23 2005/06/05 21:39:02 lordjaxom Exp $
+ * $Id: display.c,v 1.24 2005/09/20 18:22:56 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -693,6 +693,7 @@ cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinLoader *Loader):
 		mMessageType(mtStatus),
 		mMessageText(""),
 		mEvent(NULL),
+		mRecording(NULL),
 		mItems(),
 		mCurrentItem((uint)-1)
 {
