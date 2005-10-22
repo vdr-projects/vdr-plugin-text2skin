@@ -1,6 +1,14 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2005-10-22: Version 1.1-cvs_ext-0.1 (vdr-text2skin-1.1-cvs_ext-0.1.diff)
+
+- added several tokens:
+  NextTimerName, NextTimerStart, NextTimerChannel, TimerConflict,
+  CurrentRecordingsCount, using the service "CheckTimerConflict-v1.0" to
+  check timer conflicts. A patch for the timeline-plugin is included in
+  Enigma-0.4pre2 (timeline_CheckTimerConflictService-0.1.diff)
+
 2005-06-xx: Version 1.1
 
 - fixed crash due to uninitialized pointer (thanks to Frank Enderle)

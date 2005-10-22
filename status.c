@@ -4,6 +4,8 @@
  
 #include "status.h"
 #include "render.h"
+#include <vdr/timers.h>
+#include <vdr/plugin.h>
 
 const std::string ReplayNames[__REPLAY_COUNT__] =
 	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image" };
@@ -117,7 +119,67 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 	switch (Token.Type) {
 	case tReplayMode:
 		return ReplayNames[mReplayMode];
-
+	
+	case tNextTimerName:
+		{
+			cTimer *tim = Timers.GetNextActiveTimer();
+			if (tim)
+			{
+				const char *timText = tim->File();
+				return timText;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	
+	case tNextTimerStart:
+		{
+			cTimer *tim = Timers.GetNextActiveTimer();
+			if (tim)
+			{
+				char *buffer = NULL;
+				asprintf(&buffer, "%02d:%02d", tim->Start() / 100, tim->Start() % 100);
+				return buffer;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	
+	case tNextTimerChannel:
+		{
+			cTimer *tim = Timers.GetNextActiveTimer();
+			if (tim)
+			{
+				const char *timChan = tim->Channel()->Name();
+				return timChan;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+	case tTimerConflict:
+		{
+			bool conflict = false;
+			
+			if (cPluginManager::CallFirstService("CheckTimerConflict-v1.0", &conflict) )
+			{
+				return conflict;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	
+	case tCurrentRecordingsCount:
+		return (int)mRecordings.size();
+		
 	case tCurrentRecording:
 		Dprintf("token attrib type is: %d, number: %d\n", Token.Attrib.Type, Token.Attrib.Number);
 		if (Token.Attrib.Type == aNumber) {
@@ -127,7 +189,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		} else if (mRecordings.size() > 0) {
 			mRecordingsLock.Lock();
 			uint now = time_ms();
-			if (mNextRecording == 0)
+			if (mNextRecording == 0)      
 				mNextRecording = now + 2000;
 			else if (now >= mNextRecording) {
 				mCurrentRecording = (mCurrentRecording + 1) % mRecordings.size();

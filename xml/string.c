@@ -10,7 +10,7 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
-	"ChannelSource", "ChannelID", "PresentStartDateTime", "PresentVPSDateTime", 
+	"ChannelSource", "ChannelID", "NextTimerName", "NextTimerStart", "NextTimerChannel", "TimerConflict", "CurrentRecordingsCount", "PresentStartDateTime", "PresentVPSDateTime", 
 	"PresentEndDateTime", "PresentDuration", "PresentProgress", "PresentRemaining",
 	"PresentTitle", "PresentShortText", "PresentDescription", "FollowingStartDateTime", 
 	"FollowingVPSDateTime", "FollowingEndDateTime", "FollowingDuration",

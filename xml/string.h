@@ -24,6 +24,11 @@ enum exToken {
 	tChannelSource,
 	tTChannelID, // (name clash)
 	// next 9 also in Menu
+	tNextTimerName,
+	tNextTimerStart,
+	tNextTimerChannel,
+	tTimerConflict,
+	tCurrentRecordingsCount,
 	tPresentStartDateTime,
 	tPresentVPSDateTime,
 	tPresentEndDateTime,
