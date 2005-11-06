@@ -1,5 +1,5 @@
 /*
- * $Id: file.c,v 1.1 2004/12/19 22:03:13 lordjaxom Exp $
+ * $Id: file.c,v 1.2 2005/11/06 15:58:30 lordjaxom Exp $
  */
 
 #include "file.h"
@@ -19,9 +19,10 @@ bool cText2SkinFile::Load(const std::string &Filename) {
 		FILE *f = fopen(Filename.c_str(), "r");
 		if (f) {
 			int line = 0;
-			char buffer[MAXPARSEBUFFER];
+			char *buffer = NULL;
+			size_t buflen = 0;
 			result = true;
-			while (fgets(buffer, sizeof(buffer), f) > 0) {
+			while (getline(&buffer, &buflen, f) != -1) {
 				line++;
 				char *ptr = skipspace(stripspace(buffer));
 				if (!isempty(ptr) && ptr[0] != '#') {
@@ -32,6 +33,7 @@ bool cText2SkinFile::Load(const std::string &Filename) {
 					}
 				}
 			}
+			free(buffer);
 			fclose(f);
 		} else {
 			LOG_ERROR_STR(Filename.c_str());
