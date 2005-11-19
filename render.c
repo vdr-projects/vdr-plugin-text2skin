@@ -11,6 +11,7 @@
 #include "screen.h"
 #include "display.h"
 #include "scroller.h"
+#include "setup.h"
 #include "xml/display.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>
@@ -353,11 +354,28 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
                                    uint Delay, uint Index)
 {
 	bool scrolling = Font->Width(Text.c_str()) > Size.w;
-
+	
 	tState &state = mStates[Index];
 	if (state.text != Text) {
 		state = tState();
 		state.text = Text;
+	}
+	
+	if (Text2SkinSetup.MarqueeReset && mUpdate.resetMarquee && mUpdate.currentItem.find(Text, 0) != std::string::npos)
+	{
+		state.offset = 0;
+		state.direction = 1;
+		state.nexttime = 0;
+		state.scrolling = false;
+		mUpdate.foundFirstItem = true;
+	}
+	else
+	{
+		if (mUpdate.foundFirstItem)
+		{
+			mUpdate.resetMarquee = false;
+			mUpdate.foundFirstItem = false;
+		}
 	}
 	
 	if (state.nexttime == 0)
@@ -376,7 +394,7 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 				++state.direction;
 				nextin = 1500;
 			} else
-				--state.offset;
+				Text2SkinSetup.MarqueeLeftRight ? --state.offset : state.offset = 0;
 		}
 		state.nexttime = mNow + nextin;
 	}

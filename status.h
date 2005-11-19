@@ -27,21 +27,47 @@ public:
 	typedef std::string tRecordingInfo;
 	typedef std::vector<tRecordingInfo> tRecordings;
 
+	struct tEvent
+	{
+		std::string    title;
+		bool           isRecording;
+		std::string    channelName;
+		int            channelNumber;
+		time_t         startTime;
+		time_t         stopTime;
+		int            priority;
+		
+		bool tEvent::operator< (const tEvent &b) const
+		{
+			int r = startTime - b.startTime;
+			r = r == 0 ? b.priority - priority : r;
+			return r > 0 ? true : false;
+		};
+	};
+	
+	typedef std::vector<tEvent> tEvents;
+	
 private:
+	void UpdateEvents(void);
+	
 	cText2SkinRender *mRender;
 	eReplayMode       mReplayMode;
 	bool              mReplayIsLoop;
 	bool              mReplayIsShuffle;
 	tRecordings       mRecordings;
+	tEvents           mEvents;
+	const cRecording *mReplay;
 	cMutex            mRecordingsLock;
 	uint              mCurrentRecording;
 	uint              mNextRecording;
 	int               mLastLanguage;
+	bool              mTimerConflict;
 
 protected:
 	virtual void Replaying(const cControl *Control, const char *Name);
 	virtual void Recording(const cDevice *Device, const char *Name);
 	virtual void OsdClear(void);
+	virtual void OsdCurrentItem(const char *Text);
 
 public:
 	cText2SkinStatus(void);

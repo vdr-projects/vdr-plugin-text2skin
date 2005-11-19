@@ -45,6 +45,7 @@ class cxObject {
 	friend class VSkinnerItem;
 
 public:
+        static int UseTTF;
 	enum eType {
 		image,
 		text,

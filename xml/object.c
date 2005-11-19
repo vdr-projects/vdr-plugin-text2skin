@@ -140,10 +140,14 @@ const std::string &cxObject::TypeName(void) const
 	return ObjectNames[mType];
 }
 
+int cxObject::UseTTF = true;
+
 const cFont *cxObject::Font(void) const
 {
 	const cFont *font;
 
+        if (UseTTF) {
+         
 	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) 
 	        != NULL)
 		return font;
@@ -151,6 +155,8 @@ const cFont *cxObject::Font(void) const
 	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize, 
 	                                 mFontWidth)) != NULL)
 		return font;
+	
+		}
 	
 	return cFont::GetFont(fontOsd);
 }

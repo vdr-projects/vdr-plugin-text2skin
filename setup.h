@@ -13,6 +13,9 @@ public:
 
 	bool SetupParse(const char *Name, const char *Value);
 
+	int MarqueeLeftRight;
+	int MarqueeReset;
+	int CheckTimerConflict;
 	int MaxCacheFill;
 };
 

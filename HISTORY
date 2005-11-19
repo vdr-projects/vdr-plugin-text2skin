@@ -1,6 +1,25 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2005-11-19: Version 1.1-cvs_ext-0.2 (vdr-text2skin-1.1-cvs_ext-0.2.diff)
+
+- removed the previously introduced tokens NextTimerName, NextTimerStart,
+  NextTimerChannel, CurrentRecordingsCount and added tokens for the next
+  3 timers: CurrentEventsTitle[123], CurrentEventsStartDateTime[123],
+  CurrentEventsStopDateTime[123], CurrentEventsChannelNumber[123],
+  CurrentEventsChannelName[123], CurrentEventsIsRecording[123]
+- added audio- and video-tokens:
+  PresentLanguageCode, PresentLanguageDescription, PresentVideoAR and
+  implemented the missing code for the Language-token
+- added tokens for replay:
+  ReplayName, ReplayDateTime, ReplayShortText, ReplayDescription,
+  ReplayLanguageCode, ReplayLanguageDescription, ReplayVideoAR
+  (not activated yet)
+- additional recording-tokens:
+  RecordingVideoAR, RecordingSize
+- added a reset for scrolling text (configurable)
+- included Text2skin.diff from the rotor-plugin
+
 2005-10-22: Version 1.1-cvs_ext-0.1 (vdr-text2skin-1.1-cvs_ext-0.1.diff)
 
 - added several tokens:

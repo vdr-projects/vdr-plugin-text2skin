@@ -243,7 +243,16 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tLanguage: {
 #if VDRVERSNUM >= 10318
-			// TODO !!!
+			cDevice *dev = cDevice::PrimaryDevice();
+			eTrackType trackType = dev->GetCurrentAudioTrack();
+			const tTrackId *track = dev->GetTrack(trackType);
+			if (track)
+			{
+				std::string buffer(track->language);
+				if (trackType >= ttDolby) buffer.append("DD");
+				return (cxType)buffer.c_str();
+			}
+			return (cxType)false;
 #else
 			int cur;
 			const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
@@ -584,6 +593,32 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		}
 		return false;
 
+	case tLanguage: {
+#if VDRVERSNUM >= 10318
+		cDevice *dev = cDevice::PrimaryDevice();
+		eTrackType trackType = dev->GetCurrentAudioTrack();
+		const tTrackId *track = dev->GetTrack(trackType);
+		if (track)
+		{
+			std::string buffer(track->language);
+			if (trackType >= ttDolby) buffer.append("DD");
+			return (cxType)buffer.c_str();
+		}
+		return (cxType)false;
+#else
+		int cur;
+		const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
+		if (tracks) {
+			int i = 0;
+			while (tracks[i] != NULL)
+				++i;
+			if (cur < i)
+				return tracks[cur];
+		}
+#endif
+	}
+	return false;
+
 	case tMessage:
 		return mText;
 
@@ -757,6 +792,9 @@ void cText2SkinDisplayMenu::SetTitle(const char *Title)
 	UpdateLock();
 	if (Title == NULL) Title = "";
 	if (mTitle != Title) {
+		mUpdate.timerConflict = true;
+		mUpdate.events = true;
+		mUpdate.resetMarquee = true;
 		mTitle = Title;
 		SetDirty();
 	}
@@ -1051,7 +1089,74 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return mEvent != NULL
 		       ? (cxType)mEvent->Description()
 		       : (cxType)false;
-	
+
+	case tPresentLanguageCode:
+		if (mEvent)
+		{
+			const cComponents *components = mEvent->Components();
+			if (components)
+			{
+				int index = Token.Attrib.Number;
+				
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++)
+				{
+					const tComponent *c = components->Component(i);					
+					if (c->stream != 2) index++; // only audio-streams
+					if (i == index)
+					{
+						std::string buffer(c->language);
+						if (c->type == 1) buffer.append("MONO");
+						if (c->type == 2) buffer.append("DUAL");
+						if (c->type == 5) buffer.append("DD");
+						return (cxType)buffer.c_str();
+					}
+				}
+			}
+		}
+		return false;
+
+	case tPresentLanguageDescription: 
+		if (mEvent)
+		{
+			const cComponents *components = mEvent->Components();
+			if (components)
+			{
+				int index = Token.Attrib.Number;
+				
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++)
+				{
+					const tComponent *c = components->Component(i);					
+					if (c->stream != 2) index++; // only audio-streams
+					if (i == index) return (cxType)c->description;
+				}
+			}
+		}
+		return false;
+
+	case tPresentVideoAR: 
+		if (mEvent)
+		{
+			const cComponents *components = mEvent->Components();
+			if (components)
+			{
+				for (int i = 0; i < components->NumComponents(); i++)
+				{
+					const tComponent *c = components->Component(i);					
+					if (c->stream == 1)
+					{
+						switch (c->type)
+						{
+							case 1: return "4:3";
+							case 3: return "16:9";
+						}
+					}
+				}
+			}
+		}
+		return false;
+
 	case tHasVPS:
 	case tChannelHasVPS:
 		return mEvent != NULL && mEvent->Vps() != 0;
@@ -1096,27 +1201,112 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       ? (cxType)mRecording->Info()->Description()
 		       : (cxType)false;
 
-	case tRecordingLanguageCode: 
-		if (mRecording != NULL) {
-			const tComponent *c 
-				= mRecording->Info()->Components()->Component(Token.Attrib.Number);
-			return c != NULL
-			       ? (cxType)c->language
-			       : (cxType)false;
+	case tRecordingLanguageCode:
+		if (mRecording)
+		{
+			const cComponents *components = mRecording->Info()->Components();
+			if (components)
+			{
+				int index = Token.Attrib.Number;
+				
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++)
+				{
+					const tComponent *c = components->Component(i);					
+					if (c->stream != 2) index++; // only audio-streams
+					if (i == index)
+					{
+						std::string buffer(c->language);
+						if (c->type == 1) buffer.append("MONO");
+						if (c->type == 2) buffer.append("DUAL");
+						if (c->type == 5) buffer.append("DD");
+						return (cxType)buffer.c_str();
+					}
+				}
+			}
 		}
 		return false;
-			       
+
 	case tRecordingLanguageDescription: 
-		if (mRecording != NULL) {
-			const tComponent *c 
-				= mRecording->Info()->Components()->Component(Token.Attrib.Number);
-			return c != NULL
-			       ? (cxType)c->description
-			       : (cxType)false;
+		if (mRecording)
+		{
+			const cComponents *components = mRecording->Info()->Components();
+			if (components)
+			{
+				int index = Token.Attrib.Number;
+				
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++)
+				{
+					const tComponent *c = components->Component(i);					
+					if (c->stream != 2) index++; // only audio-streams
+					if (i == index) return (cxType)c->description;
+				}
+			}
+		}
+		return false;
+
+	case tRecordingVideoAR: 
+		if (mRecording)
+		{
+			const cComponents *components = mRecording->Info()->Components();
+			if (components)
+			{
+				for (int i = 0; i < components->NumComponents(); i++)
+				{
+					const tComponent *c = components->Component(i);					
+					if (c->stream == 1)
+					{
+						switch (c->type)
+						{
+							case 1: return "4:3";
+							case 3: return "16:9";
+						}
+					}
+				}
+			}
 		}
 		return false;
 #endif
 
+	case tRecordingSize: 
+		if (mRecording != NULL) {
+			bool bRet=false;
+			long long size = 0;
+			int nFiles;
+			struct stat fileinfo; // Holds file information structure
+			char *cmd = NULL;
+			cReadLine reader;
+			asprintf(&cmd, "find '%s' -follow -type f -name '*.*'|sort ", mRecording->FileName());
+		
+			FILE *p = popen(cmd, "r");
+			int ret=0;
+			if (p)
+			{
+				char *s;
+				
+				while ((s = reader.Read(p)) != NULL)
+				{
+					if ((ret=stat(s, &fileinfo)) != -1)
+					{
+						size += (long long)fileinfo.st_size;
+						nFiles++;
+					}
+				}
+				
+				bRet=true;
+			}
+			
+			pclose(p);
+			delete cmd;
+			
+			return (long)(size / 1024 / 1024); // [MB]
+		}
+		else
+		{
+			return false;
+		}
+		
 	default:
 		return cText2SkinRender::GetTokenData(Token);
 	}

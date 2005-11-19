@@ -12,6 +12,7 @@
 #include "i18n.h"
 #include "loader.h"
 #include "status.h"
+#include "xml/object.h"
 
 const char *cText2SkinPlugin::VERSION        = "1.1-cvs";
 const char *cText2SkinPlugin::SKINVERSION    = "1.0";
@@ -21,6 +22,17 @@ cText2SkinPlugin::cText2SkinPlugin(void) {
 }
 
 cText2SkinPlugin::~cText2SkinPlugin() {
+}
+
+bool cText2SkinPlugin::Service(const char *Id, void *Data)
+{
+  if (strcmp(Id,"Text2Skin-TTF") == 0) {
+     if (Data == NULL)
+       return true;
+     cxObject::UseTTF = *(int*)Data; 
+     return true;
+     }
+  return false;
 }
 
 bool cText2SkinPlugin::Start(void) {

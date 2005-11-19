@@ -134,6 +134,18 @@ public:
 	static bool ItemColor(const std::string &Color, tColor &Result);
 	static std::string ImagePath(const std::string &Filename);
 	static cxType GetToken(const txToken &Token);
+		
+	// update infos
+	struct tUpdate
+	{
+		bool        timerConflict;
+		bool        events;
+		std::string currentItem;
+		bool        resetMarquee;
+		bool        foundFirstItem;
+		
+		tUpdate(void) : timerConflict(true), events(true), currentItem(""), resetMarquee(true), foundFirstItem(false) {}
+	} mUpdate;
 };
 
 inline void cText2SkinRender::Flush(bool Force) 

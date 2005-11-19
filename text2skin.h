@@ -21,6 +21,7 @@ public:
   virtual ~cText2SkinPlugin();
   virtual const char *Version(void) { return VERSION; }
   virtual const char *Description(void) { return tr(DESCRIPTION); }
+  virtual bool Service(const char *Id, void *Data);
   virtual bool Start(void);
   virtual cMenuSetupPage *SetupMenu(void);
   virtual bool SetupParse(const char *Name, const char *Value);
