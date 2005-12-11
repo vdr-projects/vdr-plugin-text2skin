@@ -1,6 +1,11 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2005-12-11: Version 1.1-cvs_ext-0.3 (vdr-text2skin-1.1-cvs_ext-0.3.diff)
+
+- added recording-tokens:
+  RecordingLength, RecordingCuttedLength
+
 2005-11-19: Version 1.1-cvs_ext-0.2 (vdr-text2skin-1.1-cvs_ext-0.2.diff)
 
 - removed the previously introduced tokens NextTimerName, NextTimerStart,

@@ -1270,43 +1270,20 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 #endif
 
 	case tRecordingSize: 
-		if (mRecording != NULL) {
-			bool bRet=false;
-			long long size = 0;
-			int nFiles;
-			struct stat fileinfo; // Holds file information structure
-			char *cmd = NULL;
-			cReadLine reader;
-			asprintf(&cmd, "find '%s' -follow -type f -name '*.*'|sort ", mRecording->FileName());
-		
-			FILE *p = popen(cmd, "r");
-			int ret=0;
-			if (p)
-			{
-				char *s;
-				
-				while ((s = reader.Read(p)) != NULL)
-				{
-					if ((ret=stat(s, &fileinfo)) != -1)
-					{
-						size += (long long)fileinfo.st_size;
-						nFiles++;
-					}
-				}
-				
-				bRet=true;
-			}
-			
-			pclose(p);
-			delete cmd;
-			
-			return (long)(size / 1024 / 1024); // [MB]
-		}
-		else
-		{
-			return false;
-		}
-		
+		return mRecording != NULL
+		       ? (cxType)GetRecordingSize(mRecording->FileName())
+		       : (cxType)false;
+	
+	case tRecordingLength: 
+		return mRecording != NULL
+		       ? (cxType)GetRecordingLength(mRecording->FileName())
+				 : (cxType)false;
+	
+	case tRecordingCuttedLength: 
+		return mRecording != NULL
+		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName())
+				 : (cxType)false;
+	
 	default:
 		return cText2SkinRender::GetTokenData(Token);
 	}

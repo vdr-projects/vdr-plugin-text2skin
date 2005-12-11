@@ -151,6 +151,8 @@ enum exToken {
 	tRecordingLanguageCode,
 	tRecordingVideoAR,
 	tRecordingSize,
+	tRecordingLength,
+	tRecordingCuttedLength,
 	tRecordingLanguageDescription,
 	// next four also in Channel and Replay display (if supported by vdr/plugin)
 	tButtonRed,

@@ -51,6 +51,10 @@ const char *ChannelShortName(const cChannel *Channel, int Number);
 
 bool StoppedTimer(const char *Name);
 const cRecording *GetRecordingByName(const char *Name);
+const cRecording *GetRecordingByFileName(const char *FileName);
+int GetRecordingSize(const char *FileName); // [MB]
+int GetRecordingLength(const char *FileName); // [min]
+int GetRecordingCuttedLength(const char *FileName); // [min]
 
 cxType TimeType(time_t Time, const std::string &Format);
 cxType DurationType(uint Index, const std::string &Format);

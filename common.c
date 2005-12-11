@@ -115,6 +115,146 @@ const cRecording *GetRecordingByName(const char *Name)
 	return NULL;
 }
 
+const cRecording *GetRecordingByFileName(const char *FileName)
+{
+	return Recordings.GetByName(FileName);
+}
+
+int GetRecordingSize(const char *FileName)
+{
+	if (FileName != NULL) {
+		bool bRet=false;
+		long long size = 0;
+		int nFiles;
+		struct stat fileinfo; // Holds file information structure
+		char *cmd = NULL;
+		cReadLine reader;
+		asprintf(&cmd, "find '%s' -follow -type f -name '*.*'|sort ", FileName);
+	
+		FILE *p = popen(cmd, "r");
+		int ret=0;
+		if (p)
+		{
+			char *s;
+			
+			while ((s = reader.Read(p)) != NULL)
+			{
+				if ((ret=stat(s, &fileinfo)) != -1)
+				{
+					size += (long long)fileinfo.st_size;
+					nFiles++;
+				}
+			}
+			
+			bRet=true;
+		}
+		
+		pclose(p);
+		delete cmd;
+		
+		return (int)(size / 1024 / 1024); // [MB]
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int GetRecordingLength(const char *FileName)
+{
+	// based on the enAIO-Patch for VDR
+	#define INDEXFILESUFFIX   "/index.vdr"
+	
+	struct tIndex { int offset; uchar type; uchar number; short reserved; };
+	tIndex *index;
+	char RecLength[21];
+	char *filename = NULL;
+	int last = -1;
+	index = NULL;
+	if (FileName) {
+	  filename = MALLOC(char, strlen(FileName) + strlen(INDEXFILESUFFIX) + 1);
+	  if (filename) {
+		  strcpy(filename, FileName);
+		  char *pFileExt = filename + strlen(filename);
+		  strcpy(pFileExt, INDEXFILESUFFIX);
+		  int delta = 0;
+		  if (access(filename, R_OK) == 0) {
+			  struct stat buf;
+			  if (stat(filename, &buf) == 0) {
+				  delta = buf.st_size % sizeof(tIndex);
+				  if (delta) {
+					  delta = sizeof(tIndex) - delta;
+					  esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, filename);
+					  }
+				  last = (buf.st_size + delta) / sizeof(tIndex) - 1;
+				  char hour[2], min[3];
+				  snprintf(RecLength, sizeof(RecLength), "%s", *IndexToHMSF(last, true));
+				  snprintf(hour, sizeof(hour), "%c", RecLength[0]);
+				  snprintf(min, sizeof(min), "%c%c", RecLength[2], RecLength[3]);	
+				  return (atoi(hour) * 60) + atoi(min);
+				  }
+			  }
+		  free(filename);
+		  }
+	  }
+	  
+	return 0;
+}
+
+int GetRecordingCuttedLength(const char *FileName)
+{
+	cMarks marks;
+	double length = 0;
+	int totalLength = GetRecordingLength(FileName);
+	const double diffIFrame = FRAMESPERSEC / 2; // approx. 1/2 sec.
+	/*
+	// not useful
+	static std::string lastFileName = "";
+	static uint64 nextUpdate = 0;
+	static int totalLength = 0;
+	const uint64 bufferTime = 30 * 1000; // [ms]
+	*/
+	
+	
+	marks.Load(FileName);
+	
+	/*
+	// buffer the result of 'GetRecordingLength'
+	if (FileName != lastFileName || time_ms() >= nextUpdate)
+	{
+		lastFileName = FileName;
+		nextUpdate = time_ms() + bufferTime;
+		totalLength = GetRecordingLength(FileName);
+	}
+	*/
+	
+	if (marks.Count())
+	{
+		int start = 1; // first frame
+		bool isStart = true;
+		
+		for (cMark *m = marks.First(); m; m = marks.GetNext(m->position))
+		{
+			if (isStart)
+			{
+				start = m->position;
+			}
+			else
+			{
+				length += (double)(m->position - start + 1 + diffIFrame) / (FRAMESPERSEC * 60); // [min]
+			}
+			
+			isStart = !isStart;
+		}
+		
+		// if there is no end-mark the last segment goes to the end of the rec.
+		if (!isStart) length += totalLength - (double)(start - 1 - diffIFrame) / (FRAMESPERSEC * 60); // [min]
+	}
+	
+	// just to avoid, that the cutted length is bigger than the total length
+	return (int)length > totalLength ? totalLength : (int)length;
+}
+
 cxType TimeType(time_t Time, const std::string &Format) 
 {
 	static char result[1000];

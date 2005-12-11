@@ -7,6 +7,7 @@
 #include "menu.h"
 #include <vdr/timers.h>
 #include <vdr/plugin.h>
+#include <vdr/menu.h>
 
 const std::string ReplayNames[__REPLAY_COUNT__] =
 	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image" };
@@ -53,11 +54,11 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 				mReplayIsShuffle = Name[2] == 'S';
 			}
 		} 
-		else if (const cRecording *rec = GetRecordingByName(Name))
-			{
-				mReplay = rec;
-				mReplayMode = replayNormal;
-			}
+		else if (const cRecording *rec = GetRecordingByFileName(cReplayControl::LastReplayed()))
+		{
+			mReplay = rec;
+			mReplayMode = replayNormal;
+		}
 		else if (strcmp(Name, "DVD") == 0)
 			mReplayMode = replayDVD;
 		else if (strcmp(Name, "VCD") == 0)
@@ -308,7 +309,13 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 				{
 					const tComponent *c = components->Component(i);					
 					if (c->stream != 2) index++; // only audio-streams
-					if (i == index) return (cxType)c->language;
+					{
+						std::string buffer(c->language);
+						if (c->type == 1) buffer.append("MONO");
+						if (c->type == 2) buffer.append("DUAL");
+						if (c->type == 5) buffer.append("DD");
+						return (cxType)buffer.c_str();
+					}
 				}
 			}
 		}
