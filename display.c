@@ -1,5 +1,5 @@
 /*
- * $Id: display.c,v 1.25 2005/12/17 19:43:51 lordjaxom Exp $
+ * $Id: display.c,v 1.26 2005/12/17 21:51:43 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -116,7 +116,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 {
 	switch (Token.Type) {
 	case tChannelNumber:
-		return ChannelNumber(mChannel, mNumber)
+		return ChannelNumber(mChannel, mNumber);
 		
 	case tChannelName:
 		return mChannel != NULL
