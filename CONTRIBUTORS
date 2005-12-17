@@ -20,3 +20,7 @@ Reinhard Nissl
 
 Frank Enderle
   for sending a patch to fix a crash due to uninitialized pointer
+
+Chris Warren
+  for sending a patch to fix displaying partial channel numbers while changing
+	channels

@@ -7,6 +7,8 @@ VDR Plugin 'text2skin' Revision History
 - patch for PresentRemaining by Björn (VDR-Portal)
 - fixed a race condition (thanks to Reinhard Nissl for pointing this out)
 - updated finnish translations (thanks to Rolf Ahrenberg)
+- fixed displaying of partial channel numbers while changing channels (thanks to
+  Chris Warren)
 - added tokens for Recording Info Display
   (RecordingName, RecordingDateTime, RecordingTitle, RecordingShortText,
   RecordingDescription, RecordingLanguageCode, RecordingLanguageDescription)
