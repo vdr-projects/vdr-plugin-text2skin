@@ -16,7 +16,7 @@
 cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinLoader *Loader, bool WithInfo):
 		cText2SkinRender(Loader, WithInfo ? cxDisplay::channelInfo : cxDisplay::channelSmall),
 		mFallbackDisplay(NULL),
-		mChannel(NULL),
+		mChannel(NULL),                                    
 		mNumber(0),
 		mPresent(NULL),
 		mFollowing(NULL),
@@ -116,9 +116,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 {
 	switch (Token.Type) {
 	case tChannelNumber:
-		return mChannel != NULL
-		       ? (cxType)ChannelNumber(mChannel, mNumber)
-		       : (cxType)false;
+		return (cxType)ChannelNumber(mChannel, mNumber);
 		
 	case tChannelName:
 		return mChannel != NULL

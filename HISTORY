@@ -1,6 +1,14 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2005-12-18: Version 1.1-cvs_ext-0.4 (vdr-text2skin-1.1-cvs_ext-0.4.diff)
+
+- modified the way, the current replayed recording is determined (status.c:
+  cText2SkinStatus::Replaying)
+  There remains a problem that recordings with the same name cannot be
+  distinguished, so information optained from mReplay are not necessarily
+  correct (all the ones added in vdr-text2skin-1.1-cvs_ext-0.2.diff)
+
 2005-12-11: Version 1.1-cvs_ext-0.3 (vdr-text2skin-1.1-cvs_ext-0.3.diff)
 
 - added recording-tokens:

@@ -117,7 +117,7 @@ const cRecording *GetRecordingByName(const char *Name)
 
 const cRecording *GetRecordingByFileName(const char *FileName)
 {
-	return Recordings.GetByName(FileName);
+	return (FileName) ? Recordings.GetByName(FileName) : NULL;
 }
 
 int GetRecordingSize(const char *FileName)

@@ -53,12 +53,28 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 				mReplayIsLoop    = Name[1] == 'L';
 				mReplayIsShuffle = Name[2] == 'S';
 			}
-		} 
+		}
+		/*
+		I tried the following, but this is not thread-safe and it seems that
+		'LastReplayed()' is not allways up to date, when cStatus::Replaying()
+		is called:
+		
 		else if (const cRecording *rec = GetRecordingByFileName(cReplayControl::LastReplayed()))
 		{
 			mReplay = rec;
 			mReplayMode = replayNormal;
 		}
+		
+		so here is a temporary implementation which has the problem, that several
+		recordings with the same name cannot be seperated. This is deactivated
+		in Enigma (as it is more ore less useless), till there is a decent fix for
+		that.
+		*/
+		else if (const cRecording *rec = GetRecordingByName(Name))
+		{
+			mReplay = rec;
+			mReplayMode = replayNormal;
+		}	
 		else if (strcmp(Name, "DVD") == 0)
 			mReplayMode = replayDVD;
 		else if (strcmp(Name, "VCD") == 0)
