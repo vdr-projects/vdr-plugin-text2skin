@@ -21,7 +21,9 @@ public:
   virtual ~cText2SkinPlugin();
   virtual const char *Version(void) { return VERSION; }
   virtual const char *Description(void) { return tr(DESCRIPTION); }
+#if VDRVERSNUM >= 10330
   virtual bool Service(const char *Id, void *Data);
+#endif
   virtual bool Start(void);
   virtual cMenuSetupPage *SetupMenu(void);
   virtual bool SetupParse(const char *Name, const char *Value);

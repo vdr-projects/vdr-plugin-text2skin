@@ -5,14 +5,11 @@
 #ifndef VDR_TEXT2SKIN_STATUS_H
 #define VDR_TEXT2SKIN_STATUS_H
 
-#ifndef __STL_CONFIG_H
-#define __STL_CONFIG_H
-#endif
-
-#include "common.h"
-#include <vdr/status.h>
 #include <algorithm>
 #include <vector>
+#include "common.h"
+#include <vdr/status.h>
+
 
 class cText2SkinRender;
 

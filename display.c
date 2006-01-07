@@ -16,7 +16,7 @@
 cText2SkinDisplayChannel::cText2SkinDisplayChannel(cText2SkinLoader *Loader, bool WithInfo):
 		cText2SkinRender(Loader, WithInfo ? cxDisplay::channelInfo : cxDisplay::channelSmall),
 		mFallbackDisplay(NULL),
-		mChannel(NULL),                                    
+		mChannel(NULL),
 		mNumber(0),
 		mPresent(NULL),
 		mFollowing(NULL),
@@ -116,7 +116,9 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 {
 	switch (Token.Type) {
 	case tChannelNumber:
-		return (cxType)ChannelNumber(mChannel, mNumber);
+		return mChannel != NULL
+		       ? (cxType)ChannelNumber(mChannel, mNumber)
+		       : (cxType)false;
 		
 	case tChannelName:
 		return mChannel != NULL
@@ -1088,6 +1090,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       ? (cxType)mEvent->Description()
 		       : (cxType)false;
 
+#if VDRVERSNUM >= 10318
 	case tPresentLanguageCode:
 		if (mEvent)
 		{
@@ -1154,6 +1157,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 			}
 		}
 		return false;
+#endif
 
 	case tHasVPS:
 	case tChannelHasVPS:

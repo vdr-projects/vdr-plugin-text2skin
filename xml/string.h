@@ -153,6 +153,8 @@ enum exToken {
 	tRecordingSize,
 	tRecordingLength,
 	tRecordingCuttedLength,
+	tOsdWidth,
+	tOsdHeight,
 	tRecordingLanguageDescription,
 	// next four also in Channel and Replay display (if supported by vdr/plugin)
 	tButtonRed,
@@ -161,7 +163,7 @@ enum exToken {
 	tButtonBlue,
 	tCanScrollUp,
 	tCanScrollDown,
-
+	
 #define __COUNT_TOKEN__ (tCanScrollDown + 1)
 };
 

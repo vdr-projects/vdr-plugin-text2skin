@@ -128,7 +128,9 @@ int GetRecordingSize(const char *FileName)
 		int nFiles;
 		struct stat fileinfo; // Holds file information structure
 		char *cmd = NULL;
+#if VDRVERSNUM >= 10318
 		cReadLine reader;
+#endif
 		asprintf(&cmd, "find '%s' -follow -type f -name '*.*'|sort ", FileName);
 	
 		FILE *p = popen(cmd, "r");
@@ -137,7 +139,11 @@ int GetRecordingSize(const char *FileName)
 		{
 			char *s;
 			
+#if VDRVERSNUM >= 10318
 			while ((s = reader.Read(p)) != NULL)
+#else
+			while ((s = readline(p)) != NULL)
+#endif
 			{
 				if ((ret=stat(s, &fileinfo)) != -1)
 				{
@@ -188,7 +194,11 @@ int GetRecordingLength(const char *FileName)
 					  }
 				  last = (buf.st_size + delta) / sizeof(tIndex) - 1;
 				  char hour[2], min[3];
+#if VDRVERSNUM >= 10318
 				  snprintf(RecLength, sizeof(RecLength), "%s", *IndexToHMSF(last, true));
+#else
+				  snprintf(RecLength, sizeof(RecLength), "%s", IndexToHMSF(last, true));
+#endif
 				  snprintf(hour, sizeof(hour), "%c", RecLength[0]);
 				  snprintf(min, sizeof(min), "%c%c", RecLength[2], RecLength[3]);	
 				  return (atoi(hour) * 60) + atoi(min);

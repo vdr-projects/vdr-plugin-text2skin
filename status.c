@@ -267,6 +267,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			: (cxType)false;
 		
 	case tTimerConflict:
+#if VDRVERSNUM >= 10330
 		if (Text2SkinSetup.CheckTimerConflict)
 		{
 			bool conflict;
@@ -291,7 +292,9 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		{
 			return false;
 		}
-	
+#endif
+		
+#if VDRVERSNUM >= 10325
 	case tReplayName:
 		return mReplay != NULL
 		       ? (cxType)mReplay->Name()
@@ -356,7 +359,6 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		}
 		return false;
 
-		/*
 	case tReplayVideoAR: 
 		if (mReplay)
 		{
@@ -378,7 +380,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			}
 		}
 		return false;
-		*/
+#endif
 
 	case tCurrentRecording:
 		Dprintf("token attrib type is: %d, number: %d\n", Token.Attrib.Type, Token.Attrib.Number);

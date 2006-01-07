@@ -24,6 +24,7 @@ cText2SkinPlugin::cText2SkinPlugin(void) {
 cText2SkinPlugin::~cText2SkinPlugin() {
 }
 
+#if VDRVERSNUM >= 10330
 bool cText2SkinPlugin::Service(const char *Id, void *Data)
 {
   if (strcmp(Id,"Text2Skin-TTF") == 0) {
@@ -34,6 +35,7 @@ bool cText2SkinPlugin::Service(const char *Id, void *Data)
      }
   return false;
 }
+#endif
 
 bool cText2SkinPlugin::Start(void) {
 	RegisterI18n(Phrases);

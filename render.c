@@ -679,7 +679,11 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
 	
 	case tIsRecording:   return cRecordControls::Active();
-
+	
+	case tOsdWidth:      return (cxType)mBaseSize.w;
+	
+	case tOsdHeight:     return (cxType)mBaseSize.h;
+	
 #if VDRVERSNUM >=10318
 	case tAudioTrack:    {
 			cDevice *dev = cDevice::PrimaryDevice();

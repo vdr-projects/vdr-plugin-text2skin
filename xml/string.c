@@ -46,7 +46,7 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", 
 	"IsMenuCurrent", "MenuText", "RecordingName", "RecordingDateTime", "RecordingTitle",
 	"RecordingShortText", "RecordingDescription", "RecordingLanguageCode",
-	"RecordingVideoAR", "RecordingSize", "RecordingLength", "RecordingCuttedLength",
+	"RecordingVideoAR", "RecordingSize", "RecordingLength", "RecordingCuttedLength", "OsdWidth", "OsdHeight",
 	"RecordingLanguageDescription", "ButtonRed", "ButtonGreen", 
 	"ButtonYellow", "ButtonBlue", "CanScrollUp", "CanScrollDown"
 };
