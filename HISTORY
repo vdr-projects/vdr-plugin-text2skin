@@ -1,6 +1,14 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2006-01-10: Version 1.1-cvs_ext-0.6 (vdr-text2skin-1.1-cvs_ext-0.6.diff)
+
+- updated to cvs-version of text2skin
+- since vdr-1.3.38 it is possible to exactly identify the replayed
+  recording, so the replay-tokens work now
+- switched the search-order for the fonts to priorise the skin-folder
+  (this avoids error-messages in the log)
+
 2006-01-07: Version 1.1-cvs_ext-0.5 (vdr-text2skin-1.1-cvs_ext-0.5.diff)
 
 - modifications to compile with vdr-versions >= 1.3.18
@@ -54,6 +62,8 @@ VDR Plugin 'text2skin' Revision History
 - patch for PresentRemaining by Björn (VDR-Portal)
 - fixed a race condition (thanks to Reinhard Nissl for pointing this out)
 - updated finnish translations (thanks to Rolf Ahrenberg)
+- fixed displaying of partial channel numbers while changing channels (thanks to
+  Chris Warren)
 - added tokens for Recording Info Display
   (RecordingName, RecordingDateTime, RecordingTitle, RecordingShortText,
   RecordingDescription, RecordingLanguageCode, RecordingLanguageDescription)

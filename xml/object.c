@@ -148,12 +148,12 @@ const cFont *cxObject::Font(void) const
 
         if (UseTTF) {
          
-	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) 
-	        != NULL)
-		return font;
-	
 	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize, 
 	                                 mFontWidth)) != NULL)
+		return font;
+	
+	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) 
+	        != NULL)
 		return font;
 	
 		}

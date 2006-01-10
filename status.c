@@ -33,7 +33,12 @@ void cText2SkinStatus::SetRender(cText2SkinRender *Render)
 	mNextRecording    = 0;
 }
 
-void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) {
+#if VDRVERSNUM >= 10338
+void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name, const char *FileName, bool On)
+#else
+void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name)
+#endif
+{
 	Dprintf("cText2SkinStatus::Replaying(%s)\n", Name);
 	eReplayMode oldMode = mReplayMode;
 
@@ -54,27 +59,19 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 				mReplayIsShuffle = Name[2] == 'S';
 			}
 		}
-		/*
-		I tried the following, but this is not thread-safe and it seems that
-		'LastReplayed()' is not allways up to date, when cStatus::Replaying()
-		is called:
-		
-		else if (const cRecording *rec = GetRecordingByFileName(cReplayControl::LastReplayed()))
+#if VDRVERSNUM >= 10338
+		else if (const cRecording *rec = GetRecordingByFileName(FileName))
 		{
 			mReplay = rec;
 			mReplayMode = replayNormal;
 		}
-		
-		so here is a temporary implementation which has the problem, that several
-		recordings with the same name cannot be seperated. This is deactivated
-		in Enigma (as it is more ore less useless), till there is a decent fix for
-		that.
-		*/
+#else
 		else if (const cRecording *rec = GetRecordingByName(Name))
 		{
 			mReplay = rec;
 			mReplayMode = replayNormal;
-		}	
+		}
+#endif
 		else if (strcmp(Name, "DVD") == 0)
 			mReplayMode = replayDVD;
 		else if (strcmp(Name, "VCD") == 0)
@@ -106,7 +103,11 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 	}
 }
 
-void cText2SkinStatus::Recording(const cDevice *Device, const char *Name) 
+#if VDRVERSNUM >= 10338
+void cText2SkinStatus::Recording(const cDevice *Device, const char *Name, const char *FileName, bool On)
+#else
+void cText2SkinStatus::Recording(const cDevice *Device, const char *Name)
+#endif
 {
 	if (mRender != NULL)
 		mRender->UpdateLock();
@@ -295,6 +296,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 #endif
 		
 #if VDRVERSNUM >= 10325
+#if VDRVERSNUM >= 10338
 	case tReplayName:
 		return mReplay != NULL
 		       ? (cxType)mReplay->Name()
@@ -314,7 +316,20 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		return mReplay != NULL
 		       ? (cxType)mReplay->Info()->Description()
 		       : (cxType)false;
+#else
+	case tReplayName:
+		return (cxType)false;
 
+	case tReplayDateTime:
+		return (cxType)false;
+                         
+	case tReplayShortText:
+		return (cxType)false;
+
+	case tReplayDescription:
+		return (cxType)false;
+#endif
+	
 	case tReplayLanguageCode:
 		if (mReplay)
 		{

@@ -67,8 +67,13 @@ private:
 	bool              mTimerConflict;
 
 protected:
+#if VDRVERSNUM >= 10338
+	virtual void Replaying(const cControl *Control, const char *Name, const char *FileName, bool On);
+	virtual void Recording(const cDevice *Device, const char *Name, const char *FileName, bool On);
+#else
 	virtual void Replaying(const cControl *Control, const char *Name);
 	virtual void Recording(const cDevice *Device, const char *Name);
+#endif
 	virtual void OsdClear(void);
 	virtual void OsdCurrentItem(const char *Text);
 
