@@ -129,6 +129,31 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+  { "Show scrollbar in the menus",
+    "Zeige Bildlaufleiste in Menüs",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+  },
   { "Reset Marquee for new item",
     "Marquee für neues Item zurücksetzen",
     "",

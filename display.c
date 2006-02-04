@@ -873,6 +873,8 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 		mCurrentItem = Index;
 		SetDirty();
 	}
+	
+	if (Current) mRender->mMenuScrollbar.currentOnScreen = (uint)Index;
 	UpdateUnlock();
 }
 

@@ -9,6 +9,7 @@ cText2SkinSetup Text2SkinSetup;
 // --- cText2SkinSetup --------------------------------------------------------
 
 cText2SkinSetup::cText2SkinSetup(void) {
+	MenuScrollbar = false;
 	MarqueeLeftRight = true;
 	MarqueeReset = false;
 	CheckTimerConflict = false;
@@ -16,7 +17,8 @@ cText2SkinSetup::cText2SkinSetup(void) {
 }
 
 bool cText2SkinSetup::SetupParse(const char *Name, const char *Value) {
-	if      (strcmp(Name, "MarqueeLeftRight") == 0) MarqueeLeftRight = atoi(Value);
+	if      (strcmp(Name, "MenuScrollbar") == 0) MenuScrollbar = atoi(Value);
+	else if (strcmp(Name, "MarqueeLeftRight") == 0) MarqueeLeftRight = atoi(Value);
 	else if (strcmp(Name, "MarqueeReset") == 0) MarqueeReset = atoi(Value);
 	else if (strcmp(Name, "CheckTimerConflict") == 0) CheckTimerConflict = atoi(Value);
 	else if (strcmp(Name, "MaxCacheFill") == 0) MaxCacheFill = atoi(Value);

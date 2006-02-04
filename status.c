@@ -155,13 +155,16 @@ void cText2SkinStatus::OsdCurrentItem(const char *Text)
 		u->foundFirstItem = false;
 		
 		// find current item in scrollbar
-		cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
-		for (int i = 0; i < sb->total; i++)
+		if (Text2SkinSetup.MenuScrollbar)
 		{
-			if (sb->items[i] == Text)
+			cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
+			for (uint i = 0; i < sb->total; i++)
 			{
-				sb->current = i;
-				break;
+				if (sb->items[i] == Text)
+				{
+					sb->current = i;
+					break;
+				}
 			}
 		}
 	}
@@ -169,21 +172,22 @@ void cText2SkinStatus::OsdCurrentItem(const char *Text)
 
 void cText2SkinStatus::OsdItem(const char *Text, int Index)
 {
-	if (mRender != NULL)
+	if (mRender && Text2SkinSetup.MenuScrollbar)
 	{
+		uint curr = (uint)Index;
 		cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
 		
-		if ((unsigned int)Index < sb->items.size())
+		if (curr < sb->items.size())
 		{
-			sb->items[Index] = Text;
+			sb->items[curr] = Text;
 		}
 		else
 		{
 			sb->items.push_back(Text);
-			sb->total = Index + 1;
+			sb->total = curr + 1;
 		}
 		
-		if (Index + 1 > sb->total) sb->total = Index + 1;
+		if (curr + 1 > sb->total) sb->total = curr + 1;
 	}
 }
 

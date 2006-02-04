@@ -11,7 +11,6 @@
 #include "screen.h"
 #include "display.h"
 #include "scroller.h"
-#include "setup.h"
 #include "xml/display.h"
 #include <vdr/channels.h>
 #include <vdr/epg.h>
@@ -222,7 +221,8 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 				uint itemheight = item->Size().h;
 				uint maxitems = areasize.h / itemheight;
 				uint yoffset = 0;
-
+				
+				mMenuScrollbar.maxItems = maxitems;
 				SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
 				for (uint i = 0; i < maxitems; ++i, yoffset += itemheight) {
 					for (uint j = 1; j < Object->Objects(); ++j) {
@@ -564,6 +564,29 @@ void cText2SkinRender::DrawScrollbar(const txPoint &Pos, const txSize &Size, con
 			DrawRectangle(sp, ss, Fg);
 		}
 	}
+	else if (mMenuScrollbar.Available())
+	{
+		DrawRectangle(Pos, Size, Bg);
+		txPoint sbPoint = Pos;
+		txSize sbSize = Size;
+		if (sbSize.h > sbSize.w)
+		{
+			// -1 to get at least 1 pixel height
+			double top = double(mMenuScrollbar.Top()) / mMenuScrollbar.total * (sbSize.h - 1);
+			double bottom = double(mMenuScrollbar.Bottom()) / mMenuScrollbar.total * (sbSize.h - 1);
+			sbPoint.y += (uint)top;
+			sbSize.h -= (uint)top + (uint)bottom;
+		}
+		else
+		{
+			// -1 to get at least 1 pixel height
+			double left = double(mMenuScrollbar.Top()) / mMenuScrollbar.total * (sbSize.w - 1);
+			double right = double(mMenuScrollbar.Bottom()) / mMenuScrollbar.total * (sbSize.w - 1);
+			sbPoint.x += (uint)left;
+			sbSize.w -= (uint)left + (uint)right;
+		}
+		DrawRectangle(sbPoint, sbSize, Fg);
+	}
 }
 
 txPoint cText2SkinRender::Transform(const txPoint &Pos) 
@@ -675,9 +698,19 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tDateTime:      return TimeType(time(NULL), Token.Attrib.Text);
 
-	case tCanScrollUp:   return mScroller != NULL && mScroller->CanScrollUp();
+	case tCanScrollUp:
+	{
+		if (mScroller) return mScroller->CanScrollUp();
+		else if (mMenuScrollbar.Available()) return mMenuScrollbar.CanScrollUp();
+		else return false;
+	}
 
-	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
+	case tCanScrollDown:
+	{
+		if (mScroller) return mScroller->CanScrollDown();
+		else if (mMenuScrollbar.Available()) return mMenuScrollbar.CanScrollDown();
+		else return false;
+	}
 	
 	case tIsRecording:   return cRecordControls::Active();
 	

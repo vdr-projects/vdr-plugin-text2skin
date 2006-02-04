@@ -12,7 +12,8 @@ public:
 	cText2SkinSetup(void);
 
 	bool SetupParse(const char *Name, const char *Value);
-
+	
+	int MenuScrollbar;
 	int MarqueeLeftRight;
 	int MarqueeReset;
 	int CheckTimerConflict;

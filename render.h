@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "scroller.h"
+#include "setup.h"
 #include "xml/skin.h"
 #include "xml/type.h"
 #include <vdr/osd.h>
@@ -47,6 +48,7 @@ private:
 
 	std::string         mBasePath;
 	bool                mDirty;
+	uint                mMaxItems;
 	cSkin              *mFallback;
 	
 	// update thread
@@ -115,6 +117,7 @@ protected:
 	virtual bool HasTabText(int Index, int n) { return false; }
 	virtual void SetEditableWidth(int Width) {}
 	virtual void SetMaxItems(int MaxItems) {}
+	inline int GetmMaxItems(void) { return mMaxItems; }
 
 	// functions for display renderer to control behaviour
 	void Flush(bool Force = false);
@@ -138,12 +141,18 @@ public:
 	// provide scrollbar in every menu
 	struct tMenuScrollbar
 	{
-		int         current;
-		int         total;
+		uint        current; // overall (0 ... toal-1)
+		uint        currentOnScreen; // on the current screen (0 ... maxItems-1)
+		uint        total;
+		uint        maxItems; // viewable on current screen
 		std::vector<std::string> items;
 		
-		tMenuScrollbar(void) : current(0), total(0) {}
-		//bool available(void) { printf("%d / %d\n", total, GetMaxItems(); return total > GetMaxItems(); }
+		tMenuScrollbar(void) : current(0), currentOnScreen(0), total(0), maxItems(0) {}
+		bool Available(void) { return Text2SkinSetup.MenuScrollbar ? total > maxItems : false; }
+		uint Top(void) { return current - currentOnScreen; }
+		uint Bottom(void) { return total - Top() - maxItems; }
+		bool CanScrollUp(void) { return Text2SkinSetup.MenuScrollbar ? Top() > 0 : false; }
+		bool CanScrollDown(void) { return Text2SkinSetup.MenuScrollbar ? Bottom() > 0 : false; }
 	} mMenuScrollbar;
 	
 	// update infos (e.g. timerConflict)

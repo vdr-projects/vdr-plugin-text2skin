@@ -9,6 +9,7 @@
 
 cText2SkinSetupPage::cText2SkinSetupPage(void) {
 	mData = Text2SkinSetup;
+	Add(new cMenuEditBoolItem(tr("Show scrollbar in the menus"), &mData.MenuScrollbar, tr("no"), tr("yes")));
 	Add(new cMenuEditBoolItem(tr("Scrolling behaviour"), &mData.MarqueeLeftRight, tr("to the left"), tr("left and right")));
 	Add(new cMenuEditBoolItem(tr("Reset Marquee for new item"), &mData.MarqueeReset, tr("no"), tr("yes")));
 #if VDRVERSNUM >= 10330
@@ -22,6 +23,7 @@ cText2SkinSetupPage::~cText2SkinSetupPage() {
 }
 
 void cText2SkinSetupPage::Store(void) {
+	SetupStore("MenuScrollbar", mData.MenuScrollbar);
 	SetupStore("MarqueeLeftRight", mData.MarqueeLeftRight);
 	SetupStore("MarqueeReset", mData.MarqueeReset);
 #if VDRVERSNUM >= 10330
