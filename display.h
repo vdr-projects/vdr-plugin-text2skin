@@ -169,7 +169,8 @@ protected:
 	virtual void SetEditableWidth(int Width) { cSkinDisplayMenu::SetEditableWidth(Width); }
 	virtual int MaxItems(void) { return mMaxItems; }
 	virtual void SetMaxItems(int MaxItems) { mMaxItems = MaxItems; }
-
+	virtual int GetMaxItems(void) { return mMaxItems; }
+	
 public:
 	cText2SkinDisplayMenu(cText2SkinLoader *Loader);
 	virtual ~cText2SkinDisplayMenu();

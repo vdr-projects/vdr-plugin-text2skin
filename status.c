@@ -134,18 +134,56 @@ void cText2SkinStatus::OsdClear(void)
 		mLastLanguage = Setup.OSDLanguage;
 		cxString::Reparse();
 	}
+	
+	if (mRender != NULL)
+	{
+		mRender->mMenuScrollbar.total = 0;
+	}
 }
 
 void cText2SkinStatus::OsdCurrentItem(const char *Text)
 {
 	if (mRender != NULL)
 	{
+		// update infos
+		cText2SkinRender::tUpdate *u = &mRender->mUpdate;
 		static std::string lastItem;
 		
-		lastItem = mRender->mUpdate.currentItem;
-		mRender->mUpdate.currentItem = Text;
-		mRender->mUpdate.resetMarquee = true;
-		mRender->mUpdate.foundFirstItem = false;
+		lastItem = u->currentItem;
+		u->currentItem = Text;
+		u->resetMarquee = true;
+		u->foundFirstItem = false;
+		
+		// find current item in scrollbar
+		cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
+		for (int i = 0; i < sb->total; i++)
+		{
+			if (sb->items[i] == Text)
+			{
+				sb->current = i;
+				break;
+			}
+		}
+	}
+}
+
+void cText2SkinStatus::OsdItem(const char *Text, int Index)
+{
+	if (mRender != NULL)
+	{
+		cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
+		
+		if ((unsigned int)Index < sb->items.size())
+		{
+			sb->items[Index] = Text;
+		}
+		else
+		{
+			sb->items.push_back(Text);
+			sb->total = Index + 1;
+		}
+		
+		if (Index + 1 > sb->total) sb->total = Index + 1;
 	}
 }
 
@@ -155,31 +193,21 @@ void cText2SkinStatus::UpdateEvents(void)
 	{
 		mRender->mUpdate.events = false;
 		
-		mEvents.clear();
+		mEvents.Clear();
 		Timers.IncBeingEdited();
 		
-		for (cTimer *tim = Timers.First(); tim != NULL; tim = Timers.Next(tim))
+		for (cTimer *tim = Timers.First(); tim; tim = Timers.Next(tim))
 		{
 			if (tim->HasFlags(tfActive))
 			{	
 				int i = 0;
 				cTimer dummy;
-				dummy = *tim; // copy the timer
+				dummy = *tim;
 				
 				do
 				{
-					tEvent ev;
+					mEvents.Add(new tEvent(&dummy));
 					
-					ev.title = dummy.File();
-					ev.isRecording = dummy.Recording();
-					ev.channelName = dummy.Channel()->Name();
-					ev.channelNumber = dummy.Channel()->Number();
-					ev.startTime = dummy.StartTime();
-					ev.stopTime = dummy.StopTime();
-					ev.priority = dummy.Priority();
-	
-					mEvents.push_back(ev);
-							
 					if (!dummy.IsSingleEvent()) // add 4 additional rep. timer
 					{
 						do
@@ -195,13 +223,13 @@ void cText2SkinStatus::UpdateEvents(void)
 		}
 		
 		Timers.DecBeingEdited();
-		std::sort(mEvents.rbegin(), mEvents.rend());
+		mEvents.Sort();
 	}
 }
 
 cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 {
-	uint event = 0;
+	int event = 0;
 	
 	switch (Token.Type) {
 	case tReplayMode:
@@ -213,8 +241,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		event++;
 	case tCurrentEventsTitle1:
 		UpdateEvents();
-		return mEvents.size() > event
-			? (cxType)mEvents[event].title.c_str()
+		return mEvents.Count() > event
+			? (cxType)mEvents.Get(event)->title.c_str()
 			: (cxType)false;
 		
 	case tCurrentEventsStartDateTime3:
@@ -223,8 +251,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		event++;
 	case tCurrentEventsStartDateTime1:
 		UpdateEvents();
-		return mEvents.size() > event
-			? (cxType)TimeType(mEvents[event].startTime, Token.Attrib.Text)
+		return mEvents.Count() > event
+			? (cxType)TimeType(mEvents.Get(event)->startTime, Token.Attrib.Text)
 			: (cxType)false;
 		
 	case tCurrentEventsStopDateTime3:
@@ -233,8 +261,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		event++;
 	case tCurrentEventsStopDateTime1:
 		UpdateEvents();
-		return mEvents.size() > event
-			? (cxType)TimeType(mEvents[event].stopTime, Token.Attrib.Text)
+		return mEvents.Count() > event
+			? (cxType)TimeType(mEvents.Get(event)->stopTime, Token.Attrib.Text)
 			: (cxType)false;
 
 	case tCurrentEventsChannelNumber3:
@@ -243,8 +271,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		event++;
 	case tCurrentEventsChannelNumber1:
 		UpdateEvents();
-		return mEvents.size() > event
-			? (cxType)mEvents[event].channelNumber
+		return mEvents.Count() > event
+			? (cxType)mEvents.Get(event)->channelNumber
 			: (cxType)false;
 
 	case tCurrentEventsChannelName3:
@@ -253,8 +281,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		event++;
 	case tCurrentEventsChannelName1:
 		UpdateEvents();
-		return mEvents.size() > event
-			? (cxType)mEvents[event].channelName.c_str()
+		return mEvents.Count() > event
+			? (cxType)mEvents.Get(event)->channelName.c_str()
 			: (cxType)false;
 
 	case tCurrentEventsIsRecording3:
@@ -263,8 +291,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		event++;
 	case tCurrentEventsIsRecording1:
 		UpdateEvents();
-		return mEvents.size() > event
-			? (cxType)mEvents[event].isRecording
+		return mEvents.Count() > event
+			? (cxType)mEvents.Get(event)->isRecording
 			: (cxType)false;
 		
 	case tTimerConflict:

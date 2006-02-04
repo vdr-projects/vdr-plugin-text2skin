@@ -5,8 +5,6 @@
 #ifndef VDR_TEXT2SKIN_STATUS_H
 #define VDR_TEXT2SKIN_STATUS_H
 
-#include <algorithm>
-#include <vector>
 #include "common.h"
 #include <vdr/status.h>
 
@@ -30,22 +28,32 @@ public:
 	typedef std::string tRecordingInfo;
 	typedef std::vector<tRecordingInfo> tRecordings;
 
-	struct tEvent
+	struct tEvent : public cListObject
 	{
-		std::string    title;
-		bool           isRecording;
-		std::string    channelName;
-		int            channelNumber;
-		time_t         startTime;
-		time_t         stopTime;
-		int            priority;
+		time_t startTime;
+		time_t stopTime;
+		int channelNumber;
+		std::string channelName;
+		int priority;
+		bool isRecording;
+		std::string title;
 		
-		bool tEvent::operator< (const tEvent &b) const
+		tEvent(cTimer *timer) :
+			startTime(timer->StartTime()),
+			stopTime(timer->StopTime()),
+			channelNumber(timer->Channel()->Number()),
+			channelName(timer->Channel()->Name()),
+			priority(timer->Priority()),
+			isRecording(timer->Recording()),
+			title(timer->File()) {}
+		
+		virtual int Compare(const cListObject &listObj) const
 		{
-			int r = startTime - b.startTime;
-			r = r == 0 ? b.priority - priority : r;
-			return r > 0 ? true : false;
-		};
+			tEvent *e = (tEvent *)&listObj;
+			int r = startTime - e->startTime;
+			if (r == 0) r = e->priority - priority;
+			return r;
+		}
 	};
 	
 	typedef std::vector<tEvent> tEvents;
@@ -58,8 +66,8 @@ private:
 	bool              mReplayIsLoop;
 	bool              mReplayIsShuffle;
 	tRecordings       mRecordings;
-	tEvents           mEvents;
 	const cRecording *mReplay;
+	cList<tEvent>     mEvents;
 	cMutex            mRecordingsLock;
 	uint              mCurrentRecording;
 	uint              mNextRecording;
@@ -76,7 +84,8 @@ protected:
 #endif
 	virtual void OsdClear(void);
 	virtual void OsdCurrentItem(const char *Text);
-
+	virtual void OsdItem(const char *Text, int Index);
+	
 public:
 	cText2SkinStatus(void);
 

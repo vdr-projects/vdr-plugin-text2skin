@@ -134,8 +134,19 @@ public:
 	static bool ItemColor(const std::string &Color, tColor &Result);
 	static std::string ImagePath(const std::string &Filename);
 	static cxType GetToken(const txToken &Token);
+	
+	// provide scrollbar in every menu
+	struct tMenuScrollbar
+	{
+		int         current;
+		int         total;
+		std::vector<std::string> items;
 		
-	// update infos
+		tMenuScrollbar(void) : current(0), total(0) {}
+		//bool available(void) { printf("%d / %d\n", total, GetMaxItems(); return total > GetMaxItems(); }
+	} mMenuScrollbar;
+	
+	// update infos (e.g. timerConflict)
 	struct tUpdate
 	{
 		bool        timerConflict;

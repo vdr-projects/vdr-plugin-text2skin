@@ -263,6 +263,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 								// there is no "next tab", use the rightmost edge
 								obj.mPos2.x += Object->mPos1.x;
 								SetEditableWidth(obj.Size().w);
+								//printf("EditableWidth von '%s': %d Pixels\n", obj.Text().c_str(), obj.Size().w);
 							}
 
 							obj.mPos2.y += Object->mPos1.y + yoffset;

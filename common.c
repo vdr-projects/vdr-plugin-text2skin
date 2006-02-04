@@ -121,6 +121,14 @@ const cRecording *GetRecordingByFileName(const char *FileName)
 }
 
 int GetRecordingSize(const char *FileName)
+#if VDRVERSNUM >= 10338
+// use VDR's routine
+{
+	const cRecording *rec = GetRecordingByFileName(FileName);
+	return (rec) ? DirSizeMB(FileName) : 0;
+}
+#else
+// use our own approach
 {
 	if (FileName != NULL) {
 		bool bRet=false;
@@ -165,6 +173,7 @@ int GetRecordingSize(const char *FileName)
 		return 0;
 	}
 }
+#endif
 
 int GetRecordingLength(const char *FileName)
 {
@@ -217,26 +226,8 @@ int GetRecordingCuttedLength(const char *FileName)
 	double length = 0;
 	int totalLength = GetRecordingLength(FileName);
 	const double diffIFrame = FRAMESPERSEC / 2; // approx. 1/2 sec.
-	/*
-	// not useful
-	static std::string lastFileName = "";
-	static uint64 nextUpdate = 0;
-	static int totalLength = 0;
-	const uint64 bufferTime = 30 * 1000; // [ms]
-	*/
-	
 	
 	marks.Load(FileName);
-	
-	/*
-	// buffer the result of 'GetRecordingLength'
-	if (FileName != lastFileName || time_ms() >= nextUpdate)
-	{
-		lastFileName = FileName;
-		nextUpdate = time_ms() + bufferTime;
-		totalLength = GetRecordingLength(FileName);
-	}
-	*/
 	
 	if (marks.Count())
 	{
