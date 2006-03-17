@@ -1,5 +1,5 @@
 /* 
- * $Id: status.c,v 1.10 2005/06/03 08:53:13 lordjaxom Exp $
+ * $Id: status.c,v 1.11 2006/03/17 18:25:57 lordjaxom Exp $
  */
  
 #include "status.h"
@@ -29,14 +29,16 @@ void cText2SkinStatus::SetRender(cText2SkinRender *Render)
 	mNextRecording    = 0;
 }
 
-void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) {
+void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
+								 const char *FileName, bool On) 
+{
 	Dprintf("cText2SkinStatus::Replaying(%s)\n", Name);
 	eReplayMode oldMode = mReplayMode;
 
 	if (mRender != NULL)
 		mRender->UpdateLock();
 
-	if (Name != NULL) {
+	if (On) {
 		mReplayMode = replayMPlayer;
 		if (strlen(Name) > 6 && Name[0]=='[' && Name[3]==']' && Name[5]=='(') {
 			int i;
@@ -83,7 +85,8 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name) 
 	}
 }
 
-void cText2SkinStatus::Recording(const cDevice *Device, const char *Name) 
+void cText2SkinStatus::Recording(const cDevice *Device, const char *Name,
+								 const char *FileName, bool On) 
 {
 	if (mRender != NULL)
 		mRender->UpdateLock();
