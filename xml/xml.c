@@ -1,5 +1,5 @@
 /*
- *  $Id: xml.c,v 1.2 2006/09/04 20:48:57 lordjaxom Exp $
+ *  $Id: xml.c,v 1.3 2006/09/04 20:51:06 lordjaxom Exp $
  *  This module was kindly provided by Clemens Kirchgatterer
  */
 
@@ -38,7 +38,7 @@ XML::XML(const string &file) {
 	buffer = new char [size];
 	f.read(buffer, size);
 	f.close();
-	data ssign(buffer, size);
+	data.assign(buffer, size);
 	delete[] buffer;
 	nodestartcb  = NULL;
 	nodeendcb    = NULL;
