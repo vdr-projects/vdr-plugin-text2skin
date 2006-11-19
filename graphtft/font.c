@@ -138,20 +138,21 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 		 //Load the char
 		 error = FT_Load_Glyph( _face, glyph_index, FT_LOAD_DEFAULT ); 
 		 if ( error ) continue; /* ignore errors */  
-		 
-		 // convert to a mono bitmap
-		 error = FT_Render_Glyph( _face->glyph, ft_render_mode_mono ); 
-		 if ( error ) continue;
 		
 		// now, convert to vdr font data
 		int width = (_slot->metrics.horiAdvance / 64) + 1;
 		int bearingX = (_slot->metrics.horiBearingX / 64) +1;
 		width = (width > (int)sizeof(cFont::tPixelData) * 8) ? (((int)sizeof(cFont::tPixelData) * 8)-2) :width ;
-		int  top = _slot->bitmap_top;
-		int  y_off = Size - top;
 
 		font_data[(num_char_array*num_rows)+0]=width;
 		font_data[(num_char_array*num_rows)+1]=num_rows_global;
+
+		// convert to a mono bitmap
+		error = FT_Render_Glyph( _face->glyph, ft_render_mode_mono );
+		if ( error ) continue;
+
+		int  top = _slot->bitmap_top;
+		int  y_off = Size - top;
 
 		unsigned char *bmp = _slot->bitmap.buffer;
 		

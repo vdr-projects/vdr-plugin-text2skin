@@ -142,8 +142,10 @@ private:
 
 	// detailed event view
 	const cEvent     *mEvent;
+	std::string      ExtPresentDescription;
 	// detailed recording
 	const cRecording *mRecording;
+	std::string      ExtRecordingDescription;
 	// long text
 	std::string       mText;
 

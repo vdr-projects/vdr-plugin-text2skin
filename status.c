@@ -143,13 +143,13 @@ void cText2SkinStatus::OsdClear(void)
 
 void cText2SkinStatus::OsdCurrentItem(const char *Text)
 {
-	if (mRender != NULL)
+	if (mRender && Text)
 	{
 		// update infos
 		cText2SkinRender::tUpdate *u = &mRender->mUpdate;
-		static std::string lastItem;
+		//static std::string lastItem;
 		
-		lastItem = u->currentItem;
+		//lastItem = u->currentItem;
 		u->currentItem = Text;
 		u->resetMarquee = true;
 		u->foundFirstItem = false;
@@ -172,7 +172,7 @@ void cText2SkinStatus::OsdCurrentItem(const char *Text)
 
 void cText2SkinStatus::OsdItem(const char *Text, int Index)
 {
-	if (mRender && Text2SkinSetup.MenuScrollbar)
+	if (mRender && Text2SkinSetup.MenuScrollbar && Text)
 	{
 		uint curr = (uint)Index;
 		cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
@@ -214,11 +214,13 @@ void cText2SkinStatus::UpdateEvents(void)
 					
 					if (!dummy.IsSingleEvent()) // add 4 additional rep. timer
 					{
+						int j = 0;
 						do
 						{
+							j++; // just to avoid a endless loop
 							dummy.Skip();
 							dummy.Matches(); // Refresh start- and end-time
-						} while (!dummy.DayMatches(dummy.Day()));
+						} while (!dummy.DayMatches(dummy.StartTime()) && (j < 7));
 					}
 		
 					i++;
@@ -238,7 +240,19 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 	switch (Token.Type) {
 	case tReplayMode:
 		return ReplayNames[mReplayMode];
-
+	
+	case tFrontendSTR:
+		return GetFrontendSTR();
+	
+	case tFrontendSNR:
+		return GetFrontendSNR();
+	
+	case tFrontendHasLock:
+		return GetFrontendHasLock();
+	
+	case tFrontendHasSignal:
+		return GetFrontendHasSignal();
+	
 	case tCurrentEventsTitle3:
 		event++;
 	case tCurrentEventsTitle2:
@@ -299,34 +313,26 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			? (cxType)mEvents.Get(event)->isRecording
 			: (cxType)false;
 		
-	case tTimerConflict:
+	case tTimerConflicts:
 #if VDRVERSNUM >= 10330
-		if (Text2SkinSetup.CheckTimerConflict)
-		{
-			bool conflict;
-			
-			if (mRender->mUpdate.timerConflict)
-			{
+		if (Text2SkinSetup.CheckTimerConflict) {
+			if (mRender->mUpdate.timerConflict)	{
+				Epgsearch_lastconflictinfo_v1_0 conflict;
 				mRender->mUpdate.timerConflict = false;
 				
-				if (cPluginManager::CallFirstService("CheckTimerConflict-v1.0", &conflict) )
-				{
-					mTimerConflict = conflict;
-				}
-				else
-				{
-					mTimerConflict = false;
+				if (cPluginManager::CallFirstService("Epgsearch-lastconflictinfo-v1.0", &conflict)) {
+					mTimerConflicts = conflict.relevantConflicts;
+				} else {
+					mTimerConflicts = 0;
 				}
 			}
-			
-			return mTimerConflict;
-		}
-		else
-		{
-			return false;
-		}
+			return mTimerConflicts;
+		} else
 #endif
-		
+		{
+			return 0;
+		}
+
 #if VDRVERSNUM >= 10325
 #if VDRVERSNUM >= 10338
 	case tReplayName:
@@ -338,7 +344,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		return mReplay != NULL
 		       ? (cxType)TimeType(mReplay->start, Token.Attrib.Text)
 		       : (cxType)false;
-                         
+
 	case tReplayShortText:
 		return mReplay != NULL
 		       ? (cxType)mReplay->Info()->ShortText()
@@ -378,7 +384,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 					{
 						std::string buffer(c->language);
 						if (c->type == 1) buffer.append("MONO");
-						if (c->type == 2) buffer.append("DUAL");
+						if ((c->type == 2) || (c->type == 4)) buffer.append("DUAL");
 						if (c->type == 5) buffer.append("DD");
 						return (cxType)buffer.c_str();
 					}

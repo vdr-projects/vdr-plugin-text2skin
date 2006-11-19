@@ -145,15 +145,22 @@ void cText2SkinRender::Action(void)
 
 void cText2SkinRender::Update(void) 
 {
+	//DStartBench(malen);
+	//DStartBench(ges);
 	Dbench(update);
 
 	for (uint i = 0; i < mDisplay->Objects(); ++i)
 		DrawObject(mDisplay->GetObject(i));
 
+	//DShowBench("---\t", malen);
+	//DStartBench(flushen);
 	Dbench(flush);
 	mScreen->Flush();
 	Ddiff("flush only", flush);
 	Ddiff("complete flush", update);
+	//DShowBench("===\t", flushen);
+	//DShowBench("=== ges\t", ges);
+	//printf("====\t%d\n", mDisplay->Objects());
 }
 
 void cText2SkinRender::DrawObject(const cxObject *Object)
@@ -262,8 +269,17 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 							else {
 								// there is no "next tab", use the rightmost edge
 								obj.mPos2.x += Object->mPos1.x;
-								SetEditableWidth(obj.Size().w);
-								//printf("EditableWidth von '%s': %d Pixels\n", obj.Text().c_str(), obj.Size().w);
+								if (obj.Type() == cxObject::text && t == 1) {
+									// VDR assumes, that the font in the menu is fontOsd,
+									// so the EditableWidth is not necessarily correct
+									// for TTF
+									const cFont *defFont = cFont::GetFont(fontOsd);
+									const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+									int editableWidth = obj.Size().w;
+									if (defFont != obj.Font())
+										editableWidth = (int)(editableWidth * defFont->Width(dummy) / (1.1 * obj.Font()->Width(dummy)));
+									SetEditableWidth(editableWidth);
+								}
 							}
 
 							obj.mPos2.y += Object->mPos1.y + yoffset;
@@ -610,7 +626,9 @@ bool cText2SkinRender::ItemColor(const std::string &Color, tColor &Result)
 std::string cText2SkinRender::ImagePath(const std::string &Filename) 
 {
 	if (mRender)
-		return mRender->mBasePath + "/" + Filename;
+		return (*Filename.data() == '/')
+			? Filename
+			: mRender->mBasePath + "/" + Filename;
 	return "";
 }
 

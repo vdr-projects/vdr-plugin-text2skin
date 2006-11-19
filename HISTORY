@@ -1,6 +1,28 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2006-11-19: Version 1.1-cvs_ext-0.9 (vdr-text2skin-1.1-cvs_ext-0.9.diff)
+
+- added a test-feature to search for reruns of a program and add the
+  information to the extended epg-info (trigger DEVELOPMENT_FEATURES).
+  This uses a service-interface of the epgsearch-plugin
+  "Epgsearch-searchresults-v1.0"
+- the timer-conflicts are now checked with epgsearch (service-interface
+  "Epgsearch-lastconflictinfo-v1.0", as it works more reliable and is
+  supported by the plugin author
+- the extended epg-info and the recording-info are extended by AUX-Infos
+  (configurable)
+  there is also an option to strip known tags
+- the tab-widths are scaled for taking into account that different TT-Fonts
+  have a different width than the default font from VDR
+- added tokens for signal-info:
+  FrontendSTR, FrontendSNR, FrontendHasLock, FrontendHasSignal
+- changed token TimerConflict to TimerConflicts
+- added token PresentEventID for EPG-images
+- added tokens for recordings:
+  RecordingFilename, RecordingPriority, RecordingLifetime
+- removed Text2skin.diff from the rotor-plugin
+
 2006-02-04: Version 1.1-cvs_ext-0.8 (vdr-text2skin-1.1-cvs_ext-0.8.diff)
 
 - added a configuration option for showing the scrollbar in the menus and

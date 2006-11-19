@@ -9,6 +9,7 @@
 #include <string>
 #include <vdr/osd.h>
 #include <vdr/config.h>
+#include <vdr/epg.h>
 
 #if defined(DEBUG) || defined(BENCH)
 #	ifdef DEBUG
@@ -23,6 +24,9 @@
 #	define Dbench(x)
 #	define Ddiff(t,x)
 #endif
+
+#define DStartBench(x) uint64 bench_##x = time_ms()
+#define DShowBench(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
 
 #if VDRVERSNUM >= 10318
 #	define time_ms() cTimeMs::Now()
@@ -47,11 +51,17 @@ const std::string &SkinPath(void);
 const char *ChannelNumber(const cChannel *Channel, int Number);
 const char *ChannelName(const cChannel *Channel, int Number);
 const char *ChannelShortName(const cChannel *Channel, int Number);
+const char *EventType(uint Number);
 //const char *ChannelBouquet(const cChannel *Channel, int Number);
 
 bool StoppedTimer(const char *Name);
 const cRecording *GetRecordingByName(const char *Name);
 const cRecording *GetRecordingByFileName(const char *FileName);
+int GetFrontendSTR(void); // Signal strength [%]
+int GetFrontendSNR(void); // Signal to Noise ratio [%]
+bool GetFrontendHasLock(void);
+bool GetFrontendHasSignal(void);
+std::string AddExtInfoToDescription(const char *Title, const char *ShortText, const char *Description, const char *Aux = NULL, bool StripAux = false);
 int GetRecordingSize(const char *FileName); // [MB]
 int GetRecordingLength(const char *FileName); // [min]
 int GetRecordingCuttedLength(const char *FileName); // [min]
@@ -63,5 +73,40 @@ bool ParseVar(const char *Text, const char *Name, std::string &Value);
 bool ParseVar(const char *Text, const char *Name, tColor *Value);
 	
 void SkipQuotes(std::string &Value);
+std::string FitToWidth(std::string &Line, uint Width);
+std::string FitToWidth(std::stringstream &Line, uint Width);
+std::string StripXmlTag(std::string &Line, const char *Tag);
+
+// Data structure for service "Epgsearch-searchresults-v1.0"
+struct Epgsearch_searchresults_v1_0
+{
+// in
+    char* query;               // search term
+    int mode;                  // search mode (0=phrase, 1=and, 2=or, 3=regular expression)
+    int channelNr;             // channel number to search in (0=any)
+    bool useTitle;             // search in title
+    bool useSubTitle;          // search in subtitle
+    bool useDescription;       // search in description
+// out
+
+    class cServiceSearchResult : public cListObject 
+	{
+	public:
+	    const cEvent* event;
+	    cServiceSearchResult(const cEvent* Event) : event(Event) {}
+	};
+
+    cList<cServiceSearchResult>* pResultList;   // pointer to the results
+};
+
+// Data structure for service "Epgsearch-lastconflictinfo-v1.0"
+struct Epgsearch_lastconflictinfo_v1_0
+{
+// in
+// out
+    time_t nextConflict;       // next conflict date, 0 if none
+    int relevantConflicts;     // number of relevant conflicts
+    int totalConflicts;        // total number of conflicts
+};
 
 #endif // VDR_TEXT2SKIN_COMMON_H

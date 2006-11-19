@@ -17,6 +17,7 @@ public:
 	cText2SkinSetupPage(void);
 	virtual ~cText2SkinSetupPage();
 
+	void cText2SkinSetupPage::Setup(void);
 	virtual void Store(void);
 	eOSState ProcessKey(eKeys Key);
 };

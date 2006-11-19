@@ -72,7 +72,7 @@ private:
 	uint              mCurrentRecording;
 	uint              mNextRecording;
 	int               mLastLanguage;
-	bool              mTimerConflict;
+	int               mTimerConflicts;
 
 protected:
 #if VDRVERSNUM >= 10338

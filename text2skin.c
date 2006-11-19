@@ -7,14 +7,14 @@
  */
 
 #include "text2skin.h"
+#include "bitmap.h"
 #include "setup.h"
 #include "menu.h"
 #include "i18n.h"
 #include "loader.h"
 #include "status.h"
-#include "xml/object.h"
 
-const char *cText2SkinPlugin::VERSION        = "1.1-cvs";
+const char *cText2SkinPlugin::VERSION        = "1.1-cvs_ext-0.9";
 const char *cText2SkinPlugin::SKINVERSION    = "1.0";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
@@ -24,16 +24,26 @@ cText2SkinPlugin::cText2SkinPlugin(void) {
 cText2SkinPlugin::~cText2SkinPlugin() {
 }
 
-#if VDRVERSNUM >= 10330
-bool cText2SkinPlugin::Service(const char *Id, void *Data)
+#if VDRVERSNUM >= 10331
+const char **cText2SkinPlugin::SVDRPHelpPages(void)
 {
-  if (strcmp(Id,"Text2Skin-TTF") == 0) {
-     if (Data == NULL)
-       return true;
-     cxObject::UseTTF = *(int*)Data; 
-     return true;
-     }
-  return false;
+	static const char *HelpPages[] = {
+		"FLUS\n"
+		"    Flush the image cache (useful if images have changed and the"
+		"    current version should be loaded).",
+		NULL
+		};
+  return HelpPages;
+}
+
+cString cText2SkinPlugin::SVDRPCommand(const char *Command, const char *Option, int &ReplyCode)
+{
+	if (strcasecmp(Command, "FLUS") == 0) {
+		// we use the default reply code here
+		cText2SkinBitmap::FlushCache();
+		return "image cache flushed.";
+	}
+	return NULL;
 }
 #endif
 

@@ -2,8 +2,11 @@
 # Imlib2 for loading images. BEWARE that you can not use GraphTFT together with
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
 
+#DEBUG=1
+#BENCH=1
+
 HAVE_IMAGEMAGICK=1
-#HAVE_IMLIB2=1
+#HAVE_IMLIB2=1 # not recommended
 
 # comment this out if you don't want to use FreeType font rendering
 
@@ -61,6 +64,10 @@ OBJS = $(PLUGIN).o loader.o display.o render.o common.o bitmap.o \
        xml/type.o xml/display.o xml/xml.o
 
 ### Includes and Defines (add further entries here):
+
+ifdef DEVELOPMENT_FEATURES
+	DEFINES += -DDEVELOPMENT_FEATURES
+endif
 
 ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2

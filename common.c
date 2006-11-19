@@ -3,7 +3,13 @@
  */
 
 #include "common.h"
+#include <sstream>
 #include <vdr/plugin.h>
+#include <vdr/device.h>
+#include <sys/ioctl.h>
+#include <linux/dvb/frontend.h>
+
+#define FRONTEND_DEVICE "/dev/dvb/adapter%d/frontend%d"
 
 const std::string &SkinPath(void) 
 {
@@ -69,6 +75,14 @@ const char *ChannelShortName(const cChannel *Channel, int Number)
 	
 	return buffer;
 }
+
+const char *EventType(uint Number) 
+{
+	static char buffer[25];
+	buffer[0] = '\0';
+	snprintf(buffer, sizeof(buffer), "%d", Number);
+	return buffer;
+}
 /*
 const char *ChannelBouquet(const cChannel *Channel, int Number) {
 	static char buffer[256];
@@ -118,6 +132,137 @@ const cRecording *GetRecordingByName(const char *Name)
 const cRecording *GetRecordingByFileName(const char *FileName)
 {
 	return (FileName) ? Recordings.GetByName(FileName) : NULL;
+}
+
+int GetFrontendSTR(void)
+{
+	uint16_t value = 0;
+	char *dev = NULL;
+	
+	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
+	int fe = open(dev, O_RDONLY | O_NONBLOCK);
+	free(dev);
+	if (fe >= 0) {
+		CHECK(ioctl(fe, FE_READ_SIGNAL_STRENGTH, &value));
+		close(fe);
+	}
+	return value / 655;
+}
+
+int GetFrontendSNR(void)
+{
+	uint16_t value = 0;
+	char *dev = NULL;
+	
+	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
+	int fe = open(dev, O_RDONLY | O_NONBLOCK);
+	free(dev);
+	if (fe >= 0) {
+		CHECK(ioctl(fe, FE_READ_SNR, &value));
+		close(fe);
+	}
+	return value / 655;
+}
+
+bool GetFrontendHasLock(void)
+{
+	uint16_t value = 0;
+	char *dev = NULL;
+	
+	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
+	int fe = open(dev, O_RDONLY | O_NONBLOCK);
+	free(dev);
+	if (fe >= 0) {
+		CHECK(ioctl(fe, FE_READ_STATUS, &value));
+		close(fe);
+	}
+	return value & FE_HAS_LOCK;
+}
+
+bool GetFrontendHasSignal(void)
+{
+	uint16_t value = 0;
+	char *dev = NULL;
+	
+	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
+	int fe = open(dev, O_RDONLY | O_NONBLOCK);
+	free(dev);
+	if (fe >= 0) {
+		CHECK(ioctl(fe, FE_READ_STATUS, &value));
+		close(fe);
+	}
+	return value & FE_HAS_SIGNAL;
+}
+
+std::string AddExtInfoToDescription(const char *Title, const char *ShortText, const char *Description, const char *Aux, bool StripAux)
+{
+	// max. width so lines don't get wrapped
+	#define MAX_CHARS 50
+	
+	// prepare the description
+	std::stringstream desc("");
+	
+	if (!isempty(Description)) {
+		// it seems that sometimes the description ends with a newline
+		// and sometimes it does not
+		std::string buf(Description);
+		while (!buf.empty() && buf[buf.size() - 1] == '\n') buf.erase(buf.size() - 1);
+		desc << buf << "\n"; // keep one newline
+	}
+	
+#ifdef DEVELOPMENT_FEATURES
+	// try to find a rerun of the show using epgsearch-service
+	if (!isempty(Title)) {
+		Epgsearch_searchresults_v1_0 data;
+		data.query = strdup(Title);
+		data.mode = 0;
+		data.channelNr = 0;
+		data.useTitle = true;
+		data.useSubTitle = false;
+		data.useDescription = false;
+		if (cPluginManager::CallFirstService("Epgsearch-searchresults-v1.0", &data)) {
+			cList<Epgsearch_searchresults_v1_0::cServiceSearchResult>* list = data.pResultList;
+			if (list) {
+				// die aktuelle Sendung wird noch als WH angezeigt !!!
+				if (!desc.str().empty()) desc << "\n";
+				desc << tr("RERUNS OF THIS SHOW") << ":\n";
+				int i = 0;
+				for (Epgsearch_searchresults_v1_0::cServiceSearchResult *r = 
+				list->First(); r && i < 5; r = list->Next(r)) {
+					i++;
+					std::stringstream buf;
+					buf << " - ";
+					buf << *DayDateTime(r->event->StartTime());
+					buf << ": " << r->event->Title();
+					if (!isempty(r->event->ShortText())) buf << "~" << r->event->ShortText();
+					desc << FitToWidth(buf, MAX_CHARS) << "\n";
+				}
+				delete list;
+			}
+		}
+	}
+#endif // DEVELOPMENT_FEATURES 
+	
+	// Add the AUX-Info of the Recording
+	if (Aux) {
+		if (StripAux) {
+			std::string auxRaw(Aux);
+			std::string auxEpgsearch = StripXmlTag(auxRaw, "epgsearch");
+			if (!auxEpgsearch.empty()) {
+				if (!desc.str().empty()) desc << "\n";
+				desc << tr("AUXILIARY INFOS") << ":\n";
+				std::stringstream buf;
+				buf << " - " << tr("Search timer") << ": " << StripXmlTag(auxRaw, "Search timer");
+				desc << FitToWidth(buf, MAX_CHARS) << "\n";
+			}
+		} else {
+			if (!desc.str().empty()) desc << "\n";
+			desc << tr("AUXILIARY INFOS") << ":\n";
+			desc << Aux << "\n";
+		}
+	}
+	
+	return desc.str();
 }
 
 int GetRecordingSize(const char *FileName)
@@ -403,4 +548,37 @@ void SkipQuotes(std::string &Value) {
 		Value.erase(i, 1);
 	else
 		esyslog("ERROR: text2skin: missing closing %c", quote);
+}
+
+std::string FitToWidth(std::string &Line, uint Width) {
+	std::string buf(Line);
+	if (buf.size() > Width) {
+		buf.erase(Width - 3);
+		buf.append("...");
+	}
+	return buf;
+}
+
+std::string FitToWidth(std::stringstream &Line, uint Width) {
+	std::string buf(Line.str());
+	if (buf.size() > Width) {
+		buf.erase(Width - 3);
+		buf.append("...");
+	}
+	return buf;
+}
+
+std::string StripXmlTag(std::string &Line, const char *Tag) {
+	// set the search strings
+	std::stringstream strStart, strStop;
+	strStart << "<" << Tag << ">";
+	strStop << "</" << Tag << ">";
+	// find the strings
+	std::string::size_type locStart = Line.find(strStart.str());
+	std::string::size_type locStop = Line.find(strStop.str());
+	if (locStart == std::string::npos || locStop == std::string::npos) return "";
+	// extract relevant text
+	int pos = locStart + strStart.str().size();
+	int len = locStop - pos;
+	return len < 0 ? "" : Line.substr(pos, len);
 }

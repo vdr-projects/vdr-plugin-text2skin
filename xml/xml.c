@@ -35,7 +35,7 @@ XML::XML(const string &file) {
 	ifstream f(file.c_str(), ios::in|ios::binary|ios::ate);
 	size = f.tellg();
 	f.seekg(0, ios::beg);
-	buffer = new char [size];
+	buffer = new char [size+1];
 	f.read(buffer, size);
 	f.close();
 	data = buffer;
