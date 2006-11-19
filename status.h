@@ -1,5 +1,5 @@
 /*
- * $Id: status.h,v 1.7 2005/06/03 08:53:13 lordjaxom Exp $
+ * $Id: status.h,v 1.8 2006/03/17 18:25:57 lordjaxom Exp $
  */
  
 #ifndef VDR_TEXT2SKIN_STATUS_H

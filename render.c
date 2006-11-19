@@ -1,5 +1,5 @@
 /*
- * $Id: render.c,v 1.29 2005/01/27 17:31:12 lordjaxom Exp $
+ * $Id: render.c,v 1.30 2006/03/17 18:24:52 lordjaxom Exp $
  */
 
 #include "render.h"
@@ -221,7 +221,6 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 		break;
 
 	case cxObject::list: {
-			Dprintf("list\n");
 			const cxObject *item = Object->GetObject(0);
 			if (item && item->Type() == cxObject::item) {
 				txSize areasize = Object->Size();
