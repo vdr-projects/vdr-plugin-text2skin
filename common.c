@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include <sstream>
+#include <locale.h>
 #include <vdr/plugin.h>
 #include <vdr/device.h>
 #include <sys/ioctl.h>
@@ -409,6 +410,7 @@ cxType TimeType(time_t Time, const std::string &Format)
 
 	if (Time > 0) {
 		if (Format.length() > 0) {
+			setlocale(LC_TIME, tr("en_US"));
 			strftime(result, sizeof(result), Format.c_str(), tm);
 			
 			cxType r = result;

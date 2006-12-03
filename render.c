@@ -227,6 +227,7 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 				uint itemheight = item->Size().h;
 				uint maxitems = areasize.h / itemheight;
 				uint yoffset = 0;
+				bool initialEditableWidthSet = false;
 				
 				mMenuScrollbar.maxItems = maxitems;
 				SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
@@ -262,13 +263,23 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 								nexttab = GetTab(n);
 							}
 							
+							// set initial EditableWidth
+							// this is for plugins like 'extrecmenu' and 'rotor'
+							if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && !initialEditableWidthSet) {
+								initialEditableWidthSet = true;
+								SetEditableWidth(obj.Size().w);
+							}
+							
 							if (t >= 0 && nexttab > 0 && nexttab < obj.mPos1.x + obj.Size().w - 1)
 								// there is a "next tab" with text
 								obj.mPos2.x = Object->mPos1.x + o->mPos1.x + nexttab;
 							else {
 								// there is no "next tab", use the rightmost edge
 								obj.mPos2.x += Object->mPos1.x;
-								if (obj.Type() == cxObject::text && t == 1) {
+								/* not used anymore due to change to fontOsd
+								   but could be usefull if someone uses a differnt font
+									
+								if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && t == 1) {
 									// VDR assumes, that the font in the menu is fontOsd,
 									// so the EditableWidth is not necessarily correct
 									// for TTF
@@ -278,7 +289,9 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 									if (defFont != obj.Font())
 										editableWidth = (int)(editableWidth * defFont->Width(dummy) / (1.1 * obj.Font()->Width(dummy)));
 									SetEditableWidth(editableWidth);
-								}
+								} */
+								if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && t == 1)
+									SetEditableWidth(obj.Size().w);
 							}
 
 							obj.mPos2.y += Object->mPos1.y + yoffset;

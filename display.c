@@ -1194,7 +1194,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 					 : (cxType)false;
 		} else if (mRecording) { // recording Info
 			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
-			tChannelID chID = recInfo->ChannelID();
 			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
 			return channel != NULL	
 		   	    ? (cxType)ChannelName(channel, 0)
@@ -1209,7 +1208,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 					 : (cxType)false;
 		} else if (mRecording) { // recording Info
 			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
-			tChannelID chID = recInfo->ChannelID();
 			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
 			return channel != NULL	
 		   	    ? (cxType)ChannelShortName(channel, 0)

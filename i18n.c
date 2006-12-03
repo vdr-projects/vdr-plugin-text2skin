@@ -329,8 +329,8 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
-  { "Show auxiliary infos of recordings",
-    "Zusatzinfos der Aufnahmen anzeigen",
+  { "Auxiliary infos in recordings/timers",
+    "Zusatzinfos bei Aufnahmen/Timer anzeigen",
     "",
     "",
     "",
@@ -452,6 +452,31 @@ const tI18nPhrase Phrases[] = {
 #endif
 #if VDRVERSNUM >= 10316
     "",
+#endif
+  },
+  { "en_US",
+    "de_DE",
+    "sl_SI",
+    "it_IT",
+    "nl_NL",
+    "pt_PT",
+    "fr_FR",
+    "no_NO",
+    "fi_FI",
+    "pl_PL",
+    "es_ES",
+    "el_GR",
+    "sv_SE",
+    "ro_RO",
+    "hu_HU",
+    "ca_AD",
+    "ru_RU",
+    "hr_HR",
+#if VDRVERSNUM >= 10313
+    "et_EE",
+#endif
+#if VDRVERSNUM >= 10316
+    "da_DK",
 #endif
   },
 	{ NULL }
