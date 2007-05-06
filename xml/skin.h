@@ -15,6 +15,44 @@
 class cText2SkinI18n;
 class cText2SkinTheme;
 
+
+class cxVersion {
+public:
+	cxVersion( int ma=0, int min=0 );
+	bool Parse(const std::string &Text);
+	int Major(void) const { return mMajor; }
+	int Minor(void) const { return mMinor; }
+	bool Require( int ma, int min ) const {
+		return mMajor > ma ? true : (mMajor == ma ? mMinor >= min : false);
+	}
+	bool Limit( int ma, int min ) const {
+		return mMajor < ma ? true : (mMajor == ma ? mMinor <= min : false);
+	}
+	bool cxVersion::operator==( const cxVersion &v ) const {
+		return mMajor == v.mMajor && mMinor == v.mMinor;
+	}
+	bool cxVersion::operator>=( const cxVersion &v ) const { 
+		return Require(  v.mMajor , v.mMinor);
+	}
+	bool cxVersion::operator>=( const char *c ) const { 
+		cxVersion v;
+		if( !v.Parse(c) ) return false;
+		return Require(  v.mMajor , v.mMinor);
+	}
+	bool cxVersion::operator<=( const cxVersion &v ) const {
+		return Limit( v.mMajor , v.mMinor );
+	}
+	bool cxVersion::operator<=( const char *c ) const { 
+		cxVersion v;
+		if( !v.Parse(c) ) return false;
+		return Limit(  v.mMajor , v.mMinor);
+	}
+
+private:
+	int mMajor;
+	int mMinor;
+};
+
 class cxSkin {
 	friend bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs);
 	friend bool xEndElem(const std::string &name);
@@ -35,7 +73,7 @@ private:
 	txSize           mBaseSize;
 	std::string      mName;
 	std::string      mTitle;
-	std::string      mVersion;
+	cxVersion        mVersion;
 	
 	cxDisplays       mDisplays;
 	
@@ -55,7 +93,7 @@ public:
 	const txSize      &BaseSize(void)   const { return mBaseSize; }
 	const std::string &Name(void)       const { return mName; }
 	const std::string &Title(void)      const { return mTitle; }
-	const std::string &Version(void)    const { return mVersion; }
+	const cxVersion   &Version(void)    const { return mVersion; }
 
 	// functions for object classes to obtain dynamic item information
 	std::string        Translate(const std::string &Text);

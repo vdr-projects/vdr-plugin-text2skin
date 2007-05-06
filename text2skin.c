@@ -15,7 +15,7 @@
 #include "status.h"
 
 const char *cText2SkinPlugin::VERSION        = "1.1-cvs_ext-0.10";
-const char *cText2SkinPlugin::SKINVERSION    = "1.0";
+const char *cText2SkinPlugin::SKINVERSION    = "1.1";
 const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
 
 cText2SkinPlugin::cText2SkinPlugin(void) {

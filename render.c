@@ -178,7 +178,13 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 
 	pos  = Object->Pos(BaseOffset, BaseSize);
 
-	size = Object->Size(BaseOffset, BaseSize);
+        if( ListItem >= 0 && !mSkin->Version().Require(1,1) ) {
+                // Object is part of al list
+                // Calculate offset of list item relative to the list offset
+                size = Object->Size();
+        } else {
+                size = Object->Size(BaseOffset, BaseSize);
+        }
 
 
 	switch (Object->Type()) {

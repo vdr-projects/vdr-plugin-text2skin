@@ -45,7 +45,7 @@
 #define ATTRIB_OPT_NUMBER(_attr,_target) \
 	if (attrs.find(_attr) != attrs.end()) { \
 		char *_e; const char *_t = attrs[_attr].c_str(); \
-		long _l = strtol(_t, &_e, 10); \
+		long _l = strtol(_t, &_e, 0); \
 		if (_e ==_t || *_e != '\0') { \
 			esyslog("ERROR: Text2Skin: Invalid numeric value \"%s\" in attribute %s", \
 					_t, _attr); \
@@ -91,7 +91,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 
 	if      (context.size() == 0) {
 		if (name == "skin") {
-			ATTRIB_MAN_STRING("version",    skin->mVersion);
+			ATTRIB_MAN_FUNC  ("version",    skin->mVersion.Parse);
 			ATTRIB_MAN_STRING("name",       skin->mTitle);
 			ATTRIB_MAN_FUNC  ("screenBase", skin->ParseBase);
 		} 

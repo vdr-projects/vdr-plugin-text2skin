@@ -52,11 +52,12 @@ void cText2SkinLoader::Load(const char *Skin) {
 
 		cxSkin *skin = xmlParse(Skin, skinfile, translations, theme);
 		if (skin) {
-			if (skin->Version() == cText2SkinPlugin::SkinVersion()) {
+			if( skin->Version() <= cText2SkinPlugin::SkinVersion() ) {
 				new cText2SkinLoader(skin, translations, theme, Skin, skin->Title());
 				return;
 			} else
-				esyslog("ERROR: text2skin: Skin is version %s, expecting %s", skin->Version().c_str(), 
+				esyslog("ERROR: text2skin: Skin is version %i,%i, expecting <= %s",
+				        skin->Version().Major(), skin->Version().Minor(),
 				        cText2SkinPlugin::SkinVersion());
 		} else
 			esyslog("ERROR: error in skin file");

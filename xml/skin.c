@@ -9,6 +9,40 @@
 
 const std::string ScreenBases[] = { "relative", "absolute" };
 
+cxVersion::cxVersion(int ma, int min):
+		mMajor(ma),
+		mMinor(min)
+{
+}
+
+bool cxVersion::Parse(const std::string &Text)
+{
+	int dot = Text.find(".");
+	std::string ma(Text, 0, dot), min(Text, dot+1);
+	char *e = NULL;
+	const char *t = NULL; 
+	long l=0;
+
+	t = ma.c_str();
+	l = strtol(t, &e, 10);
+	if (e ==t || *e != '\0') {
+		return false;
+	} else {
+		mMajor = l;
+	}
+
+	t = min.c_str();
+	l = strtol(t, &e, 10);
+	if (e ==t || *e != '\0') {
+		return false;
+	} else {
+		mMinor = l;
+	}
+
+	return true;
+}
+
+
 cxSkin::cxSkin(const std::string &Name, cText2SkinI18n *I18n, cText2SkinTheme *Theme):
 		mName(Name),
 		mI18n(I18n),
