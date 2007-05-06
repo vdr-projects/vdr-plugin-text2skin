@@ -35,6 +35,7 @@ private:
 	int       mNumWindows;
 	int       mNumMarquees;
 	cxObjects mObjects;
+	cxRefresh mRefreshDefault;
 
 public:
 	cxDisplay(cxSkin *Parent);

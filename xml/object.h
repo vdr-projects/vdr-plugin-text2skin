@@ -33,6 +33,40 @@ struct txWindow {
 			pos1(_x1, _y2), pos2(_x2, _y2), bpp(_bpp) {}
 };
 
+class cxObject;
+
+class cxRefresh {
+	friend bool xEndElem(const std::string &name);
+
+public:
+	enum eRefreshType {
+		all,		// complete redraw of the screen
+		timeout,	// redraw due to a timeout
+		//message,	// a message was set or removed
+		update,		// update of the osd elements
+		scroll,		// a scroll event
+		list,		// list items or the current item have changed
+	};
+
+	cxRefresh(cxObject *Object);
+	~cxRefresh();
+	bool           Dirty(uint dirty, bool force=false);
+	bool	       Full(void)      const { return mFull; }
+	uint           Type(void)      const { return mRefreshType; }
+	bool           Parse(const std::string &Text);
+	bool           ParseChanged(const std::string &Text);
+	cxRefresh     &cxRefresh::operator=(const cxRefresh &b);
+
+private:
+	uint           mRefreshType;
+	cxType         mLastEval;
+	cxType	       mEval;
+	cxString      *mText;
+	cxString      *mChanged;
+	cxObject      *mObject;
+	bool           mForce, mFull;
+};
+
 class cxObjects;
 
 class cxObject {
@@ -88,6 +122,7 @@ private:
 	int            mFontWidth;
 	uint           mDelay;
 	uint           mIndex;
+	cxRefresh      mRefresh;
 	cxObjects     *mObjects; // used for block objects such as <list>
 
 public:

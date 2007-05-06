@@ -29,7 +29,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mScreen(NULL),
 		mScroller(NULL),
 		mBasePath(BasePath),
-		mDirty(true),
+		mDirty(cxRefresh::all),
 		mFallback(NULL),
 		mActive(false),
 		mDoUpdate(),
@@ -37,6 +37,7 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mStarted(),
 		mUpdateIn(0),
 		mNow(0),
+		mFirst(true),
 		mBaseSize(),
 		mTabScale(1.0),
 		mTabScaleSet(false)
@@ -129,12 +130,16 @@ cText2SkinRender::~cText2SkinRender()
 
 void cText2SkinRender::Action(void) 
 {
+	bool to = true;
 	mActive = true;
 	UpdateLock();
 	mStarted.Broadcast();
 	while (mActive) {
-		if (mUpdateIn) mDoUpdate.TimedWait(mDoUpdateMutex, mUpdateIn);
-		else           mDoUpdate.Wait(mDoUpdateMutex);
+		to = true;
+		if (mUpdateIn) to=mDoUpdate.TimedWait(mDoUpdateMutex, mUpdateIn);
+		else               mDoUpdate.Wait(mDoUpdateMutex);
+
+		if(!to) SetDirty(cxRefresh::timeout);
 
 		if (!mActive)  break; // fall out if thread to be stopped
 
@@ -150,9 +155,23 @@ void cText2SkinRender::Update(void)
 	//DStartBench(malen);
 	//DStartBench(ges);
 	Dbench(update);
+#ifdef BENCH
+	fprintf( stderr, "mDirty = 0x%04x\n", mDirty );
+#endif
+	if( mFirst ) {
+	    mDirty = (1<<cxRefresh::all);
+	    mFirst = false;
+	} else if( mDirty & (1<<cxRefresh::all) ) {
+		// we need a complete redraw anyway, that is enough
+		mDirty = 1 << cxRefresh::all;
+	}
 
 	for (uint i = 0; i < mDisplay->Objects(); ++i)
 		DrawObject(mDisplay->GetObject(i));
+
+	mDirty = 0;
+	while( mDirtyItems.size() > 0 )
+		mDirtyItems.pop_back();
 
 	//DShowBench("---\t", malen);
 	//DStartBench(flushen);
@@ -168,9 +187,11 @@ void cText2SkinRender::Update(void)
 void cText2SkinRender::DrawObject( cxObject *Object,
                                    const txPoint &BaseOffset /*=txPoint(-1,-1)*/,
 				   const txSize &BaseSize /*=txPoint(-1,-1)*/,
-				   int ListItem /*=-1*/ )
+				   int ListItem /*=-1*/,
+				   bool ForceUpdate /*=false*/)
 {
-	if (Object->Condition() != NULL && !Object->Condition()->Evaluate())
+	if( !Object->mRefresh.Dirty(mDirty, ForceUpdate) ||
+	    (Object->Condition()!=NULL && !Object->Condition()->Evaluate()))
 		return;
 
 	txPoint pos;
@@ -178,13 +199,13 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 
 	pos  = Object->Pos(BaseOffset, BaseSize);
 
-        if( ListItem >= 0 && !mSkin->Version().Require(1,1) ) {
-                // Object is part of al list
-                // Calculate offset of list item relative to the list offset
-                size = Object->Size();
-        } else {
-                size = Object->Size(BaseOffset, BaseSize);
-        }
+	if( ListItem >= 0 && !mSkin->Version().Require(1,1) ) {
+		// Object is part of al list
+		// Calculate offset of list item relative to the list offset
+		size = Object->Size();
+	} else {
+		size = Object->Size(BaseOffset, BaseSize);
+	}
 
 
 	switch (Object->Type()) {
@@ -246,7 +267,8 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 
 	case cxObject::block:
 		for (uint i = 0; i < Object->Objects(); ++i)
-			DrawObject(Object->GetObject(i), pos, size, ListItem );
+			DrawObject(Object->GetObject(i), pos, size, ListItem,
+				   ListItem >= 0 ? true : Object->mRefresh.Full());
 		break;
 
 	case cxObject::list:{
@@ -259,6 +281,14 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 			mMenuScrollbar.maxItems = maxitems;
 			SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
 			uint index = 0;
+			bool partial = false;
+
+			// is only a partial update needed?
+			if( !Object->mRefresh.Full() &&
+                           !(Object->mRefresh.Type() & mDirty & ~(1<<cxRefresh::list)) ) {
+				maxitems = mDirtyItems.size();
+				partial = true;
+			}
 			
 			// draw list items
 			for (uint i = 0; i < maxitems; ++i) {
@@ -266,13 +296,21 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 					continue;
 
 				Dbench(item);
-				index = i;
+				if( partial )
+					index = mDirtyItems[i];
+				else
+					index = i;
 
 				itempos.y = pos.y + index * itemsize.h;
 				for (uint j = 1; j < Object->Objects(); ++j) {
 					item = Object->GetObject(j);
+					// exclude items with only "list" update set from
+					// complete redraw
+					if( !partial && !(item->mRefresh.Type() &
+					   ~(1<<cxRefresh::list)) )
+						continue;
 					item->SetListIndex( index, -1 );
-					DrawObject( item, itempos, itemsize, index );
+					DrawObject( item, itempos, itemsize, index, true);
 				}
 				Ddiff( "draw item", item );
 			}

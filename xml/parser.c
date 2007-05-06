@@ -102,6 +102,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 		if (name == "display") {
 			display = new cxDisplay(skin);
 			ATTRIB_MAN_FUNC  ("id",         display->ParseType);
+			ATTRIB_OPT_FUNC  ("refresh",    display->mRefreshDefault.Parse);
 		} 
 		else
 			TAG_ERR_REMAIN("skin");
@@ -129,12 +130,18 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 		else {
 			object = new cxObject(display);
 			if (object->ParseType(name)) {
+				if(parents.size() > 0)
+					object->mRefresh = parents.back()->mRefresh;
+				else
+					object->mRefresh = display->mRefreshDefault;
+
 				ATTRIB_OPT_NUMBER("x1",            object->mPos1.x);
 				ATTRIB_OPT_NUMBER("y1",            object->mPos1.y);
 				ATTRIB_OPT_NUMBER("x2",            object->mPos2.x);
 				ATTRIB_OPT_NUMBER("y2",            object->mPos2.y);
 				ATTRIB_OPT_FUNC  ("condition",     object->ParseCondition);
-
+				ATTRIB_OPT_FUNC  ("refresh",       object->mRefresh.Parse);
+				ATTRIB_OPT_FUNC  ("changed",       object->mRefresh.ParseChanged);
 				if      (name == "image") {
 					ATTRIB_OPT_NUMBER("x",         object->mPos1.x);
 					ATTRIB_OPT_NUMBER("y",         object->mPos1.y);
@@ -249,6 +256,20 @@ bool xEndElem(const std::string &name) {
 				case cxObject::blink:
 				case cxObject::scrolltext:
 					object->mCondition = new cxFunction(object->mText);
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			if (object->mRefresh.mChanged == NULL) {
+				switch (object->mType) {
+				case cxObject::text:
+				case cxObject::marquee:
+				case cxObject::blink:
+				case cxObject::scrolltext:
+					object->mRefresh.mChanged = &object->mText;
 					break;
 
 				default:

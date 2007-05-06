@@ -8,7 +8,8 @@
 #include "common.h"
 #include <vdr/osd.h>
 
-#undef DIRECTBLIT
+// #undef DIRECTBLIT
+#define DIRECTBLIT
 
 class cText2SkinScreen {
 	/* Skin Editor */

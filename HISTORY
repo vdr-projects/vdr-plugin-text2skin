@@ -1,6 +1,13 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2007-05-06: Version 1.1-cvs_ext-0.10c (text2skin-1.1-cvs_ext-0.10c.diff)
+
+- selective update of changed objects
+  refresh can be controlled for individual objects by the attributes
+  "refresh" and "changed"
+  default behaviour is to redraw everything (compatible with old skins)
+
 2007-05-06: Version 1.1-cvs_ext-0.10b (text2skin-1.1-cvs_ext-0.10b.diff)
 
 - increase skin file version to 1.1

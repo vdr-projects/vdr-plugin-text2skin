@@ -48,7 +48,8 @@ private:
 	tTokenCache         mTokenCache;
 
 	std::string         mBasePath;
-	bool                mDirty;
+	uint                mDirty;  // bit mask of required updates - set by SetDirty()
+	std::vector<int>    mDirtyItems;
 	uint                mMaxItems;
 	cSkin              *mFallback;
 	
@@ -60,6 +61,7 @@ private:
 	cCondVar            mStarted;
 	uint                mUpdateIn;
 	uint                mNow; // timestamp to calculate update timings
+	bool                mFirst; // First drawing of the display -> draw everything
 
 	// coordinate transformation
 	txSize              mBaseSize;
@@ -90,7 +92,7 @@ protected:
 	// Drawing operations
 	void DrawObject(cxObject *Object, const txPoint &BaseOffset=txPoint(-1,-1),
                         const txSize &BaseSize=txSize(-1,-1),
-			int ListItem=-1 );
+			int ListItem=-1, bool ForceUpdate=false);
 	void DrawItemText(cxObject *o, int i, const txPoint &ListOffset, const txSize &ListSize);
 
 	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
@@ -130,7 +132,8 @@ protected:
 
 	// functions for display renderer to control behaviour
 	void Flush(bool Force = false);
-	void SetDirty(void) { mDirty = true; }
+	void SetDirty( cxRefresh::eRefreshType type=cxRefresh::all) {
+		mDirty |= 1<<type; }
 	void Scroll(bool Up, bool Page) { if (mScroller != NULL) mScroller->Scroll(Up, Page); }
 	void Clear(void) { DELETENULL(mScroller); }
 	cSkin *Fallback(void) const { return mFallback; }
@@ -179,14 +182,17 @@ public:
 
 inline void cText2SkinRender::Flush(bool Force) 
 {
-	if (mDirty || Force) {
+	if( Force ) {
+		// do a full redraw
+		mDirty = (1 << cxRefresh::all);
+	}
+
+	if (mDirty>0) {
 		mTokenCache.clear();
 
 		UpdateLock();
 		mDoUpdate.Broadcast();
 		UpdateUnlock();
-		
-		mDirty = false;
 	}
 }
 

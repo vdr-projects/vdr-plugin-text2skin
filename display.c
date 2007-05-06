@@ -51,7 +51,7 @@ void cText2SkinDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 	if (mChannel != Channel || mNumber != Number) {
 		mChannel = Channel;
 		mNumber = Number;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -67,7 +67,7 @@ void cText2SkinDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Fo
 	if (mPresent != Present || mFollowing != Following) {
 		mPresent = Present;
 		mFollowing = Following;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -84,7 +84,7 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text)
 	if (mType != Type || mText != Text) {
 		mType = Type;
 		mText = Text;
-		SetDirty();
+		SetDirty(cxRefresh::all);
 	}
 	UpdateUnlock();
 }
@@ -108,7 +108,7 @@ void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, co
 		mButtonGreen  = Green;
 		mButtonYellow = Yellow;
 		mButtonBlue   = Blue;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -372,7 +372,7 @@ void cText2SkinDisplayVolume::SetVolume(int Current, int Total, bool Mute)
 		mCurrent = Current;
 		mTotal = Total;
 		mMute = Mute;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -422,7 +422,7 @@ void cText2SkinDisplayReplay::SetTitle(const char *Title)
 	if (Title == NULL) Title = "";
 	if (mTitle != Title) {
 		mTitle = Title;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -436,7 +436,7 @@ void cText2SkinDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 		mPlay = Play;
 		mForward = Forward;
 		mSpeed = Speed;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -447,7 +447,7 @@ void cText2SkinDisplayReplay::SetProgress(int Current, int Total)
 	if (mCurrent != Current || mTotal != Total) {
 		mCurrent = Current;
 		mTotal = Total;
-		// SetDirty(); TODO: let this cause a display update every frame?
+		// SetDirty(cxRefresh::update); TODO: let this cause a display update every frame?
 	}
 	UpdateUnlock();
 }
@@ -456,7 +456,7 @@ void cText2SkinDisplayReplay::SetMarks(const cMarks *Marks)
 {
 	UpdateLock();
 	mMarks = Marks;
-	SetDirty();
+	SetDirty(cxRefresh::update);
 	UpdateUnlock();
 }
 
@@ -466,7 +466,7 @@ void cText2SkinDisplayReplay::SetCurrent(const char *Current)
 	if (Current == NULL) Current = "";
 	if (mPosition != Current) {
 		mPosition = Current;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -477,7 +477,7 @@ void cText2SkinDisplayReplay::SetTotal(const char *Total)
 	if (Total == NULL) Total = "";
 	if (mDuration != Total) {
 		mDuration = Total;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -488,7 +488,7 @@ void cText2SkinDisplayReplay::SetJump(const char *Jump)
 	if (Jump == NULL) Jump = "";
 	if (mPrompt != Jump) {
 		mPrompt = Jump;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -500,7 +500,7 @@ void cText2SkinDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 	if (mType != Type || mText != Text) {
 		mType = Type;
 		mText = Text;
-		SetDirty();
+		SetDirty(cxRefresh::all);
 	}
 	UpdateUnlock();
 }
@@ -519,7 +519,7 @@ void cText2SkinDisplayReplay::SetButtons(const char *Red, const char *Green, con
 		mButtonGreen  = Green;
 		mButtonYellow = Yellow;
 		mButtonBlue   = Blue;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -677,7 +677,7 @@ void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text)
 	if (mType != Type || mText != Text) {
 		mType = Type;
 		mText = Text;
-		SetDirty();
+		SetDirty(cxRefresh::all);
 	}
 	UpdateUnlock();
 }
@@ -778,7 +778,7 @@ void cText2SkinDisplayMenu::Clear(void)
 	ExtRecordingDescription = "";
 	mText = "";
 	cText2SkinRender::Clear();
-	SetDirty();
+	SetDirty(cxRefresh::all);
 	UpdateUnlock();
 }
 
@@ -797,7 +797,7 @@ void cText2SkinDisplayMenu::SetTitle(const char *Title)
 		mUpdate.events = true;
 		mUpdate.resetMarquee = true;
 		mTitle = Title;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -821,7 +821,7 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 		mButtonGreen  = Green;
 		mButtonYellow = Yellow;
 		mButtonBlue   = Blue;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -839,7 +839,7 @@ void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 	if (mMessageType != Type || mMessageText != Text) {
 		mMessageType = Type;
 		mMessageText = Text;
-		SetDirty();
+		SetDirty(cxRefresh::all);
 	}
 	UpdateUnlock();
 }
@@ -865,16 +865,22 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 
 	if (mItems.size() <= (uint)Index) {
 		mItems.push_back(item);
-		SetDirty();
+		mDirtyItems.push_back( Index );
+		SetDirty(cxRefresh::list);
 	}
 	else if (mItems[Index] != item) {
 		mItems[Index] = item;
-		SetDirty();
+		// refresh only the changed items
+		mDirtyItems.push_back( Index );
+		SetDirty(cxRefresh::list);
 	}
 
 	if (Current && mCurrentItem != (uint)Index) {
+		// refresh only the changed items
+		mDirtyItems.push_back( mCurrentItem );
+		mDirtyItems.push_back( Index );
+		SetDirty(cxRefresh::list);
 		mCurrentItem = Index;
-		SetDirty();
 	}
 	
 	if (Current) mRender->mMenuScrollbar.currentOnScreen = (uint)Index;
@@ -893,7 +899,7 @@ void cText2SkinDisplayMenu::SetEvent(const cEvent *Event)
 		mEvent = Event;
 		ExtPresentDescription = "";
 		if (mEvent != NULL)
-			SetDirty();
+			SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -911,7 +917,7 @@ void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording)
 		mRecording = Recording;
 		ExtRecordingDescription = "";
 		if (mRecording != NULL)
-			SetDirty();
+			SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -927,7 +933,7 @@ void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont)
 	if (Text == NULL) Text = "";
 	if (mText != Text) {
 		mText = Text;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }
@@ -953,7 +959,7 @@ void cText2SkinDisplayMenu::Scroll(bool Up, bool Page)
 
 	UpdateLock();
 	cText2SkinRender::Scroll(Up, Page);
-	SetDirty();
+	SetDirty(cxRefresh::scroll);
 	UpdateUnlock();
 }
 
@@ -1421,9 +1427,13 @@ void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
 	UpdateLock();
 	Dprintf("SetTrack: %d (%s here, %s in array)\n", Index, Tracks[Index], mItems[Index].c_str());
 	if (mCurrentItem != (uint)Index) {
+		// refresh only the changed items
+		mDirtyItems.push_back( mCurrentItem );
+		mDirtyItems.push_back( Index );
 		mCurrentItem = Index;
-		SetDirty();
+		SetDirty(cxRefresh::list);
 	}
+	
 	UpdateUnlock();
 }
 
@@ -1432,7 +1442,7 @@ void cText2SkinDisplayTracks::SetAudioChannel(int AudioChannel)
 	UpdateLock();
 	if (mAudioChannel != AudioChannel) {
 		mAudioChannel = AudioChannel;
-		SetDirty();
+		SetDirty(cxRefresh::update);
 	}
 	UpdateUnlock();
 }

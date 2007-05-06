@@ -30,6 +30,7 @@ cxObject::cxObject(cxDisplay *Parent):
 		mFontWidth(0),
 		mDelay(150),
 		mIndex(0),
+		mRefresh(this),
 		mObjects(NULL)
 {
 }
@@ -59,6 +60,7 @@ cxObject::cxObject(const cxObject &Src):
 		mFontSize(Src.mFontSize),
 		mFontWidth(Src.mFontWidth),
 		mDelay(Src.mDelay),
+		mRefresh(Src.mRefresh),
 		mObjects(NULL)
 {
 	if (Src.mCondition)
@@ -223,3 +225,115 @@ cxObjects::~cxObjects()
 		delete operator[](i);
 }
 
+
+
+
+
+
+cxRefresh::cxRefresh( cxObject *Object ):
+	mRefreshType(0xFF),
+	mText(NULL),
+	mChanged(NULL),
+	mObject(Object),
+	mForce(true),
+	mFull(true)
+{
+}
+
+cxRefresh::~cxRefresh()
+{
+	delete mText;
+}
+
+bool cxRefresh::Dirty(uint dirty, bool force)
+{
+	bool need_changed = !mForce && !force && !(mRefreshType & dirty & ~(1<<update));
+
+	if( !(mRefreshType & dirty) )
+		return false;
+
+	if( mChanged == NULL && need_changed )
+		return false;
+	else if( mChanged == NULL )
+		return true;
+
+	mEval = mChanged->Evaluate();
+
+	if( mEval == mLastEval && need_changed ) {
+		return false;
+	} else {
+		mLastEval = mEval;
+	}
+	
+	return  true;
+}
+
+
+
+
+
+bool cxRefresh::Parse(const std::string &Text)
+{
+	uint refresh=0;
+	bool force=false, full=false;
+
+	if( Text.find("all") != std::string::npos )
+		refresh |= (1<<all);
+
+	if( Text.find("timeout") != std::string::npos )
+		refresh |= (1<<timeout);
+
+	if( Text.find("update") != std::string::npos )
+		refresh |= (1<<update);
+
+	//if( Text.find("message") =! std::string::npos )
+	//	refresh |= (1<<list);
+
+	if( Text.find("list") != std::string::npos )
+		refresh |= (1<<list);
+
+	if( Text.find("scroll") != std::string::npos )
+		refresh |= (1<<scroll);
+
+	if( Text.find("allways") != std::string::npos )
+		refresh |= 0xFF;
+
+	if( Text.find("full") != std::string::npos )
+		full = true;
+
+	if( Text.find("force") != std::string::npos )
+		force = true;
+
+	if( refresh == 0)
+		return false;
+
+	mForce = force;
+	mFull = full;
+	mRefreshType = refresh;
+
+	return true;
+}
+
+bool cxRefresh::ParseChanged(const std::string &Text)
+{
+	if( mObject == NULL )
+		return false;
+
+	if(mText == NULL)
+		mText = new cxString(mObject, false);
+
+	if ( mText->Parse(Text) ) {
+		mChanged = mText;
+		return true;
+	}
+
+	return false;
+}
+
+cxRefresh &cxRefresh::operator=(const cxRefresh &a)
+{
+	mRefreshType = a.mRefreshType;
+	mForce = a.mForce;
+	mFull = a.mFull;
+	return *this;
+}
