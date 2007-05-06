@@ -962,11 +962,8 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	switch (Token.Type) {
 	case tMenuItem:
 	case tMenuGroup:
-		if (Token.Index < 0) return false;
 	case tMenuCurrent:
-		if (Token.Index >= 0 && Token.Tab == -1) return false;
 		break;
-
 	default:
 		if (Token.Tab >= 0) return false;
 		break;
@@ -977,38 +974,63 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return mTitle;
 
 	case tMenuItem:
-		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel
-		       && mCurrentItem != (uint)Token.Index
-		       ? (cxType)mItems[Token.Index].tabs[Token.Tab]
-		       : (cxType)false;
+		if (Token.Index < 0) return false;
+
+		if( mItems.size() <= (uint)Token.Index || !mItems[Token.Index].sel ||
+		    mCurrentItem == (uint)Token.Index )
+			return false;
+
+		if (Token.Tab < 0) {
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)mItems[Token.Index].tabs[Token.Attrib.Number]
+			       : (cxType)mItems[Token.Index].text;
+		}
+
+		return (cxType)mItems[Token.Index].tabs[Token.Tab];
 
 	case tIsMenuItem:
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel
 		       && mCurrentItem != (uint)Token.Index;
 	
 	case tMenuCurrent:
+		if(mItems.size() <= mCurrentItem)
+			return false;
+	
 		if (Token.Index < 0) {
-			if (mItems.size() > mCurrentItem)
-				return Token.Attrib.Type == aNumber
-				       ? (cxType)mItems[mCurrentItem].tabs[Token.Attrib.Number]
-				       : (cxType)mItems[mCurrentItem].text;
-			else
-				return false;
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)mItems[mCurrentItem].tabs[Token.Attrib.Number]
+			       : (cxType)mItems[mCurrentItem].text;
 		}
 
-		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel
-		       && mCurrentItem == (uint)Token.Index
-		       ? (cxType)mItems[Token.Index].tabs[Token.Tab]
-		       : (cxType)false;
+		if( mItems.size() <= (uint)Token.Index || !mItems[Token.Index].sel ||
+		    mCurrentItem != (uint)Token.Index )
+			return false;
+
+		if (Token.Tab < 0) {
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)mItems[Token.Index].tabs[Token.Attrib.Number]
+			       : (cxType)mItems[Token.Index].text;
+		}
+
+		return (cxType)mItems[Token.Index].tabs[Token.Tab];
 
 	case tIsMenuCurrent:
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel
 		       && mCurrentItem == (uint)Token.Index;
 
 	case tMenuGroup:
-		return mItems.size() > (uint)Token.Index && !mItems[Token.Index].sel
-		       ? (cxType)mItems[Token.Index].tabs[Token.Tab]
-		       : (cxType)false;
+		if (Token.Index < 0) return false;
+
+		if( mItems.size() <= (uint)Token.Index || mItems[Token.Index].sel)
+			return false;
+
+		if (Token.Tab < 0) {
+			return Token.Attrib.Type == aNumber
+			       ? (cxType)mItems[Token.Index].tabs[Token.Attrib.Number]
+			       : (cxType)mItems[Token.Index].text;
+		}
+
+		return (cxType)mItems[Token.Index].tabs[Token.Tab];
 
 	case tIsMenuGroup:
 		return mItems.size() > (uint)Token.Index && !mItems[Token.Index].sel;
@@ -1417,17 +1439,7 @@ void cText2SkinDisplayTracks::SetAudioChannel(int AudioChannel)
 
 cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 {
-	switch (Token.Type) {
-	case tMenuItem:
-		if (Token.Index < 0) return false;
-	case tMenuCurrent:
-		if (Token.Index >= 0 && Token.Tab == -1) return false;
-		break;
-		
-	default:
-		if (Token.Tab >= 0) return false;
-		break;
-	}
+	if (Token.Tab >= 0) return false;
 
 	int index = Token.Index;
 	if (index >= 0 && mCurrentItem >= (uint)mMaxItems) {
@@ -1440,17 +1452,28 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 		return mTitle;
 
 	case tMenuItem:
-		return mItems.size() > (uint)index && mCurrentItem != (uint)index
-		       ? (cxType)mItems[index]
-		       : (cxType)false;
-	
+		if (index < 0) return false;
+
+		if( mItems.size() <= (uint)index || mCurrentItem == (uint)index )
+			return false;
+
+		return (cxType)mItems[index];
+
 	case tIsMenuItem:
 		return mItems.size() > (uint)index && mCurrentItem != (uint)index;
-
+	
 	case tMenuCurrent:
-		return mItems.size() > (uint)index && mCurrentItem == (uint)index
-		       ? (cxType)mItems[index]
-		       : (cxType)false;
+		if(mItems.size() <= mCurrentItem)
+			return false;
+	
+		if (index < 0) {
+			return (cxType)mItems[mCurrentItem];
+		}
+
+		if( mItems.size() <= (uint)index || mCurrentItem != (uint)index )
+			return false;
+
+		return (cxType)mItems[index];
 
 	case tIsMenuCurrent:
 		return mItems.size() > (uint)index && mCurrentItem == (uint)index;

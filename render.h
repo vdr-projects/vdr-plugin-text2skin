@@ -27,6 +27,7 @@ class cText2SkinRender: public cThread {
 	friend class cText2SkinDisplayReplay;
 	friend class cText2SkinDisplayMessage;
 	friend class cText2SkinDisplayMenu;
+	friend class cText2SkinDisplayTracks;
 
 	friend class cText2SkinStatus;
 
@@ -75,6 +76,10 @@ private:
 	};
 	typedef std::map<uint,tState> tStates;
 	tStates mStates;
+
+	// scalefactor for tabs in the menu list
+	float               mTabScale;
+	bool                mTabScaleSet;
 	
 protected:
 	// Update thread
@@ -83,7 +88,11 @@ protected:
 	virtual void Action(void);
 
 	// Drawing operations
-	void DrawObject(const cxObject *Object);
+	void DrawObject(cxObject *Object, const txPoint &BaseOffset=txPoint(-1,-1),
+                        const txSize &BaseSize=txSize(-1,-1),
+			int ListItem=-1 );
+	void DrawItemText(cxObject *o, int i, const txPoint &ListOffset, const txSize &ListSize);
+
 	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
 	                    int Alpha, const std::string &Path);
 	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 

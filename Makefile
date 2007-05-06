@@ -100,7 +100,7 @@ ifdef DEBUG
 	CXXFLAGS += -g -fno-inline
 	DEFINES += -DDEBUG
 else
-	CXXFLAGS += -O2 -g
+	CXXFLAGS += -O3
 ifdef BENCH
 	DEFINES += -DBENCH
 endif

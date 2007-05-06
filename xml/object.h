@@ -61,7 +61,7 @@ public:
 		item,
 #define __COUNT_OBJECT__ (item + 1)
 	};
-	
+
 private:
 	cxDisplay     *mDisplay;
 	cxSkin        *mSkin;
@@ -118,8 +118,8 @@ public:
 	cxSkin            *Skin(void)            const { return mSkin; }
 
 	const std::string &TypeName(void)        const;
-	txPoint            Pos(void)             const;
-	txSize             Size(void)            const;
+	txPoint            Pos(const txPoint &BaseOffset=txPoint(-1,-1), const txSize &BaseSize=txSize(-1,-1))  const;
+	txSize             Size(const txPoint &BaseOffset=txPoint(-1,-1), const txSize &BaseSize=txSize(-1,-1)) const;
 	const cFont       *Font(void)            const;
 	const tColor      *Fg(void)              const;
 	const tColor      *Bg(void)              const;
@@ -129,7 +129,7 @@ public:
 	const tColor      *Keep(void)            const;
 
 	uint               Objects(void)         const;
-	const cxObject    *GetObject(uint Index) const;
+	cxObject          *GetObject(uint Index) const;
 };
 
 class cxObjects: public std::vector<cxObject*> {
@@ -144,7 +144,7 @@ inline uint cxObject::Objects(void) const
 	return mObjects ? mObjects->size() : 0;
 }
 
-inline const cxObject *cxObject::GetObject(uint Index) const
+inline cxObject *cxObject::GetObject(uint Index) const
 {
 	return mObjects ? (*mObjects)[Index] : NULL;
 }

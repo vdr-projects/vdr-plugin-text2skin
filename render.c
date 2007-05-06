@@ -37,7 +37,9 @@ cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Di
 		mStarted(),
 		mUpdateIn(0),
 		mNow(0),
-		mBaseSize()
+		mBaseSize(),
+		mTabScale(1.0),
+		mTabScaleSet(false)
 {
 	if (mDisplay == NULL) {
 		esyslog("ERROR: text2skin: display for %s missing", cxDisplay::GetType(Display).c_str());
@@ -163,187 +165,112 @@ void cText2SkinRender::Update(void)
 	//printf("====\t%d\n", mDisplay->Objects());
 }
 
-void cText2SkinRender::DrawObject(const cxObject *Object)
+void cText2SkinRender::DrawObject( cxObject *Object,
+                                   const txPoint &BaseOffset /*=txPoint(-1,-1)*/,
+				   const txSize &BaseSize /*=txPoint(-1,-1)*/,
+				   int ListItem /*=-1*/ )
 {
 	if (Object->Condition() != NULL && !Object->Condition()->Evaluate())
 		return;
 
+	txPoint pos;
+	txSize size;
+
+	pos  = Object->Pos(BaseOffset, BaseSize);
+
+	size = Object->Size(BaseOffset, BaseSize);
+
+
 	switch (Object->Type()) {
 	case cxObject::image:
-		DrawImage(Object->Pos(), Object->Size(), Object->Bg(), Object->Fg(), Object->Mask(),
+		DrawImage(pos, size, Object->Bg(), Object->Fg(), Object->Mask(),
 		          Object->Alpha(), Object->Colors(), Object->Path());
 		break;
 
 	case cxObject::text:
-		DrawText(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
-		         Object->Align());
+		if( ListItem >= 0 && Object->Display()->Type() == cxDisplay::menu )
+			DrawItemText( Object, ListItem, pos, BaseSize );
+		else
+			DrawText(pos, size, Object->Fg(), Object->Text(), Object->Font(), 
+		         	 Object->Align());
 		break;
 
 	case cxObject::marquee:
-		DrawMarquee(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
-		            Object->Align(), Object->Delay(), Object->Index());
+		if( ListItem >= 0 && Object->Display()->Type() == cxDisplay::menu )
+			DrawItemText( Object, ListItem, pos, BaseSize );
+		else
+			DrawMarquee(pos, size, Object->Fg(), Object->Text(), Object->Font(), 
+		            	    Object->Align(), Object->Delay(), Object->Index());
 		break;
 
 	case cxObject::blink:
-		DrawBlink(Object->Pos(), Object->Size(), Object->Fg(), Object->Bg(), Object->Text(), 
-		          Object->Font(), Object->Align(), Object->Delay(), Object->Index());
+		if( ListItem >= 0 && Object->Display()->Type() == cxDisplay::menu )
+			DrawItemText( Object, ListItem, pos, BaseSize );
+		else
+			DrawBlink(pos, size, Object->Fg(), Object->Bg(), Object->Text(), 
+		          	  Object->Font(), Object->Align(), Object->Delay(),
+				  Object->Index());
 		break;
 
 	case cxObject::rectangle:
-		DrawRectangle(Object->Pos(), Object->Size(), Object->Fg());
+		DrawRectangle(pos, size, Object->Fg());
 		break;
 
 	case cxObject::ellipse:
-		DrawEllipse(Object->Pos(), Object->Size(), Object->Fg(), Object->Arc());
+		DrawEllipse(pos, size, Object->Fg(), Object->Arc());
 		break;
 	
 	case cxObject::slope:
-		DrawSlope(Object->Pos(), Object->Size(), Object->Fg(), Object->Arc());
+		DrawSlope(pos, size, Object->Fg(), Object->Arc());
 		break;
 
 	case cxObject::progress:
-		DrawProgressbar(Object->Pos(), Object->Size(), Object->Current(), Object->Total(), 
+		DrawProgressbar(pos, size, Object->Current(), Object->Total(), 
 		                Object->Bg(), Object->Fg(), Object->Keep(), Object->Mark(), 
 		                Object->Active(), GetMarks());
 		break;
 
 	case cxObject::scrolltext:
-		DrawScrolltext(Object->Pos(), Object->Size(), Object->Fg(), Object->Text(), Object->Font(), 
+		DrawScrolltext(pos, size, Object->Fg(), Object->Text(), Object->Font(), 
 		               Object->Align());
 		break;
 
 	case cxObject::scrollbar:
-		DrawScrollbar(Object->Pos(), Object->Size(), Object->Bg(), Object->Fg());
+		DrawScrollbar(pos, size, Object->Bg(), Object->Fg());
 
 	case cxObject::block:
 		for (uint i = 0; i < Object->Objects(); ++i)
-			DrawObject(Object->GetObject(i));
+			DrawObject(Object->GetObject(i), pos, size, ListItem );
 		break;
 
-	case cxObject::list: {
-			const cxObject *item = Object->GetObject(0);
-			if (item && item->Type() == cxObject::item) {
-				txSize areasize = Object->Size();
-				uint itemheight = item->Size().h;
-				uint maxitems = areasize.h / itemheight;
-				uint yoffset = 0;
-				bool initialEditableWidthSet = false;
-				
-				mMenuScrollbar.maxItems = maxitems;
-				SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
-				for (uint i = 0; i < maxitems; ++i, yoffset += itemheight) {
-					for (uint j = 1; j < Object->Objects(); ++j) {
-						const cxObject *o = Object->GetObject(j);
-						int maxtabs = 1;
+	case cxObject::list:{
+		cxObject *item = Object->GetObject(0);
+		if (item && item->Type() == cxObject::item) {
+			txSize itemsize = item->Size(pos, size);
+			txPoint itempos = pos;
+			itemsize.w = size.w;
+			uint maxitems = size.h / itemsize.h;
+			mMenuScrollbar.maxItems = maxitems;
+			SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
+			uint index = 0;
+			
+			// draw list items
+			for (uint i = 0; i < maxitems; ++i) {
+				if (!HasTabText(i, -1))
+					continue;
 
-						if (o->Display()->Type() == cxDisplay::menu)
-							maxtabs = cSkinDisplayMenu::MaxTabs;
+				Dbench(item);
+				index = i;
 
-						for (int t = -1; t < maxtabs; ++t) {
-							if (!HasTabText(i, t))
-								continue;
-
-							int thistab = GetTab(t);
-							int nexttab = GetTab(t + 1);
-
-							cxObject obj(*o);
-							obj.SetListIndex(i, t);
-							if (obj.Condition() != NULL && !obj.Condition()->Evaluate())
-								continue;
-
-							obj.mPos1.x += Object->mPos1.x + (t >= 0 ? thistab : 0);
-							obj.mPos1.y += Object->mPos1.y + yoffset;
-
-							// get end position
-							if (t >= 0 && nexttab > 0) {
-								// there is a "next tab".. see if it contains text
-								int n = t + 1;
-								while (n < cSkinDisplayMenu::MaxTabs && !HasTabText(i, n))
-									++n;
-								nexttab = GetTab(n);
-							}
-							
-							// set initial EditableWidth
-							// this is for plugins like 'extrecmenu' and 'rotor'
-							if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && !initialEditableWidthSet) {
-								initialEditableWidthSet = true;
-								SetEditableWidth(obj.Size().w);
-							}
-							
-							if (t >= 0 && nexttab > 0 && nexttab < obj.mPos1.x + obj.Size().w - 1)
-								// there is a "next tab" with text
-								obj.mPos2.x = Object->mPos1.x + o->mPos1.x + nexttab;
-							else {
-								// there is no "next tab", use the rightmost edge
-								obj.mPos2.x += Object->mPos1.x;
-								/* not used anymore due to change to fontOsd
-								   but could be usefull if someone uses a differnt font
-									
-								if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && t == 1) {
-									// VDR assumes, that the font in the menu is fontOsd,
-									// so the EditableWidth is not necessarily correct
-									// for TTF
-									const cFont *defFont = cFont::GetFont(fontOsd);
-									const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
-									int editableWidth = obj.Size().w;
-									if (defFont != obj.Font())
-										editableWidth = (int)(editableWidth * defFont->Width(dummy) / (1.1 * obj.Font()->Width(dummy)));
-									SetEditableWidth(editableWidth);
-								} */
-								if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && t == 1)
-									SetEditableWidth(obj.Size().w);
-							}
-
-							obj.mPos2.y += Object->mPos1.y + yoffset;
-
-							std::string text = obj.Text();
-							bool isprogress = false;
-							if (text.length() > 5 
-									&& text[0] == '[' && text[text.length() - 1] == ']') {
-								const char *p = text.c_str() + 1;
-								isprogress = true;
-								for (; *p != ']'; ++p) {
-									if (*p != ' ' && *p != '|') {
-										isprogress = false;
-										break;
-									}
-								}
-							}
-
-							if (isprogress) {
-								//Dprintf("detected progress bar tab\n");
-								if (obj.Condition() == NULL || obj.Condition()->Evaluate()) {
-									int total = text.length() - 2;
-									int current = 0;
-									const char *p = text.c_str() + 1;
-									while (*p == '|')
-										(++current, ++p);
-
-									txPoint pos = obj.Pos();
-									txSize size = obj.Size();
-
-									DrawRectangle(txPoint(pos.x, pos.y + 4), 
-									              txSize(size.w, 2), obj.Fg());
-									DrawRectangle(txPoint(pos.x, pos.y + 4),
-									              txSize(2, size.h - 8), obj.Fg());
-									DrawRectangle(txPoint(pos.x, pos.y + size.h - 6), 
-									              txSize(size.w, 2), obj.Fg());
-									DrawRectangle(txPoint(pos.x + size.w - 2, pos.y + 4),
-									              txSize(2, size.h - 8), obj.Fg());
-
-									pos.x += 4;
-									pos.y += 8;
-									size.w -= 8;
-									size.h -= 16;
-									DrawProgressbar(pos, size, current, total, obj.Bg(),
-									                obj.Fg(), NULL, NULL, NULL, NULL);
-								}
-							} else
-								DrawObject(&obj);
-						}
-					}
+				itempos.y = pos.y + index * itemsize.h;
+				for (uint j = 1; j < Object->Objects(); ++j) {
+					item = Object->GetObject(j);
+					item->SetListIndex( index, -1 );
+					DrawObject( item, itempos, itemsize, index );
 				}
+				Ddiff( "draw item", item );
 			}
+		}
 		}
 		break;
 
@@ -353,6 +280,138 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 
 	}
 }
+
+
+
+
+
+
+
+
+void cText2SkinRender::DrawItemText(cxObject *Object, int i, const txPoint &ListOffset, const txSize &ListSize) 
+{
+	bool initialEditableWidthSet = false;
+	int maxtabs = cSkinDisplayMenu::MaxTabs;
+	txPoint Pos = ListOffset;
+	txSize BaseSize = Object->Size(ListOffset, ListSize);
+	txSize Size = BaseSize;
+	
+	if( !mTabScaleSet ) {
+		// VDR assumes, that the font in the menu is fontOsd,
+		// so the tab width is not necessarily correct
+		// for TTF
+		const cFont *defFont = cFont::GetFont(fontOsd);
+		const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+		if( defFont != Object->Font() )
+			mTabScale = 1.05 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
+		mTabScaleSet = true;
+	}
+
+	// loop over tabs
+	for (int t = 0; t < maxtabs; ++t) {
+		if (!HasTabText(i, t))
+			continue;
+
+		int thistab = (int)(mTabScale * GetTab(t));
+		int nexttab = (int)(mTabScale * GetTab(t + 1));
+
+		Object->SetListIndex(i, t);
+		//if (Object.Condition() != NULL && !Object.Condition()->Evaluate())
+		//	continue;
+
+		// set initial EditableWidth
+		// this is for plugins like 'extrecmenu' and 'rotor'
+		if ( !initialEditableWidthSet ) {
+			initialEditableWidthSet = true;
+			SetEditableWidth((int)(Size.w / mTabScale));
+		}
+
+		// Start position of the tab
+		Pos.x = ListOffset.x + (t >= 0 ? thistab : 0);
+
+		// get end position
+		if (t >= 0 && nexttab > 0) {
+			// there is a "next tab".. see if it contains text
+			int n = t + 1;
+			while (n < cSkinDisplayMenu::MaxTabs && !HasTabText(i, n))
+				++n;
+			nexttab = (int)(mTabScale * GetTab(n));
+		}
+		
+		if (t >= 0 && nexttab > 0 && nexttab < BaseSize.w - 1)
+			// there is a "next tab" with text
+			Size.w = nexttab - thistab;
+		else {
+			// there is no "next tab", use the rightmost edge
+			Size.w = BaseSize.w - thistab;
+			if ( t == 1)
+				SetEditableWidth((int)(Size.w / mTabScale));
+		}
+
+		// Does the current tab contain a text-progress bar?
+		std::string text = Object->Text();
+		bool isprogress = false;
+		if (text.length() > 5 && text[0] == '[' && text[text.length() - 1] == ']') {
+			const char *p = text.c_str() + 1;
+			isprogress = true;
+			for (; *p != ']'; ++p) {
+				if (*p != ' ' && *p != '|') {
+					isprogress = false;
+					break;
+				}
+			}
+		}
+
+		if (isprogress) {
+			//Dprintf("detected progress bar tab\n");
+			int total = text.length() - 2;
+			int current = 0;
+			const char *p = text.c_str() + 1;
+			while (*p == '|')
+				(++current, ++p);
+
+			txPoint prog_pos = Pos;
+			txSize prog_size = Size;
+
+			DrawRectangle(txPoint(prog_pos.x, prog_pos.y + 4), 
+			              txSize(prog_size.w, 2), Object->Fg());
+			DrawRectangle(txPoint(prog_pos.x, prog_pos.y + 4),
+			              txSize(2, prog_size.h - 8), Object->Fg());
+			DrawRectangle(txPoint(prog_pos.x, prog_pos.y + prog_size.h - 6), 
+			              txSize(prog_size.w, 2), Object->Fg());
+			DrawRectangle(txPoint(prog_pos.x + prog_size.w - 2, prog_pos.y + 4),
+			              txSize(2, prog_size.h - 8), Object->Fg());
+
+			prog_pos.x += 4;
+			prog_pos.y += 8;
+			prog_size.w -= 8;
+			prog_size.h -= 16;
+			DrawProgressbar(prog_pos, prog_size, current, total, Object->Bg(),
+			                Object->Fg(), NULL, NULL, NULL, NULL);
+		} else {
+			switch (Object->Type()) {
+			case cxObject::text:
+				DrawText(Pos, Size, Object->Fg(), Object->Text(), Object->Font(), 
+		         	         Object->Align());
+				break;
+
+			case cxObject::marquee:
+				DrawMarquee(Pos, Size, Object->Fg(), Object->Text(), Object->Font(), 
+		                    	    Object->Align(), Object->Delay(), Object->Index());
+				break;
+
+			case cxObject::blink:
+				DrawBlink(Pos, Size, Object->Fg(), Object->Bg(), Object->Text(), 
+		          		  Object->Font(), Object->Align(), Object->Delay(), Object->Index());
+				break;
+			default:
+				break;
+			}
+
+		}
+	}
+}
+
 
 void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, 
                                  const tColor *Fg, const tColor *Mask, int Alpha, int Colors, 

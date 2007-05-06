@@ -155,18 +155,25 @@ const cFont *cxObject::Font(void) const
 	return cFont::GetFont(fontOsd);
 }
 
-txPoint cxObject::Pos(void) const 
+txPoint cxObject::Pos(const txPoint &BaseOffset, const txSize &BaseSize) const 
 {
-	return txPoint(mSkin->BaseOffset().x + (mPos1.x < 0 ? Skin()->BaseSize().w + mPos1.x : mPos1.x), 
-			       mSkin->BaseOffset().y + (mPos1.y < 0 ? Skin()->BaseSize().h + mPos1.y : mPos1.y));
+	txPoint bOffset = BaseOffset.x < 0 ? mSkin->BaseOffset() : BaseOffset;
+	txSize  bSize   = BaseSize.w   < 0 ? mSkin->BaseSize()   : BaseSize;
+
+	return txPoint(bOffset.x + (mPos1.x < 0 ? bSize.w + mPos1.x : mPos1.x), 
+		       bOffset.y + (mPos1.y < 0 ? bSize.h + mPos1.y : mPos1.y));
 }
 
-txSize cxObject::Size(void) const 
+txSize cxObject::Size(const txPoint &BaseOffset, const txSize &BaseSize) const 
 {
-	txPoint p1(mSkin->BaseOffset().x + (mPos1.x < 0 ? Skin()->BaseSize().w + mPos1.x : mPos1.x), 
-			   mSkin->BaseOffset().y + (mPos1.y < 0 ? Skin()->BaseSize().h + mPos1.y : mPos1.y));
-	txPoint p2(mSkin->BaseOffset().x + (mPos2.x < 0 ? Skin()->BaseSize().w + mPos2.x : mPos2.x), 
-			   mSkin->BaseOffset().y + (mPos2.y < 0 ? Skin()->BaseSize().h + mPos2.y : mPos2.y));
+	txPoint bOffset = BaseOffset.x < 0 ? mSkin->BaseOffset() : BaseOffset;
+	txSize  bSize   = BaseSize.w   < 0 ? mSkin->BaseSize()   : BaseSize;
+
+	txPoint p1(bOffset.x + (mPos1.x < 0 ? bSize.w + mPos1.x : mPos1.x), 
+		   bOffset.y + (mPos1.y < 0 ? bSize.h + mPos1.y : mPos1.y));
+	txPoint p2(bOffset.x + (mPos2.x < 0 ? bSize.w + mPos2.x : mPos2.x), 
+		   bOffset.y + (mPos2.y < 0 ? bSize.h + mPos2.y : mPos2.y));
+
 	return txSize(p2.x - p1.x + 1, p2.y - p1.y + 1);
 }
 

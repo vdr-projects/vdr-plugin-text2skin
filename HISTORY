@@ -1,6 +1,12 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2007-05-06: Version 1.1-cvs_ext-0.10a (text2skin-1.1-cvs_ext-0.10a.diff)
+
+- increased efficiency in drawing list items in the main menu
+- introduce relative Pos and Size of objects to given BasePos, BaseSize
+  (used to draw list items)
+
 2006-12-03: Version 1.1-cvs_ext-0.10 (vdr-text2skin-1.1-cvs_ext-0.10.diff)
 
 - set EditableWidth. This is important for plugins like 'rotor' or
