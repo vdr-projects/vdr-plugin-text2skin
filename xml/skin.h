@@ -28,21 +28,21 @@ public:
 	bool Limit( int ma, int min ) const {
 		return mMajor < ma ? true : (mMajor == ma ? mMinor <= min : false);
 	}
-	bool cxVersion::operator==( const cxVersion &v ) const {
+	bool operator==( const cxVersion &v ) const {
 		return mMajor == v.mMajor && mMinor == v.mMinor;
 	}
-	bool cxVersion::operator>=( const cxVersion &v ) const { 
+	bool operator>=( const cxVersion &v ) const { 
 		return Require(  v.mMajor , v.mMinor);
 	}
-	bool cxVersion::operator>=( const char *c ) const { 
+	bool operator>=( const char *c ) const { 
 		cxVersion v;
 		if( !v.Parse(c) ) return false;
 		return Require(  v.mMajor , v.mMinor);
 	}
-	bool cxVersion::operator<=( const cxVersion &v ) const {
+	bool operator<=( const cxVersion &v ) const {
 		return Limit( v.mMajor , v.mMinor );
 	}
-	bool cxVersion::operator<=( const char *c ) const { 
+	bool operator<=( const char *c ) const { 
 		cxVersion v;
 		if( !v.Parse(c) ) return false;
 		return Limit(  v.mMajor , v.mMinor);

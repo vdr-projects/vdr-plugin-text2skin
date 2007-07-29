@@ -33,6 +33,29 @@ struct txWindow {
 			pos1(_x1, _y2), pos2(_x2, _y2), bpp(_bpp) {}
 };
 
+
+
+
+
+
+// state information for marquee, blink, scroll
+struct txState {
+	bool        scrolling;
+	int         offset;
+	int         direction;
+	uint        nexttime;
+	std::string text;
+	txState(void): scrolling(false), offset(0), direction(1), nexttime(0) {}
+};
+
+
+
+
+
+
+
+
+
 class cxObject;
 
 class cxRefresh {
@@ -50,12 +73,12 @@ public:
 
 	cxRefresh(cxObject *Object);
 	~cxRefresh();
-	bool           Dirty(uint dirty, bool force=false);
+	bool           Dirty(uint dirty, uint &updatein, bool force=false, uint now=0 );
 	bool	       Full(void)      const { return mFull; }
 	uint           Type(void)      const { return mRefreshType; }
 	bool           Parse(const std::string &Text);
 	bool           ParseChanged(const std::string &Text);
-	cxRefresh     &cxRefresh::operator=(const cxRefresh &b);
+        cxRefresh     &operator=(const cxRefresh &b);
 
 private:
 	uint           mRefreshType;
@@ -66,6 +89,12 @@ private:
 	cxObject      *mObject;
 	bool           mForce, mFull;
 };
+
+
+
+
+
+
 
 class cxObjects;
 
@@ -102,11 +131,13 @@ private:
 	eType          mType;
 	txPoint        mPos1;
 	txPoint        mPos2;
+	txSize         mVirtSize;
 	int            mAlpha;
 	int            mColors;
 	int            mArc;
 	std::string    mFg;
 	std::string    mBg;
+	std::string    mBl;
 	std::string    mMask;
 	std::string    mMark;
 	std::string    mActive;
@@ -124,6 +155,12 @@ private:
 	uint           mIndex;
 	cxRefresh      mRefresh;
 	cxObjects     *mObjects; // used for block objects such as <list>
+
+	// state information for marquee, blink, scroll
+	uint           mListIndex;
+	typedef std::map<uint,txState> tStates;
+	tStates       mStates;
+
 
 public:
 	cxObject(cxDisplay *parent);
@@ -151,13 +188,17 @@ public:
 	uint               Index(void)           const { return mIndex; }
 	cxDisplay         *Display(void)         const { return mDisplay; }
 	cxSkin            *Skin(void)            const { return mSkin; }
+	txState           &State(void)                 { return mStates[mListIndex]; }
 
 	const std::string &TypeName(void)        const;
-	txPoint            Pos(const txPoint &BaseOffset=txPoint(-1,-1), const txSize &BaseSize=txSize(-1,-1))  const;
-	txSize             Size(const txPoint &BaseOffset=txPoint(-1,-1), const txSize &BaseSize=txSize(-1,-1)) const;
+	txPoint            Pos(const txPoint &BaseOffset=txPoint(-1,-1), const txSize &BaseSize=txSize(-1,-1),
+			       const txSize &VirtSize=txSize(-1,-1) )  const;
+	txSize             Size(const txPoint &BaseOffset=txPoint(-1,-1), const txSize &BaseSize=txSize(-1,-1),
+				const txSize &VirtSize=txSize(-1,-1)) const;
 	const cFont       *Font(void)            const;
 	const tColor      *Fg(void)              const;
 	const tColor      *Bg(void)              const;
+	const tColor      *Bl(void)              const;
 	const tColor      *Mask(void)            const;
 	const tColor      *Mark(void)            const;
 	const tColor      *Active(void)          const;

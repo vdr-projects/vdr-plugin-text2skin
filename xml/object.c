@@ -16,6 +16,7 @@ cxObject::cxObject(cxDisplay *Parent):
 		mType((eType)__COUNT_OBJECT__),
 		mPos1(0, 0),
 		mPos2(-1, -1),
+		mVirtSize(-1,-1),
 		mAlpha(255),
 		mColors(0),
 		mArc(0),
@@ -31,7 +32,8 @@ cxObject::cxObject(cxDisplay *Parent):
 		mDelay(150),
 		mIndex(0),
 		mRefresh(this),
-		mObjects(NULL)
+		mObjects(NULL),
+		mListIndex(0)
 {
 }
 
@@ -41,11 +43,13 @@ cxObject::cxObject(const cxObject &Src):
 		mType(Src.mType),
 		mPos1(Src.mPos1),
 		mPos2(Src.mPos2),
+		mVirtSize(Src.mVirtSize),
 		mAlpha(Src.mAlpha),
 		mColors(Src.mColors),
 		mArc(Src.mArc),
 		mFg(Src.mFg),
 		mBg(Src.mBg),
+		mBl(Src.mBl),
 		mMask(Src.mMask),
 		mMark(Src.mMark),
 		mActive(Src.mActive),
@@ -61,7 +65,8 @@ cxObject::cxObject(const cxObject &Src):
 		mFontWidth(Src.mFontWidth),
 		mDelay(Src.mDelay),
 		mRefresh(Src.mRefresh),
-		mObjects(NULL)
+		mObjects(NULL),
+		mListIndex(Src.mListIndex)
 {
 	if (Src.mCondition)
 		mCondition = new cxFunction(*Src.mCondition);
@@ -130,7 +135,8 @@ bool cxObject::ParseFontFace(const std::string &Text)
 
 void cxObject::SetListIndex(uint Index, int Tab)
 {
-	mIndex = mDisplay->Objects() + (Index * cSkinDisplayMenu::MaxTabs + Tab);
+	Tab = Tab>=0 ? Tab : -1;
+	mListIndex = 1 + Index * cSkinDisplayMenu::MaxTabs + Tab;
 	mText.SetListIndex(Index, Tab);
 	mPath.SetListIndex(Index, Tab);
 	if (mCondition != NULL)
@@ -157,24 +163,38 @@ const cFont *cxObject::Font(void) const
 	return cFont::GetFont(fontOsd);
 }
 
-txPoint cxObject::Pos(const txPoint &BaseOffset, const txSize &BaseSize) const 
+txPoint cxObject::Pos(const txPoint &BaseOffset, const txSize &BaseSize, const txSize &VirtSize) const 
 {
 	txPoint bOffset = BaseOffset.x < 0 ? mSkin->BaseOffset() : BaseOffset;
 	txSize  bSize   = BaseSize.w   < 0 ? mSkin->BaseSize()   : BaseSize;
 
-	return txPoint(bOffset.x + (mPos1.x < 0 ? bSize.w + mPos1.x : mPos1.x), 
-		       bOffset.y + (mPos1.y < 0 ? bSize.h + mPos1.y : mPos1.y));
+	double scale_x = VirtSize.w>0 ? (double)BaseSize.w / VirtSize.w : 1.0,
+               scale_y = VirtSize.h>0 ? (double)BaseSize.h / VirtSize.h : 1.0;
+
+	int x1 = mPos1.x < 0 ? (int)((mPos1.x + 1) * scale_x - 1) : (int)(mPos1.x * scale_x);
+	int y1 = mPos1.y < 0 ? (int)((mPos1.y + 1) * scale_x - 1) : (int)(mPos1.y * scale_y);
+
+	return txPoint(bOffset.x + (x1 < 0 ? bSize.w + x1 : x1), 
+		       bOffset.y + (y1 < 0 ? bSize.h + y1 : y1));
 }
 
-txSize cxObject::Size(const txPoint &BaseOffset, const txSize &BaseSize) const 
+txSize cxObject::Size(const txPoint &BaseOffset, const txSize &BaseSize, const txSize &VirtSize) const 
 {
-	txPoint bOffset = BaseOffset.x < 0 ? mSkin->BaseOffset() : BaseOffset;
+	//txPoint bOffset = BaseOffset.x < 0 ? mSkin->BaseOffset() : BaseOffset;
 	txSize  bSize   = BaseSize.w   < 0 ? mSkin->BaseSize()   : BaseSize;
 
-	txPoint p1(bOffset.x + (mPos1.x < 0 ? bSize.w + mPos1.x : mPos1.x), 
-		   bOffset.y + (mPos1.y < 0 ? bSize.h + mPos1.y : mPos1.y));
-	txPoint p2(bOffset.x + (mPos2.x < 0 ? bSize.w + mPos2.x : mPos2.x), 
-		   bOffset.y + (mPos2.y < 0 ? bSize.h + mPos2.y : mPos2.y));
+	double scale_x = VirtSize.w>0 ? (double)BaseSize.w / VirtSize.w : 1.0,
+               scale_y = VirtSize.h>0 ? (double)BaseSize.h / VirtSize.h : 1.0;
+
+	int x1 = mPos1.x < 0 ? (int)((mPos1.x + 1) * scale_x - 1) : (int)(mPos1.x * scale_x);
+	int y1 = mPos1.y < 0 ? (int)((mPos1.y + 1) * scale_x - 1) : (int)(mPos1.y * scale_y);
+	int x2 = mPos2.x < 0 ? (int)((mPos2.x + 1) * scale_x - 1) : (int)(mPos2.x * scale_x);
+	int y2 = mPos2.y < 0 ? (int)((mPos2.y + 1) * scale_x - 1) : (int)(mPos2.y * scale_y);
+
+	txPoint p1(x1 < 0 ? bSize.w + x1 : x1, 
+		   y1 < 0 ? bSize.h + y1 : y1);
+	txPoint p2(x2 < 0 ? bSize.w + x2 : x2, 
+		   y2 < 0 ? bSize.h + y2 : y2);
 
 	return txSize(p2.x - p1.x + 1, p2.y - p1.y + 1);
 }
@@ -189,6 +209,12 @@ const tColor *cxObject::Bg(void) const
 {
 	static tColor Bg;
 	return cText2SkinRender::ItemColor(mBg, Bg) ? &Bg : NULL;
+}
+
+const tColor *cxObject::Bl(void) const 
+{
+	static tColor Bl;
+	return cText2SkinRender::ItemColor(mBl, Bl) ? &Bl : NULL;
 }
 
 const tColor *cxObject::Mask(void) const 
@@ -230,6 +256,11 @@ cxObjects::~cxObjects()
 
 
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+// ---------- class cxRefresh ---------------------------------------------- //
+
 cxRefresh::cxRefresh( cxObject *Object ):
 	mRefreshType(0xFF),
 	mText(NULL),
@@ -245,27 +276,55 @@ cxRefresh::~cxRefresh()
 	delete mText;
 }
 
-bool cxRefresh::Dirty(uint dirty, bool force)
+bool cxRefresh::Dirty(uint dirty, uint &updatein, bool force, uint now)
 {
-	bool need_changed = !mForce && !force && !(mRefreshType & dirty & ~(1<<update));
+	// check if the timeout of the object has expired
+	uint nexttime = mObject->State().nexttime;
 
-	if( !(mRefreshType & dirty) )
-		return false;
+	bool to = force || mForce ||
+                  mObject->Type() == cxObject::block || mObject->Type() == cxObject::list;
+	bool changed = force || mForce;
 
-	if( mChanged == NULL && need_changed )
-		return false;
-	else if( mChanged == NULL )
+	if( now>0 && nexttime>0 ) {
+		// timeout was set
+		if( now >= nexttime ) {
+			// timeout has expired
+			to = true;
+		} else {
+			// time left -> set new update interval
+			uint nextin = nexttime - now;
+			if (updatein == 0 || nextin < updatein)
+				updatein = nextin;
+		}
+	}
+
+	// Objaect has changed since last redraw
+	if( mChanged != NULL ) {
+		mEval = mChanged->Evaluate();
+		if( mEval != mLastEval ) {
+			changed = true;
+		}
+	}
+
+	// refresh
+	if( (mRefreshType & dirty & ~(1<<timeout) & ~(1<<update)) ) {
+		if( changed ) mLastEval = mEval;
 		return true;
+	}
 
-	mEval = mChanged->Evaluate();
-
-	if( mEval == mLastEval && need_changed ) {
-		return false;
-	} else {
-		mLastEval = mEval;
+	// timeout
+	if( (mRefreshType & dirty & (1<<timeout)) && to ) {
+		if( changed ) mLastEval = mEval;
+		return true;
 	}
 	
-	return  true;
+	// update
+	if( (mRefreshType & dirty & (1<<update)) && changed ) {
+ 		mLastEval = mEval;
+		return true;
+	}
+
+	return  false;
 }
 
 

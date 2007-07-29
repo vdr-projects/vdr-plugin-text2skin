@@ -65,19 +65,6 @@ private:
 
 	// coordinate transformation
 	txSize              mBaseSize;
-	
-	// state information for marquee, blink, scroll
-	struct tState {
-		bool        scrolling;
-		int         offset;
-		int         direction;
-		uint        nexttime;
-		std::string text;
-
-		tState(void): scrolling(false), offset(0), direction(1), nexttime(0) {}
-	};
-	typedef std::map<uint,tState> tStates;
-	tStates mStates;
 
 	// scalefactor for tabs in the menu list
 	float               mTabScale;
@@ -91,7 +78,7 @@ protected:
 
 	// Drawing operations
 	void DrawObject(cxObject *Object, const txPoint &BaseOffset=txPoint(-1,-1),
-                        const txSize &BaseSize=txSize(-1,-1),
+                        const txSize &BaseSize=txSize(-1,-1), const txSize &VirtSize=txSize(-1,-1),
 			int ListItem=-1, bool ForceUpdate=false);
 	void DrawItemText(cxObject *o, int i, const txPoint &ListOffset, const txSize &ListSize);
 
@@ -99,12 +86,13 @@ protected:
 	                    int Alpha, const std::string &Path);
 	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
 	               const tColor *Mask, int Alpha, int Colors, const std::string &Path);
-	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const std::string &Text,
-	              const cFont *Font, int Align);
-	void DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-	                 const std::string &Text, const cFont *Font, int Align, uint Delay, uint Index);
+	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const tColor *Bg,
+                      const std::string &Text, const cFont *Font, int Align);
+	void DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, const tColor *Bg,
+	                 const std::string &Text, const cFont *Font, int Align, uint Delay, txState &state);
 	void DrawBlink(const txPoint &Pos, const txSize &Size, const tColor *Fg, const tColor *Bg,
-	               const std::string &Text, const cFont *Font, int Align, uint Delay, uint Index);
+                       const tColor *Bl, const std::string &Text, const cFont *Font, int Align,
+                       uint Delay, txState &state);
 	void DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg);
 	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
 	void DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
@@ -188,9 +176,8 @@ inline void cText2SkinRender::Flush(bool Force)
 	}
 
 	if (mDirty>0) {
-		mTokenCache.clear();
-
 		UpdateLock();
+		mTokenCache.clear();
 		mDoUpdate.Broadcast();
 		UpdateUnlock();
 	}

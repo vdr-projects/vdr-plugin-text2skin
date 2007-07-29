@@ -128,32 +128,48 @@ cText2SkinRender::~cText2SkinRender()
 	mRender = NULL;
 }
 
+
+
+
+
 void cText2SkinRender::Action(void) 
 {
 	bool to = true;
+	uint start_time = time_ms();
 	mActive = true;
 	UpdateLock();
 	mStarted.Broadcast();
 	while (mActive) {
 		to = true;
-		if (mUpdateIn) to=mDoUpdate.TimedWait(mDoUpdateMutex, mUpdateIn);
+		start_time = mNow;
+
+		if( mUpdateIn ) to=mDoUpdate.TimedWait(mDoUpdateMutex, mUpdateIn);
 		else               mDoUpdate.Wait(mDoUpdateMutex);
 
-		if(!to) SetDirty(cxRefresh::timeout);
-
 		if (!mActive)  break; // fall out if thread to be stopped
-
-		mUpdateIn = 0; // has to be re-set within Update();
 		mNow = time_ms();
+
+		if( mUpdateIn ) {
+			if( !to || mNow >= start_time + mUpdateIn ) {\
+				SetDirty(cxRefresh::timeout);
+				mUpdateIn = 0; // has to be re-set within Update();
+			} else {
+				mUpdateIn -= mNow - start_time;
+			}
+		}
+
 		Update();
 	}
 	UpdateUnlock();
 }
 
+
+
+
+
+
 void cText2SkinRender::Update(void) 
 {
-	//DStartBench(malen);
-	//DStartBench(ges);
 	Dbench(update);
 #ifdef BENCH
 	fprintf( stderr, "mDirty = 0x%04x\n", mDirty );
@@ -173,38 +189,41 @@ void cText2SkinRender::Update(void)
 	while( mDirtyItems.size() > 0 )
 		mDirtyItems.pop_back();
 
-	//DShowBench("---\t", malen);
-	//DStartBench(flushen);
 	Dbench(flush);
 	mScreen->Flush();
 	Ddiff("flush only", flush);
 	Ddiff("complete flush", update);
-	//DShowBench("===\t", flushen);
-	//DShowBench("=== ges\t", ges);
 	//printf("====\t%d\n", mDisplay->Objects());
 }
 
+
+
+
+
+
+
 void cText2SkinRender::DrawObject( cxObject *Object,
                                    const txPoint &BaseOffset /*=txPoint(-1,-1)*/,
-				   const txSize &BaseSize /*=txPoint(-1,-1)*/,
+				   const txSize &BaseSize /*=txSize(-1,-1)*/,
+				   const txSize &VirtSize /*=txSize(-1,-1)*/,
 				   int ListItem /*=-1*/,
 				   bool ForceUpdate /*=false*/)
 {
-	if( !Object->mRefresh.Dirty(mDirty, ForceUpdate) ||
+	if( !Object->mRefresh.Dirty(mDirty, mUpdateIn, ForceUpdate, mNow) ||
 	    (Object->Condition()!=NULL && !Object->Condition()->Evaluate()))
 		return;
 
 	txPoint pos;
 	txSize size;
 
-	pos  = Object->Pos(BaseOffset, BaseSize);
+	pos  = Object->Pos(BaseOffset, BaseSize, VirtSize);
 
 	if( ListItem >= 0 && !mSkin->Version().Require(1,1) ) {
 		// Object is part of al list
 		// Calculate offset of list item relative to the list offset
 		size = Object->Size();
 	} else {
-		size = Object->Size(BaseOffset, BaseSize);
+		size = Object->Size(BaseOffset, BaseSize, VirtSize);
 	}
 
 
@@ -218,7 +237,7 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 		if( ListItem >= 0 && Object->Display()->Type() == cxDisplay::menu )
 			DrawItemText( Object, ListItem, pos, BaseSize );
 		else
-			DrawText(pos, size, Object->Fg(), Object->Text(), Object->Font(), 
+			DrawText(pos, size, Object->Fg(), Object->Bg(), Object->Text(), Object->Font(),
 		         	 Object->Align());
 		break;
 
@@ -226,17 +245,17 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 		if( ListItem >= 0 && Object->Display()->Type() == cxDisplay::menu )
 			DrawItemText( Object, ListItem, pos, BaseSize );
 		else
-			DrawMarquee(pos, size, Object->Fg(), Object->Text(), Object->Font(), 
-		            	    Object->Align(), Object->Delay(), Object->Index());
+			DrawMarquee(pos, size, Object->Fg(), Object->Bg(), Object->Text(), Object->Font(),
+		            	    Object->Align(), Object->Delay(), Object->State());
 		break;
 
 	case cxObject::blink:
 		if( ListItem >= 0 && Object->Display()->Type() == cxDisplay::menu )
 			DrawItemText( Object, ListItem, pos, BaseSize );
 		else
-			DrawBlink(pos, size, Object->Fg(), Object->Bg(), Object->Text(), 
+			DrawBlink(pos, size, Object->Fg(), Object->Bg(), Object->Bl(), Object->Text(),
 		          	  Object->Font(), Object->Align(), Object->Delay(),
-				  Object->Index());
+				  Object->State());
 		break;
 
 	case cxObject::rectangle:
@@ -267,7 +286,7 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 
 	case cxObject::block:
 		for (uint i = 0; i < Object->Objects(); ++i)
-			DrawObject(Object->GetObject(i), pos, size, ListItem,
+			DrawObject(Object->GetObject(i), pos, size, Object->mVirtSize, ListItem,
 				   ListItem >= 0 ? true : Object->mRefresh.Full());
 		break;
 
@@ -304,13 +323,8 @@ void cText2SkinRender::DrawObject( cxObject *Object,
 				itempos.y = pos.y + index * itemsize.h;
 				for (uint j = 1; j < Object->Objects(); ++j) {
 					item = Object->GetObject(j);
-					// exclude items with only "list" update set from
-					// complete redraw
-					if( !partial && !(item->mRefresh.Type() &
-					   ~(1<<cxRefresh::list)) )
-						continue;
 					item->SetListIndex( index, -1 );
-					DrawObject( item, itempos, itemsize, index, true);
+					DrawObject( item, itempos, itemsize, Object->mVirtSize, index, true);
 				}
 				Ddiff( "draw item", item );
 			}
@@ -346,8 +360,8 @@ void cText2SkinRender::DrawItemText(cxObject *Object, int i, const txPoint &List
 		// for TTF
 		const cFont *defFont = cFont::GetFont(fontOsd);
 		const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
-		if( defFont != Object->Font() )
-			mTabScale = 1.05 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
+		//if( defFont != Object->Font() )
+			mTabScale = 1.08 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
 		mTabScaleSet = true;
 	}
 
@@ -435,18 +449,20 @@ void cText2SkinRender::DrawItemText(cxObject *Object, int i, const txPoint &List
 		} else {
 			switch (Object->Type()) {
 			case cxObject::text:
-				DrawText(Pos, Size, Object->Fg(), Object->Text(), Object->Font(), 
-		         	         Object->Align());
+				DrawText(Pos, Size, Object->Fg(), Object->Bg(), Object->Text(),
+					 Object->Font(), Object->Align());
 				break;
 
 			case cxObject::marquee:
-				DrawMarquee(Pos, Size, Object->Fg(), Object->Text(), Object->Font(), 
-		                    	    Object->Align(), Object->Delay(), Object->Index());
+				DrawMarquee(Pos, Size, Object->Fg(), Object->Bg(), Object->Text(),
+ 					    Object->Font(), Object->Align(), Object->Delay(),
+					    Object->State());
 				break;
 
 			case cxObject::blink:
-				DrawBlink(Pos, Size, Object->Fg(), Object->Bg(), Object->Text(), 
-		          		  Object->Font(), Object->Align(), Object->Delay(), Object->Index());
+				DrawBlink(Pos, Size, Object->Fg(), Object->Bg(), Object->Bl(),
+					  Object->Text(), Object->Font(), Object->Align(),
+					  Object->Delay(), Object->State());
 				break;
 			default:
 				break;
@@ -473,23 +489,26 @@ void cText2SkinRender::DrawImage(const txPoint &Pos, const txSize &Size, const t
 	}
 }
 
-void cText2SkinRender::DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-                                const std::string &Text, const cFont *Font, int Align) 
+void cText2SkinRender::DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg,
+                                const tColor *Bg, const std::string &Text, const cFont *Font, int Align) 
 {
 	//Dprintf("trying to draw text %s to %d,%d size %d,%d, color %x\n", Text.c_str(), Pos.x, Pos.y, 
 	//        Size.w, Size.h, Fg ? *Fg : 0);
+	if( Bg ) {
+		mScreen->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, *Bg );
+	}
+
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), Fg ? *Fg : 0, 0, Font, Size.w, Size.h, Align);
 }
 
 void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-                                   const std::string &Text, const cFont *Font, int Align, 
-                                   uint Delay, uint Index)
+                                   const tColor *Bg, const std::string &Text, const cFont *Font,
+                                   int Align, uint Delay, txState &state)
 {
 	bool scrolling = Font->Width(Text.c_str()) > Size.w;
 	
-	tState &state = mStates[Index];
 	if (state.text != Text) {
-		state = tState();
+		state = txState();
 		state.text = Text;
 	}
 	
@@ -538,22 +557,31 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 	}
 	//Dprintf("drawMarquee text = %s, state.text = %s, offset = %d, index = %d, scrolling = %d, mUpdatteIn = %d, nexttime = %d, delay = %d\n", 
 	//        Text.c_str(), state.text.c_str(), state.offset, Index, scrolling, mUpdateIn, state.nexttime, Delay);
-		
+
+
+	if( Bg ) {
+		mScreen->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, *Bg );
+	}
+
 	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + state.offset, Fg ? *Fg : 0, clrTransparent, Font,
 	                  Size.w, Size.h, Align);
 }
-	
+
+
+
+
+
+
+
 void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
-                                 const tColor *Bg, const std::string &Text, const cFont *Font, 
-                                 int Align, uint Delay, uint Index)
+                                 const tColor *Bg, const tColor *Bl, const std::string &Text,
+                                 const cFont *Font, int Align, uint Delay, txState &state)
 {
-	tState &state = mStates[Index];
 	if (state.text != Text) {
-		state = tState();
+		state = txState();
 		state.text = Text;
 	}
-	Dprintf("drawBlink index = %d, state.text = %s, offset = %d\n", Index, state.text.c_str(), 
-	        state.offset);
+	Dprintf("drawBlink state.text = %s, offset = %d\n", state.text.c_str(), state.offset);
 
 	if (state.nexttime == 0 || mNow >= state.nexttime) {
 		state.nexttime = mNow + Delay;
@@ -564,16 +592,32 @@ void cText2SkinRender::DrawBlink(const txPoint &Pos, const txSize &Size, const t
 	if (mUpdateIn == 0 || updatein < mUpdateIn)
 		mUpdateIn = updatein;
 
-	const tColor *col = state.offset == 0 ? Fg : Bg;
-	if (col)
+	const tColor *col = state.offset == 0 ? Fg : Bl;
+
+	if( Bg ) {
+		mScreen->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, *Bg );
+	}
+
+	if( col ) {
 		mScreen->DrawText(Pos.x, Pos.y, Text.c_str(), *col, clrTransparent, Font, Size.w, Size.h, 
 		                  Align);
+	}
 }
+
+
+
+
+
 
 void cText2SkinRender::DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg) 
 {
 	mScreen->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, Fg ? *Fg : 0);
 }
+
+
+
+
+
 
 void cText2SkinRender::DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
                                    int Arc) 
@@ -581,9 +625,19 @@ void cText2SkinRender::DrawEllipse(const txPoint &Pos, const txSize &Size, const
 	mScreen->DrawEllipse(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, Fg ? *Fg : 0, Arc);
 }
 
+
+
+
+
+
 void cText2SkinRender::DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc) {
 	mScreen->DrawSlope(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, Fg ? *Fg : 0, Arc);
 }
+
+
+
+
+
 
 void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, 
                                        int Total, const tColor *Bg, const tColor *Fg, 
@@ -635,6 +689,11 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 	}
 }
 
+
+
+
+
+
 void cText2SkinRender::DrawMark(const txPoint &Pos, const txSize &Size, bool Start, bool Current, 
                                 bool Horizontal, const tColor *Mark, const tColor *Cur)
 {
@@ -662,6 +721,11 @@ void cText2SkinRender::DrawMark(const txPoint &Pos, const txSize &Size, bool Sta
 	}
 }
 
+
+
+
+
+
 void cText2SkinRender::DrawScrolltext(const txPoint &Pos, const txSize &Size, const tColor *Fg, 
                                       const std::string &Text, const cFont *Font, int /*Align*/)
 {
@@ -672,7 +736,12 @@ void cText2SkinRender::DrawScrolltext(const txPoint &Pos, const txSize &Size, co
 	else
 		mScroller->DrawText();
 }
-	
+
+
+
+
+
+
 void cText2SkinRender::DrawScrollbar(const txPoint &Pos, const txSize &Size, const tColor *Bg, 
                                      const tColor *Fg) 
 {
@@ -720,11 +789,21 @@ void cText2SkinRender::DrawScrollbar(const txPoint &Pos, const txSize &Size, con
 	}
 }
 
+
+
+
+
+
 txPoint cText2SkinRender::Transform(const txPoint &Pos) 
 {
 	txSize base = mRender->mBaseSize;
 	return txPoint(Pos.x < 0 ? base.w + Pos.x : Pos.x, Pos.y < 0 ? base.h + Pos.y : Pos.y);
 }
+
+
+
+
+
 
 bool cText2SkinRender::ItemColor(const std::string &Color, tColor &Result) 
 {
@@ -738,6 +817,11 @@ bool cText2SkinRender::ItemColor(const std::string &Color, tColor &Result)
 	return true;
 }
 
+
+
+
+
+
 std::string cText2SkinRender::ImagePath(const std::string &Filename) 
 {
 	if (mRender)
@@ -746,6 +830,11 @@ std::string cText2SkinRender::ImagePath(const std::string &Filename)
 			: mRender->mBasePath + "/" + Filename;
 	return "";
 }
+
+
+
+
+
 
 cxType cText2SkinRender::GetToken(const txToken &Token) 
 {
@@ -814,6 +903,11 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 	}
 	return false;
 }
+
+
+
+
+
 
 cxType cText2SkinRender::GetTokenData(const txToken &Token) 
 {

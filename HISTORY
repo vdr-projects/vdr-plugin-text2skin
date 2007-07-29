@@ -1,6 +1,17 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+2007-07-29: Version 1.1-cvs_ext-0.11 (text2skin-1.1-cvs_ext-0.11.diff)
+
+- moved state tracking of marquee, blink, scroll from cText2SkinRender
+  to cxObject
+- fixed compatibility with gcc-4 and vdr-1.5.x
+- fixed use of Update.Lock() in render.h
+- new: dynamic width/height of objects
+- new: Option "bgColor" used for items "Text", "Marquee", and "Blink".
+- remember period to next timeout when doing a non-timeout refresh
+  prevent occasional start/stop of marquee-text
+
 2007-05-06: Version 1.1-cvs_ext-0.10c (text2skin-1.1-cvs_ext-0.10c.diff)
 
 - selective update of changed objects

@@ -159,11 +159,12 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				      || name == "blink"
 				      || name == "scrolltext") {
 					ATTRIB_OPT_STRING("color",     object->mFg);
+					ATTRIB_OPT_STRING("bgColor",   object->mBg);
 					ATTRIB_OPT_FUNC  ("align",     object->ParseAlignment);
 					ATTRIB_OPT_FUNC  ("font",      object->ParseFontFace);
 
 					if      (name == "blink") {
-						ATTRIB_OPT_STRING("blinkColor", object->mBg);
+						ATTRIB_OPT_STRING("blinkColor", object->mBl);
 						ATTRIB_OPT_NUMBER("delay",      object->mDelay);
 						
 						if (object->mDelay == 0)
@@ -196,6 +197,9 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				else if (name == "item") {
 					ATTRIB_MAN_NUMBER("height",  object->mPos2.y);
 					--object->mPos2.y;
+				} else if (name == "block" || name == "list") {
+					ATTRIB_OPT_NUMBER("w",  object->mVirtSize.w);
+					ATTRIB_OPT_NUMBER("h",  object->mVirtSize.h);
 				}
 			} else
 				TAG_ERR_REMAIN(context[context.size() - 1].c_str());

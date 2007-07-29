@@ -17,7 +17,7 @@
 #	else
 #		define Dprintf(x...)
 #	endif
-#	define Dbench(x) uint64 bench_##x = time_ms()
+#	define Dbench(x) uint64_t bench_##x = time_ms()
 #	define Ddiff(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
 #else
 #	define Dprintf(x...)
@@ -25,7 +25,7 @@
 #	define Ddiff(t,x)
 #endif
 
-#define DStartBench(x) uint64 bench_##x = time_ms()
+#define DStartBench(x) uint64_t bench_##x = time_ms()
 #define DShowBench(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
 
 #if VDRVERSNUM >= 10318
