@@ -41,6 +41,7 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 	if ( _cache.find(CacheName) != _cache.end() )
 		return true;	
 	
+#if VDRVERSNUM < 10503
 	int error = FT_New_Face(_library, Filename.c_str(), format, &_face);
 
 	// every thing ok?
@@ -186,6 +187,17 @@ bool cGraphtftFont::Load(string Filename, string CacheName, int Size, int Langua
 	delete(font_data);
 	// Something went wrong!
 	return false;
+#else
+#if VDRVERSNUM < 10504
+	cFont* newFont = new cFreetypeFont(*AddDirectory(FONTDIR, Filename.c_str()), Size);
+#else
+	cFont* newFont = cFont::CreateFont(Filename.c_str(), Size);
+#endif
+	if ( newFont == NULL )
+		return false;
+	_cache[CacheName] = newFont;
+	return true;
+#endif
 }
 
 const cFont* cGraphtftFont::GetFont(string CacheName){
@@ -209,10 +221,12 @@ void cGraphtftFont::Clear()
 		delete((*it).second);
 	_cache.clear();
 
+#if VDRVERSNUM < 10503
 	del_map::iterator del_it = _del.begin();
 	for (; del_it != _del.end(); ++del_it)
 		delete((*del_it).second);
 	_del.clear();
+#endif
 }
 				
 cGraphtftFont GraphtftFont;
