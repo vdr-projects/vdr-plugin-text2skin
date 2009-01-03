@@ -5,6 +5,7 @@
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
 #define VDR_TEXT2SKIN_CACHE_HPP
 
+#include <cstdlib>
 #include <map>
 #include <vector>
 #include <string>

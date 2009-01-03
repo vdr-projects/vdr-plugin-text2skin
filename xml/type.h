@@ -5,6 +5,7 @@
 #ifndef VDR_TEXT2SKIN_XML_TYPE_H
 #define VDR_TEXT2SKIN_XML_TYPE_H
 
+#include <cstdlib>
 #include <string>
 #include <vdr/tools.h>
 #include <stdio.h>
