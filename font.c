@@ -31,8 +31,13 @@ const cFont *cText2SkinFont::Load(const std::string &Path, const std::string &Fi
 	const cFont *res = NULL;
 #ifdef HAVE_FREETYPE
 	char *cachename;
+#if VDRVERSNUM >= 10507
+	asprintf(&cachename, "%s_%d_%d_%d", Filename.c_str(), Size, Width, I18nCurrentLanguage());
+	if (mFontCache.Load(Path + "/" + Filename, cachename, Size, I18nCurrentLanguage(), Width))
+#else
 	asprintf(&cachename, "%s_%d_%d_%d", Filename.c_str(), Size, Width, Setup.OSDLanguage);
 	if (mFontCache.Load(Path + "/" + Filename, cachename, Size, Setup.OSDLanguage, Width))
+#endif
 		res = mFontCache.GetFont(cachename);
 	else
 		esyslog("ERROR: Text2Skin: Couldn't load font %s:%d", Filename.c_str(), Size);

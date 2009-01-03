@@ -109,8 +109,13 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name,
 
 void cText2SkinStatus::OsdClear(void) 
 {
+#if VDRVERSNUM >= 10507
+	if (I18nCurrentLanguage() != mLastLanguage) {
+		mLastLanguage = I18nCurrentLanguage();
+#else
 	if (Setup.OSDLanguage != mLastLanguage) {
 		mLastLanguage = Setup.OSDLanguage;
+#endif
 		cxString::Reparse();
 	}
 }
