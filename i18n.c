@@ -166,11 +166,7 @@ cText2SkinI18n::cText2SkinI18n(const char *Skin): cText2SkinFile(Skin) {
 
 cText2SkinI18n::~cText2SkinI18n() {
 	for (int i = 0; mPhrases[i][0]; ++i) {
-#if VDRVERSNUM >= 10507
-		for (int j = 0; j < I18nLanguages()->Size(); ++j)
-#else
 		for (int j = 0; j < I18nNumLanguages; ++j)
-#endif
 			free((void*)mPhrases[i][j]);
 	}
 	free(mPhrases);
@@ -186,11 +182,7 @@ bool cText2SkinI18n::Parse(const char *Text) {
 			memset(&p, 0, sizeof(tI18nPhrase));
 			Text += 17;
 
-#if VDRVERSNUM >= 10507
-			for (i = 0; i < I18nLanguages()->Size(); ++i) {
-#else
 			for (i = 0; i < I18nNumLanguages; ++i) {
-#endif
 				char *langs = strdup(I18nLanguageCode(i));
 				char *ptr = langs, *ep;
 				std::string text;
@@ -208,11 +200,7 @@ bool cText2SkinI18n::Parse(const char *Text) {
 			}
 
 			int idx = mNumPhrases++;
-#if VDRVERSNUM >= 10507
-			for (i = 0; i < I18nLanguages()->Size(); ++i)
-#else
 			for (i = 0; i < I18nNumLanguages; ++i)
-#endif
 				if (!p[i]) p[i] = "";
 			mPhrases = (tI18nPhrase*)realloc(mPhrases, (mNumPhrases + 1) * sizeof(tI18nPhrase));
 			memcpy(mPhrases[idx], p, sizeof(tI18nPhrase));
@@ -226,9 +214,7 @@ bool cText2SkinI18n::Parse(const char *Text) {
 
 bool cText2SkinI18n::Load(const std::string &Filename) {
 	if (cText2SkinFile::Load(Filename)) {
-#if VDRVERSNUM <= 10506
 		I18nRegister(mPhrases, mIdentity.c_str());
-#endif
 		return true;
 	}
 	return false;

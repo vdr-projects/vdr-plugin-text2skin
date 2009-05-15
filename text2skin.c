@@ -25,11 +25,7 @@ cText2SkinPlugin::~cText2SkinPlugin() {
 
 bool cText2SkinPlugin::Start(void) {
 	RegisterI18n(Phrases);
-#if VDRVERSNUM >= 10507
-	Text2SkinStatus.SetLanguage(I18nCurrentLanguage());
-#else
 	Text2SkinStatus.SetLanguage(Setup.OSDLanguage);
-#endif
 	cText2SkinLoader::Start();
 	return true;
 }
