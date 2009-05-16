@@ -19,6 +19,8 @@ HAVE_FREETYPE=1
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
 # By default the main source file also carries this name.
+# IMPORTANT: the presence of this macro is important for the Make.config
+# file. So it must be defined, even if it is not used here!
 #
 PLUGIN = text2skin
 
@@ -29,27 +31,27 @@ VERSION = $(shell grep 'const char \*cText2SkinPlugin::VERSION *=' $(PLUGIN).c |
 ### The C++ compiler and options:
 
 CXX      ?= g++
-CXXFLAGS ?= -Wall -Woverloaded-virtual
+CXXFLAGS ?= -fPIC -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-DVBDIR = ../../../../DVB
 VDRDIR = ../../..
 LIBDIR = ../../lib
 TMPDIR = /tmp
 
-### The version number of VDR (taken from VDR's "config.h"):
+### Allow user defined options to overwrite defaults:
 
-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+-include $(VDRDIR)/Make.config
+
+### The version number of VDR's plugin API (taken from VDR's "config.h"):
+
+APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' \
+                         $(VDRDIR)/config.h)
 
 ### The name of the distribution archive:
 
 ARCHIVE = $(PLUGIN)-$(VERSION)
 PACKAGE = vdr-$(ARCHIVE)
-
-### Allow user defined options to overwrite defaults:
-
--include $(VDRDIR)/Make.config
 
 ### The object files (add further files here):
 
@@ -95,43 +97,67 @@ ifdef BENCH
 endif
 endif
 
-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/linux/include -I$(DVBDIR)/include -I.
+INCLUDES += -I$(VDRDIR)/include -I.
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+
+### The main target:
+
+all: libvdr-$(PLUGIN).so i18n
 
 ### Implicit rules:
 
 %.o: %.c
 	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
 
-# Dependencies:
+### Dependencies:
 
-MAKEDEP = g++ -MM -MG
+MAKEDEP = $(CXX) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
 
 -include $(DEPFILE)
 
-### Targets:
+### Internationalization (I18N):
 
-all: libvdr-$(PLUGIN).so
+PODIR     = po
+LOCALEDIR = $(VDRDIR)/locale
+I18Npo    = $(notdir $(wildcard $(PODIR)/*.po))
+I18Npot   = $(PODIR)/$(PLUGIN).pot
+
+$(I18Npot): $(wildcard *.c)
+	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP \
+	         --msgid-bugs-address='<sascha@akv-soft.de>' -o $@ $^
+
+%.po: $(I18Npot)
+	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
+	@touch $@
+
+$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.po
+	@mkdir -p $(dir $@)
+	msgfmt -c -o $@ $<
+
+.PHONY: i18n
+i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo)
+
+### Targets:
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
+	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 ifndef DEBUG
-	strip $(LIBDIR)/$@.$(VDRVERSION)
+	strip $(LIBDIR)/$@.$(APIVERSION)
 endif
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@mkdir $(TMPDIR)/$(ARCHIVE)
 	@cp -a * $(TMPDIR)/$(ARCHIVE)
-	@ln -s $(ARCHIVE) $(TMPDIR)/$(PLUGIN)
-	@tar czf $(PACKAGE).tgz -C $(TMPDIR) $(ARCHIVE) $(PLUGIN)
-	@-rm -rf $(TMPDIR)/$(ARCHIVE) $(TMPDIR)/$(PLUGIN)
+	@tar czf $(PACKAGE).tgz -C $(TMPDIR) \
+	     --exclude debian --exclude CVS --exclude .svn $(ARCHIVE)
+	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ SKINS SKINS.de
+	@-rm -f $(OBJS) $(DEPFILE) *.so $(I18Npot) *.tgz core* *~ SKINS SKINS.de

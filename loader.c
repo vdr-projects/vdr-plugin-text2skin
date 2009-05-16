@@ -34,6 +34,9 @@ void cText2SkinLoader::Start(void) {
 }
 
 void cText2SkinLoader::Load(const char *Skin) {
+#if VDRVERSNUM >= 10507
+	cText2SkinI18n *translations = new cText2SkinI18n(Skin);
+#else
 	cText2SkinI18n *translations = NULL;
 	std::string transfile = SkinPath() + "/" + Skin + "/" + Skin + ".trans";
 	if (access(transfile.c_str(), F_OK) == 0) {
@@ -41,6 +44,7 @@ void cText2SkinLoader::Load(const char *Skin) {
 		if (!translations->Load(transfile))
 			DELETENULL(translations);
 	}
+#endif
 
 	cText2SkinTheme *theme = new cText2SkinTheme(Skin);
 	std::string themefile = SkinPath() + "/" + Skin + "/" + Skin + ".colors";

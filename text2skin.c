@@ -15,7 +15,7 @@
 
 const char *cText2SkinPlugin::VERSION        = "1.1-cvs";
 const char *cText2SkinPlugin::SKINVERSION    = "1.0";
-const char *cText2SkinPlugin::DESCRIPTION    = "Loader for text-based skins";
+const char *cText2SkinPlugin::DESCRIPTION    = trNOOP("Loader for text-based skins");
 
 cText2SkinPlugin::cText2SkinPlugin(void) {
 }
@@ -24,8 +24,12 @@ cText2SkinPlugin::~cText2SkinPlugin() {
 }
 
 bool cText2SkinPlugin::Start(void) {
+#if VDRVERSNUM < 10507
 	RegisterI18n(Phrases);
 	Text2SkinStatus.SetLanguage(Setup.OSDLanguage);
+#else
+	Text2SkinStatus.SetLanguage(I18nCurrentLanguage());
+#endif
 	cText2SkinLoader::Start();
 	return true;
 }

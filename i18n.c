@@ -5,6 +5,7 @@
 #include "i18n.h"
 #include <vdr/config.h>
 
+#if VDRVERSNUM < 10507
 const tI18nPhrase Phrases[] = {
 	/*
   { "English",
@@ -156,14 +157,22 @@ const tI18nPhrase Phrases[] = {
   },
 	{ NULL }
 };
+#endif
 
+#if VDRVERSNUM >= 10507
+cText2SkinI18n::cText2SkinI18n(const char *Skin) {
+	mIdentity   = std::string("vdr-"PLUGIN_NAME_I18N"-") + Skin;
+	I18nRegister(mIdentity.substr(mIdentity.find('-') + 1).c_str());
+#else
 cText2SkinI18n::cText2SkinI18n(const char *Skin): cText2SkinFile(Skin) {
 	mIdentity   = (std::string)"text2skin_" + Skin;
 	mNumPhrases = 0;
 	mPhrases    = (tI18nPhrase*)malloc(sizeof(tI18nPhrase));
 	memset(mPhrases[mNumPhrases], 0, sizeof(tI18nPhrase));
+#endif
 }
 
+#if VDRVERSNUM < 10507
 cText2SkinI18n::~cText2SkinI18n() {
 	for (int i = 0; mPhrases[i][0]; ++i) {
 		for (int j = 0; j < I18nNumLanguages; ++j)
@@ -219,3 +228,4 @@ bool cText2SkinI18n::Load(const std::string &Filename) {
 	}
 	return false;
 }
+#endif
