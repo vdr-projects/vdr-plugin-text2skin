@@ -16,7 +16,7 @@
 #	else
 #		define Dprintf(x...)
 #	endif
-#	define Dbench(x) uint64 bench_##x = time_ms()
+#	define Dbench(x) uint64_t bench_##x = time_ms()
 #	define Ddiff(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
 #else
 #	define Dprintf(x...)
