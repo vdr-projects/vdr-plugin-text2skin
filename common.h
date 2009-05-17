@@ -10,6 +10,9 @@
 #include <vdr/osd.h>
 #include <vdr/config.h>
 
+// from recording.h (VDR <= 1.7.2)
+#define FRAMESPERSEC 25
+
 #if defined(DEBUG) || defined(BENCH)
 #	ifdef DEBUG
 #		define Dprintf(x...) fprintf(stderr, x)
