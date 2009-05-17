@@ -71,7 +71,8 @@ endif
 
 ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
-	LIBS += -lMagick -lMagick++
+	INCLUDES += `pkg-config --cflags ImageMagick++`
+	LIBS += `pkg-config --libs ImageMagick++`
 #	LIBS += $(shell Magick++-config --ldflags --libs)
 endif
 
