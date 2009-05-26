@@ -231,7 +231,7 @@ The same applies to "{MenuTitle:clean}" if a logo for the current menu page is w
 * file  - returns the parameter, if the file exists in the skin directory 
           (e.g. "file('logos/{ChannelName}.png')" )
 * trans - return the translation (i18n) of the parameter, false, if no translation is found 
-          (e.g. "equal('Kan‰le', trans('Channels'))" )
+          (e.g. "equal('Kan√§le', trans('Channels'))" )
 
 Normally strings in function are quoted in quotation marks, only if the simply consists of a token the quotation marks can be omitted. (e.g. "not({MenuText})" instead of  "not('{MenuText}')" )
 

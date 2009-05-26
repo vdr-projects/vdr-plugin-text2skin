@@ -4,7 +4,7 @@ VDR Plugin 'text2skin' Revision History
 2005-06-xx: Version 1.1
 
 - fixed crash due to uninitialized pointer (thanks to Frank Enderle)
-- patch for PresentRemaining by Björn (VDR-Portal)
+- patch for PresentRemaining by BjÃ¶rn (VDR-Portal)
 - fixed a race condition (thanks to Reinhard Nissl for pointing this out)
 - updated finnish translations (thanks to Rolf Ahrenberg)
 - fixed displaying of partial channel numbers while changing channels (thanks to

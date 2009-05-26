@@ -821,7 +821,7 @@ True, if one parameter is true.
 ---------
 True, if both parameters are true.
 
- equal('Kan‰le', trans('Channels'))
+ equal('Kan√§le', trans('Channels'))
 
 3.5 ne
 ---------
@@ -868,7 +868,7 @@ Returns the parameter, if the file exists in the skin directory.
 ---------
 Rreturn the translation (i18n) of the parameter, false, if no translation is found.
 
- equal('Kan‰le', trans('Channels'))
+ equal('Kan√§le', trans('Channels'))
 
 
 4. Attributes
