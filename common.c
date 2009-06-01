@@ -32,7 +32,7 @@ const char *ChannelName(const cChannel *Channel, int Number)
 	if (Channel)
 		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
 	else if (!Number)
-		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
+		snprintf(buffer, sizeof(buffer), "%s", trVDR("*** Invalid Channel ***"));
 
 #if VDRVERSNUM < 10315
 	char *ptr;
@@ -54,7 +54,7 @@ const char *ChannelShortName(const cChannel *Channel, int Number)
 		snprintf(buffer, sizeof(buffer), "%s", Channel->ShortName(true));
 #endif
 	else if (!Number)
-		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
+		snprintf(buffer, sizeof(buffer), "%s", trVDR("*** Invalid Channel ***"));
 
 #if VDRVERSNUM < 10315
 	char *ptr;

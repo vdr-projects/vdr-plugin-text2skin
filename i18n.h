@@ -11,6 +11,7 @@
 
 #if VDRVERSNUM < 10507
 #define trNOOP(s) (s)
+#define trVDR(s) tr(s)
 
 extern const tI18nPhrase Phrases[];
 

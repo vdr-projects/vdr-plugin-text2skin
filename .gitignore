@@ -1,0 +1,7 @@
+.dependencies
+*.o
+*.so*
+*.pot
+*.tgz
+*~
+debian
