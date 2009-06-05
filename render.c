@@ -145,15 +145,22 @@ void cText2SkinRender::Action(void)
 
 void cText2SkinRender::Update(void) 
 {
+	//DStartBench(malen);
+	//DStartBench(ges);
 	Dbench(update);
 
 	for (uint i = 0; i < mDisplay->Objects(); ++i)
 		DrawObject(mDisplay->GetObject(i));
 
+	//DShowBench("---\t", malen);
+	//DStartBench(flushen);
 	Dbench(flush);
 	mScreen->Flush();
 	Ddiff("flush only", flush);
 	Ddiff("complete flush", update);
+	//DShowBench("===\t", flushen);
+	//DShowBench("=== ges\t", ges);
+	//printf("====\t%d\n", mDisplay->Objects());
 }
 
 void cText2SkinRender::DrawObject(const cxObject *Object)
@@ -220,7 +227,9 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 				uint itemheight = item->Size().h;
 				uint maxitems = areasize.h / itemheight;
 				uint yoffset = 0;
+				bool initialEditableWidthSet = false;
 
+				mMenuScrollbar.maxItems = maxitems;
 				SetMaxItems(maxitems); //Dprintf("setmaxitems %d\n", maxitems);
 				for (uint i = 0; i < maxitems; ++i, yoffset += itemheight) {
 					for (uint j = 1; j < Object->Objects(); ++j) {
@@ -253,14 +262,36 @@ void cText2SkinRender::DrawObject(const cxObject *Object)
 									++n;
 								nexttab = GetTab(n);
 							}
-							
+
+							// set initial EditableWidth
+							// this is for plugins like 'extrecmenu' and 'rotor'
+							if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && !initialEditableWidthSet) {
+								initialEditableWidthSet = true;
+								SetEditableWidth(obj.Size().w);
+							}
+
 							if (t >= 0 && nexttab > 0 && nexttab < obj.mPos1.x + obj.Size().w - 1)
 								// there is a "next tab" with text
 								obj.mPos2.x = Object->mPos1.x + o->mPos1.x + nexttab;
 							else {
 								// there is no "next tab", use the rightmost edge
 								obj.mPos2.x += Object->mPos1.x;
-								SetEditableWidth(obj.Size().w);
+								/* not used anymore due to change to fontOsd
+								   but could be usefull if someone uses a differnt font
+
+								if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && t == 1) {
+									// VDR assumes, that the font in the menu is fontOsd,
+									// so the EditableWidth is not necessarily correct
+									// for TTF
+									const cFont *defFont = cFont::GetFont(fontOsd);
+									const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+									int editableWidth = obj.Size().w;
+									if (defFont != obj.Font())
+										editableWidth = (int)(editableWidth * defFont->Width(dummy) / (1.1 * obj.Font()->Width(dummy)));
+									SetEditableWidth(editableWidth);
+								} */
+								if ((obj.Type() == cxObject::text || obj.Type() == cxObject::marquee || obj.Type() == cxObject::blink) && t == 1)
+									SetEditableWidth(obj.Size().w);
 							}
 
 							obj.mPos2.y += Object->mPos1.y + yoffset;
@@ -358,7 +389,21 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 		state = tState();
 		state.text = Text;
 	}
-	
+
+	if (Text2SkinSetup.MarqueeReset && mUpdate.resetMarquee && mUpdate.currentItem.find(Text, 0) != std::string::npos) {
+		state.offset = 0;
+		state.direction = 1;
+		state.nexttime = 0;
+		state.scrolling = false;
+		mUpdate.foundFirstItem = true;
+	}
+	else {
+		if (mUpdate.foundFirstItem) {
+			mUpdate.resetMarquee = false;
+			mUpdate.foundFirstItem = false;
+		}
+	}
+
 	if (state.nexttime == 0)
 		state.nexttime = mNow + 1500;
 	else if (mNow >= state.nexttime) {
@@ -375,7 +420,7 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 				++state.direction;
 				nextin = 1500;
 			} else
-				--state.offset;
+				Text2SkinSetup.MarqueeLeftRight ? --state.offset : state.offset = 0;
 		}
 		state.nexttime = mNow + nextin;
 	}
@@ -544,6 +589,26 @@ void cText2SkinRender::DrawScrollbar(const txPoint &Pos, const txSize &Size, con
 			DrawRectangle(sp, ss, Fg);
 		}
 	}
+	else if (mMenuScrollbar.Available()) {
+		DrawRectangle(Pos, Size, Bg);
+		txPoint sbPoint = Pos;
+		txSize sbSize = Size;
+		if (sbSize.h > sbSize.w) {
+			// -1 to get at least 1 pixel height
+			double top = double(mMenuScrollbar.Top()) / mMenuScrollbar.total * (sbSize.h - 1);
+			double bottom = double(mMenuScrollbar.Bottom()) / mMenuScrollbar.total * (sbSize.h - 1);
+			sbPoint.y += (uint)top;
+			sbSize.h -= (uint)top + (uint)bottom;
+		}
+		else {
+			// -1 to get at least 1 pixel height
+			double left = double(mMenuScrollbar.Top()) / mMenuScrollbar.total * (sbSize.w - 1);
+			double right = double(mMenuScrollbar.Bottom()) / mMenuScrollbar.total * (sbSize.w - 1);
+			sbPoint.x += (uint)left;
+			sbSize.w -= (uint)left + (uint)right;
+		}
+		DrawRectangle(sbPoint, sbSize, Fg);
+	}
 }
 
 txPoint cText2SkinRender::Transform(const txPoint &Pos) 
@@ -567,7 +632,9 @@ bool cText2SkinRender::ItemColor(const std::string &Color, tColor &Result)
 std::string cText2SkinRender::ImagePath(const std::string &Filename) 
 {
 	if (mRender)
-		return mRender->mBasePath + "/" + Filename;
+		return (*Filename.data() == '/')
+		       ? Filename
+		       : mRender->mBasePath + "/" + Filename;
 	return "";
 }
 
@@ -655,11 +722,25 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tDateTime:      return TimeType(time(NULL), Token.Attrib.Text);
 
-	case tCanScrollUp:   return mScroller != NULL && mScroller->CanScrollUp();
+	case tCanScrollUp:
+		if (mScroller)
+			return mScroller->CanScrollUp();
+		if (mMenuScrollbar.Available())
+			return mMenuScrollbar.CanScrollUp();
+		return false;
 
-	case tCanScrollDown: return mScroller != NULL && mScroller->CanScrollDown();
-	
+	case tCanScrollDown:
+		if (mScroller)
+			return mScroller->CanScrollDown();
+		if (mMenuScrollbar.Available())
+			return mMenuScrollbar.CanScrollDown();
+		return false;
+
 	case tIsRecording:   return cRecordControls::Active();
+
+	case tOsdWidth:      return (cxType)mBaseSize.w;
+
+	case tOsdHeight:     return (cxType)mBaseSize.h;
 
 #if VDRVERSNUM >=10318
 	case tAudioTrack:    {

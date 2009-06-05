@@ -144,14 +144,13 @@ const cFont *cxObject::Font(void) const
 {
 	const cFont *font;
 
-	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) 
-	        != NULL)
-		return font;
-	
 	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize, 
 	                                 mFontWidth)) != NULL)
 		return font;
-	
+
+	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) != NULL)
+		return font;
+
 	return cFont::GetFont(fontOsd);
 }
 

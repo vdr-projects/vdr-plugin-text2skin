@@ -4,6 +4,10 @@
  
 #include "status.h"
 #include "render.h"
+#include "menu.h"
+#include <vdr/timers.h>
+#include <vdr/plugin.h>
+#include <vdr/menu.h>
 
 const std::string ReplayNames[__REPLAY_COUNT__] =
 	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image" };
@@ -51,9 +55,18 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 				mReplayIsLoop    = Name[1] == 'L';
 				mReplayIsShuffle = Name[2] == 'S';
 			}
-		} 
-		else if (GetRecordingByName(Name) != NULL)
+		}
+#if VDRVERSNUM >= 10338
+		else if (const cRecording *rec = GetRecordingByFileName(FileName)) {
+			mReplay = rec;
 			mReplayMode = replayNormal;
+		}
+#else
+		else if (const cRecording *rec = GetRecordingByName(Name)) {
+			mReplay = rec;
+			mReplayMode = replayNormal;
+		}
+#endif
 		else if (strcmp(Name, "DVD") == 0)
 			mReplayMode = replayDVD;
 		else if (strcmp(Name, "VCD") == 0)
@@ -118,13 +131,285 @@ void cText2SkinStatus::OsdClear(void)
 #endif
 		cxString::Reparse();
 	}
+
+	if (mRender != NULL)
+		mRender->mMenuScrollbar.total = 0;
+}
+
+void cText2SkinStatus::OsdCurrentItem(const char *Text)
+{
+	if (mRender && Text) {
+		// update infos
+		cText2SkinRender::tUpdate *u = &mRender->mUpdate;
+		//static std::string lastItem;
+
+		//lastItem = u->currentItem;
+		u->currentItem = Text;
+		u->resetMarquee = true;
+		u->foundFirstItem = false;
+
+		// find current item in scrollbar
+		if (Text2SkinSetup.MenuScrollbar) {
+			cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
+			for (uint i = 0; i < sb->total; i++) {
+				if (sb->items[i] == Text) {
+					sb->current = i;
+					break;
+				}
+			}
+		}
+	}
+}
+
+void cText2SkinStatus::OsdItem(const char *Text, int Index)
+{
+	if (mRender && Text2SkinSetup.MenuScrollbar && Text) {
+		uint curr = (uint)Index;
+		cText2SkinRender::tMenuScrollbar *sb = &mRender->mMenuScrollbar;
+
+		if (curr < sb->items.size())
+			sb->items[curr] = Text;
+		else {
+			sb->items.push_back(Text);
+			sb->total = curr + 1;
+		}
+
+		if (curr + 1 > sb->total)
+			sb->total = curr + 1;
+	}
+}
+
+void cText2SkinStatus::UpdateEvents(void)
+{
+	if (mRender->mUpdate.events) {
+		mRender->mUpdate.events = false;
+
+		mEvents.Clear();
+		Timers.IncBeingEdited();
+
+		for (cTimer *tim = Timers.First(); tim; tim = Timers.Next(tim)) {
+			if (tim->HasFlags(tfActive)) {
+				int i = 0;
+				cTimer dummy;
+				dummy = *tim;
+
+				do {
+					mEvents.Add(new tEvent(&dummy));
+
+					if (!dummy.IsSingleEvent()) { // add 4 additional rep. timer
+						int j = 0;
+						do {
+							j++; // just to avoid a endless loop
+							dummy.Skip();
+							dummy.Matches(); // Refresh start- and end-time
+						} while (!dummy.DayMatches(dummy.StartTime()) && (j < 7));
+					}
+
+					i++;
+				} while (!dummy.IsSingleEvent() && i < 5);
+			}
+		}
+
+		Timers.DecBeingEdited();
+		mEvents.Sort();
+	}
 }
 
 cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 {
+	int event = 0;
+
 	switch (Token.Type) {
 	case tReplayMode:
 		return ReplayNames[mReplayMode];
+
+	case tFrontendSTR:
+		return GetFrontendSTR();
+
+	case tFrontendSNR:
+		return GetFrontendSNR();
+
+	case tFrontendHasLock:
+		return GetFrontendHasLock();
+
+	case tFrontendHasSignal:
+		return GetFrontendHasSignal();
+
+	case tCurrentEventsTitle3:
+		event++;
+	case tCurrentEventsTitle2:
+		event++;
+	case tCurrentEventsTitle1:
+		UpdateEvents();
+		return mEvents.Count() > event
+		       ? (cxType)mEvents.Get(event)->title.c_str()
+		       : (cxType)false;
+
+	case tCurrentEventsStartDateTime3:
+		event++;
+	case tCurrentEventsStartDateTime2:
+		event++;
+	case tCurrentEventsStartDateTime1:
+		UpdateEvents();
+		return mEvents.Count() > event
+		       ? (cxType)TimeType(mEvents.Get(event)->startTime, Token.Attrib.Text)
+		       : (cxType)false;
+
+	case tCurrentEventsStopDateTime3:
+		event++;
+	case tCurrentEventsStopDateTime2:
+		event++;
+	case tCurrentEventsStopDateTime1:
+		UpdateEvents();
+		return mEvents.Count() > event
+		       ? (cxType)TimeType(mEvents.Get(event)->stopTime, Token.Attrib.Text)
+		       : (cxType)false;
+
+	case tCurrentEventsChannelNumber3:
+		event++;
+	case tCurrentEventsChannelNumber2:
+		event++;
+	case tCurrentEventsChannelNumber1:
+		UpdateEvents();
+		return mEvents.Count() > event
+		       ? (cxType)mEvents.Get(event)->channelNumber
+		       : (cxType)false;
+
+	case tCurrentEventsChannelName3:
+		event++;
+	case tCurrentEventsChannelName2:
+		event++;
+	case tCurrentEventsChannelName1:
+		UpdateEvents();
+		return mEvents.Count() > event
+		       ? (cxType)mEvents.Get(event)->channelName.c_str()
+		       : (cxType)false;
+
+	case tCurrentEventsIsRecording3:
+		event++;
+	case tCurrentEventsIsRecording2:
+		event++;
+	case tCurrentEventsIsRecording1:
+		UpdateEvents();
+		return mEvents.Count() > event
+		       ? (cxType)mEvents.Get(event)->isRecording
+		       : (cxType)false;
+
+	case tTimerConflicts:
+#if VDRVERSNUM >= 10330
+		if (Text2SkinSetup.CheckTimerConflict) {
+			if (mRender->mUpdate.timerConflict) {
+				Epgsearch_lastconflictinfo_v1_0 conflict;
+				mRender->mUpdate.timerConflict = false;
+
+				if (cPluginManager::CallFirstService("Epgsearch-lastconflictinfo-v1.0", &conflict))
+					mTimerConflicts = conflict.relevantConflicts;
+				else
+					mTimerConflicts = 0;
+			}
+			return mTimerConflicts;
+		} else
+#endif
+			return 0;
+
+#if VDRVERSNUM >= 10325
+#if VDRVERSNUM >= 10338
+	case tReplayName:
+		return mReplay != NULL
+		       ? (cxType)mReplay->Name()
+		       : (cxType)false;
+
+	case tReplayDateTime:
+		return mReplay != NULL
+		       ? (cxType)TimeType(mReplay->start, Token.Attrib.Text)
+		       : (cxType)false;
+
+	case tReplayShortText:
+		return mReplay != NULL
+		       ? (cxType)mReplay->Info()->ShortText()
+		       : (cxType)false;
+
+	case tReplayDescription:
+		return mReplay != NULL
+		       ? (cxType)mReplay->Info()->Description()
+		       : (cxType)false;
+#else
+	case tReplayName:
+		return (cxType)false;
+
+	case tReplayDateTime:
+		return (cxType)false;
+
+	case tReplayShortText:
+		return (cxType)false;
+
+	case tReplayDescription:
+		return (cxType)false;
+#endif
+
+	case tReplayLanguageCode:
+		if (mReplay) {
+			const cComponents *components = mReplay->Info()->Components();
+			if (components) {
+				int index = Token.Attrib.Number;
+
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream != 2) // only audio-streams
+						index++;
+					{
+						std::string buffer(c->language);
+						if (c->type == 1)
+							buffer.append("MONO");
+						if ((c->type == 2) || (c->type == 4))
+							buffer.append("DUAL");
+						if (c->type == 5)
+							buffer.append("DD");
+						return (cxType)buffer.c_str();
+					}
+				}
+			}
+		}
+		return false;
+
+	case tReplayLanguageDescription:
+		if (mReplay) {
+			const cComponents *components = mReplay->Info()->Components();
+			if (components) {
+				int index = Token.Attrib.Number;
+
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream != 2) // only audio-streams
+						index++;
+					if (i == index)
+						return (cxType)c->description;
+				}
+			}
+		}
+		return false;
+
+	case tReplayVideoAR:
+		if (mReplay) {
+			const cComponents *components = mReplay->Info()->Components();
+			if (components) {
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream == 1) {
+						switch (c->type) {
+						case 1:
+							return "4:3";
+						case 3:
+							return "16:9";
+						}
+					}
+				}
+			}
+		}
+		return false;
+#endif
 
 	case tCurrentRecording:
 		Dprintf("token attrib type is: %d, number: %d\n", Token.Attrib.Type, Token.Attrib.Number);

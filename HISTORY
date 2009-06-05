@@ -4,6 +4,48 @@ VDR Plugin 'text2skin' Revision History
 ____-__-__: Version 1.3
 
 - Added Italian language texts (thanks to Diego Pierotto / closes #134)
+- Added brougs78-extensions (thanks to Andreas Brugger / references #39)
+  - added tokens for the next 3 timers:
+    CurrentEventsTitle[123], CurrentEventsStartDateTime[123],
+    CurrentEventsStopDateTime[123], CurrentEventsChannelNumber[123],
+    CurrentEventsChannelName[123], CurrentEventsIsRecording[123]
+  - added audio- and video-tokens:
+    PresentLanguageCode, PresentLanguageDescription, PresentVideoAR and
+    implemented the missing code for the Language-token
+  - added tokens for replay:
+    ReplayName, ReplayDateTime, ReplayShortText, ReplayDescription,
+    ReplayLanguageCode, ReplayLanguageDescription, ReplayVideoAR
+  - additional recording-tokens:
+    RecordingVideoAR, RecordingSize
+  - added a reset for scrolling text (configurable)
+  - added recording-tokens:
+    RecordingLength, RecordingCuttedLength
+  - added tokens:
+    OsdWidth, OsdHeight
+  - switched the search-order for the fonts to priorise the skin-folder
+    (this avoids error-messages in the log)
+  - added the possibility to have a scrollbar in every menu - not fully
+    implemented yet (to position in menu-lists is not necessarily correct,
+    if there are more items with the same osd-text)
+  - added a configuration option for showing the scrollbar in the menus
+  - added token TimerConflicts using the service interface of the epgsearch
+    plugin "Epgsearch-lastconflictinfo-v1.0"
+  - added a test-feature to search for reruns of a program and add the
+    information to the extended epg-info (trigger DEVELOPMENT_FEATURES).
+    This uses a service interface of the epgsearch plugin
+    "Epgsearch-searchresults-v1.0"
+  - the extended epg-info and the recording-info are extended by AUX-Infos
+    (configurable)
+    there is also an option to strip known tags
+  - the tab-widths are scaled for taking into account that different TT-Fonts
+    have a different width than the default font from VDR
+  - added tokens for signal-info:
+    FrontendSTR, FrontendSNR, FrontendHasLock, FrontendHasSignal
+  - added token PresentEventID for EPG-images
+  - added tokens for recordings:
+    RecordingFilename, RecordingPriority, RecordingLifetime
+  - set EditableWidth. This is important for plugins like 'rotor' or
+    'extrecmenu'
 
 2009-06-01: Version 1.2
 

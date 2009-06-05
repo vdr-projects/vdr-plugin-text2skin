@@ -10,6 +10,7 @@
 #include "common.h"
 #include "xml/string.h"
 #include <vdr/menu.h>
+#include <vdr/plugin.h>
 
 // --- cText2SkinDisplayChannel -----------------------------------------------
 
@@ -241,7 +242,16 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tLanguage: {
 #if VDRVERSNUM >= 10318
-			// TODO !!!
+			cDevice *dev = cDevice::PrimaryDevice();
+			eTrackType trackType = dev->GetCurrentAudioTrack();
+			const tTrackId *track = dev->GetTrack(trackType);
+			if (track) {
+				std::string buffer(track->language);
+				if (trackType >= ttDolby)
+					buffer.append("DD");
+				return (cxType)buffer.c_str();
+			}
+			return (cxType)false;
 #else
 			int cur;
 			const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
@@ -582,6 +592,32 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		}
 		return false;
 
+	case tLanguage: {
+#if VDRVERSNUM >= 10318
+		cDevice *dev = cDevice::PrimaryDevice();
+		eTrackType trackType = dev->GetCurrentAudioTrack();
+		const tTrackId *track = dev->GetTrack(trackType);
+		if (track) {
+			std::string buffer(track->language);
+			if (trackType >= ttDolby)
+				buffer.append("DD");
+			return (cxType)buffer.c_str();
+		}
+		return (cxType)false;
+#else
+		int cur;
+		const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
+		if (tracks) {
+			int i = 0;
+			while (tracks[i] != NULL)
+				++i;
+			if (cur < i)
+				return tracks[cur];
+		}
+#endif
+	}
+	return false;
+
 	case tMessage:
 		return mText;
 
@@ -737,7 +773,9 @@ void cText2SkinDisplayMenu::Clear(void)
 	mItems.clear();
 	mCurrentItem = (uint)-1;
 	mEvent = NULL;
+	ExtPresentDescription = "";
 	mRecording = NULL;
+	ExtRecordingDescription = "";
 	mText = "";
 	cText2SkinRender::Clear();
 	SetDirty();
@@ -755,6 +793,9 @@ void cText2SkinDisplayMenu::SetTitle(const char *Title)
 	UpdateLock();
 	if (Title == NULL) Title = "";
 	if (mTitle != Title) {
+		mUpdate.timerConflict = true;
+		mUpdate.events = true;
+		mUpdate.resetMarquee = true;
 		mTitle = Title;
 		SetDirty();
 	}
@@ -835,6 +876,9 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 		mCurrentItem = Index;
 		SetDirty();
 	}
+
+	if (Current)
+		mRender->mMenuScrollbar.currentOnScreen = (uint)Index;
 	UpdateUnlock();
 }
 
@@ -848,6 +892,7 @@ void cText2SkinDisplayMenu::SetEvent(const cEvent *Event)
 	UpdateLock();
 	if (mEvent != Event) {
 		mEvent = Event;
+		ExtPresentDescription = "";
 		if (mEvent != NULL)
 			SetDirty();
 	}
@@ -865,6 +910,7 @@ void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording)
 	// yet unused
 	if (mRecording != Recording) {
 		mRecording = Recording;
+		ExtRecordingDescription = "";
 		if (mRecording != NULL)
 			SetDirty();
 	}
@@ -1046,13 +1092,128 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tPresentDescription:
+		if (mEvent) {
+			if (ExtPresentDescription == "") {
+#if VDRVERSNUM >= 10344
+				// find corresponding timer
+				const char *aux = NULL;
+				for (cTimer *tim = Timers.First(); tim; tim = Timers.Next(tim))
+					if (tim->Event() == mEvent)
+						aux = tim->Aux();
+				ExtPresentDescription = AddExtInfoToDescription(mEvent->Title(), mEvent->ShortText(), mEvent->Description(), aux, Text2SkinSetup.StripAux);
+#else
+				ExtPresentDescription = AddExtInfoToDescription(mEvent->Title(), mEvent->ShortText(), mEvent->Description());
+#endif
+			}
+			return (cxType)ExtPresentDescription;
+		} else
+			return (cxType)false;
+
+#if VDRVERSNUM >= 10318
+	case tPresentLanguageCode:
+		if (mEvent) {
+			const cComponents *components = mEvent->Components();
+			if (components) {
+				int index = Token.Attrib.Number;
+
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream != 2) // only audio-streams
+						index++;
+					if (i == index) {
+						std::string buffer(c->language);
+						if (c->type == 1)
+							buffer.append("MONO");
+						if ((c->type == 2) || (c->type == 4))
+							buffer.append("DUAL");
+						if (c->type == 5)
+							buffer.append("DD");
+						return (cxType)buffer.c_str();
+					}
+				}
+			}
+		}
+		return false;
+
+	case tPresentLanguageDescription:
+		if (mEvent) {
+			const cComponents *components = mEvent->Components();
+			if (components) {
+				int index = Token.Attrib.Number;
+
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream != 2) // only audio-streams
+						index++;
+					if (i == index)
+						return (cxType)c->description;
+				}
+			}
+		}
+		return false;
+
+	case tPresentVideoAR:
+		if (mEvent) {
+			const cComponents *components = mEvent->Components();
+			if (components) {
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream == 1) {
+						switch (c->type) {
+						case 1:
+							return "4:3";
+						case 3:
+							return "16:9";
+						}
+					}
+				}
+			}
+		}
+		return false;
+#endif
+
+	case tPresentEventID:
 		return mEvent != NULL
-		       ? (cxType)mEvent->Description()
+		       ? (cxType)EventType(mEvent->EventID())
 		       : (cxType)false;
 	
 	case tHasVPS:
 	case tChannelHasVPS:
 		return mEvent != NULL && mEvent->Vps() != 0;
+
+	case tChannelName:
+		if (mEvent) { // extended EPG
+			cChannel *channel = Channels.GetByChannelID(mEvent->ChannelID(), true);
+			return channel != NULL
+			       ? (cxType)ChannelName(channel, 0)
+			       : (cxType)false;
+		}
+		else if (mRecording) { // recording Info
+			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
+			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
+			return channel != NULL
+			       ? (cxType)ChannelName(channel, 0)
+			       : (cxType)false;
+		} else
+			return (cxType)false;
+
+	case tChannelShortName:
+		if (mEvent) { // extended EPG
+			cChannel *channel = Channels.GetByChannelID(mEvent->ChannelID(), true);
+			return channel != NULL
+			       ? (cxType)ChannelShortName(channel, 0)
+			       : (cxType)false;
+		}
+		else if (mRecording) { // recording Info
+			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
+			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
+			return channel != NULL
+			       ? (cxType)ChannelShortName(channel, 0)
+			       : (cxType)false;
+		} else
+			return (cxType)false;
 
 	case tPresentHasVPS:
 		return mEvent != NULL && mEvent->Vps() != 0 && mEvent->Vps() != mEvent->StartTime();
@@ -1074,6 +1235,21 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       ? (cxType)mRecording->Name()
 		       : (cxType)false;
 
+	case tRecordingFilename:
+		return mRecording != NULL
+		       ? (cxType)mRecording->FileName()
+		       : (cxType)false;
+
+	case tRecordingPriority:
+		return mRecording != NULL
+		       ? (cxType)mRecording->priority
+		       : (cxType)false;
+
+	case tRecordingLifetime:
+		return mRecording != NULL
+		       ? (cxType)mRecording->lifetime
+		       : (cxType)false;
+
 	case tRecordingDateTime:
 		return mRecording != NULL
 		       ? (cxType)TimeType(mRecording->start, Token.Attrib.Text)
@@ -1090,30 +1266,95 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tRecordingDescription:
-		return mRecording != NULL
-		       ? (cxType)mRecording->Info()->Description()
-		       : (cxType)false;
+		if (mRecording) {
+			if (ExtRecordingDescription == "")
+#if VDRVERSNUM >= 10344
+				ExtRecordingDescription = AddExtInfoToDescription(mRecording->Info()->Title(), mRecording->Info()->ShortText(), mRecording->Info()->Description(), Text2SkinSetup.ShowAux ? mRecording->Info()->Aux() : NULL, Text2SkinSetup.StripAux);
+#else
+				ExtRecordingDescription = AddExtInfoToDescription(mRecording->Info()->Title(), mRecording->Info()->ShortText(), mRecording->Info()->Description());
+#endif
+			return (cxType)ExtRecordingDescription;
+		} else
+			return (cxType)false;
 
 	case tRecordingLanguageCode: 
-		if (mRecording != NULL) {
-			const tComponent *c 
-				= mRecording->Info()->Components()->Component(Token.Attrib.Number);
-			return c != NULL
-			       ? (cxType)c->language
-			       : (cxType)false;
+		if (mRecording) {
+			const cComponents *components = mRecording->Info()->Components();
+			if (components) {
+				int index = Token.Attrib.Number;
+
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream != 2) // only audio-streams
+						index++;
+					if (i == index) {
+						std::string buffer(c->language);
+						if (c->type == 1)
+							buffer.append("MONO");
+						if ((c->type == 2) || (c->type == 4))
+							buffer.append("DUAL");
+						if (c->type == 5)
+							buffer.append("DD");
+						return (cxType)buffer.c_str();
+					}
+				}
+			}
 		}
 		return false;
 			       
 	case tRecordingLanguageDescription: 
-		if (mRecording != NULL) {
-			const tComponent *c 
-				= mRecording->Info()->Components()->Component(Token.Attrib.Number);
-			return c != NULL
-			       ? (cxType)c->description
-			       : (cxType)false;
+		if (mRecording) {
+			const cComponents *components = mRecording->Info()->Components();
+			if (components) {
+				int index = Token.Attrib.Number;
+
+				// don't return language-code for the video-stream
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream != 2) // only audio-streams
+						index++;
+					if (i == index)
+						return (cxType)c->description;
+				}
+			}
+		}
+		return false;
+
+	case tRecordingVideoAR:
+		if (mRecording) {
+			const cComponents *components = mRecording->Info()->Components();
+			if (components) {
+				for (int i = 0; i < components->NumComponents(); i++) {
+					const tComponent *c = components->Component(i);
+					if (c->stream == 1) {
+						switch (c->type) {
+						case 1:
+							return "4:3";
+						case 3:
+							return "16:9";
+						}
+					}
+				}
+			}
 		}
 		return false;
 #endif
+
+	case tRecordingSize:
+		return mRecording != NULL
+		       ? (cxType)GetRecordingSize(mRecording->FileName())
+		       : (cxType)false;
+
+	case tRecordingLength:
+		return mRecording != NULL
+		       ? (cxType)GetRecordingLength(mRecording->FileName())
+		       : (cxType)false;
+
+	case tRecordingCuttedLength:
+		return mRecording != NULL
+		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName())
+		       : (cxType)false;
 
 	default:
 		return cText2SkinRender::GetTokenData(Token);

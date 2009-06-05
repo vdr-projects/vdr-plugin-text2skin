@@ -7,6 +7,7 @@
  */
 
 #include "text2skin.h"
+#include "bitmap.h"
 #include "setup.h"
 #include "menu.h"
 #include "i18n.h"
@@ -22,6 +23,29 @@ cText2SkinPlugin::cText2SkinPlugin(void) {
 
 cText2SkinPlugin::~cText2SkinPlugin() {
 }
+
+#if VDRVERSNUM >= 10331
+const char **cText2SkinPlugin::SVDRPHelpPages(void)
+{
+	static const char *HelpPages[] = {
+		"FLUS\n"
+		"    Flush the image cache (useful if images have changed and the"
+		"    current version should be loaded).",
+		NULL
+		};
+	return HelpPages;
+}
+
+cString cText2SkinPlugin::SVDRPCommand(const char *Command, const char *Option, int &ReplyCode)
+{
+	if (strcasecmp(Command, "FLUS") == 0) {
+		// we use the default reply code here
+		cText2SkinBitmap::FlushCache();
+		return "image cache flushed.";
+	}
+	return NULL;
+}
+#endif
 
 bool cText2SkinPlugin::Start(void) {
 #if VDRVERSNUM < 10507

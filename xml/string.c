@@ -11,7 +11,12 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 
 	"ChannelSource", "ChannelID", "PresentStartDateTime", "PresentVPSDateTime", 
+	"CurrentEventsTitle1", "CurrentEventsStartDateTime1", "CurrentEventsStopDateTime1", "CurrentEventsChannelNumber1", "CurrentEventsChannelName1", "CurrentEventsIsRecording1",
+	"CurrentEventsTitle2", "CurrentEventsStartDateTime2", "CurrentEventsStopDateTime2", "CurrentEventsChannelNumber2", "CurrentEventsChannelName2", "CurrentEventsIsRecording2",
+	"CurrentEventsTitle3", "CurrentEventsStartDateTime3", "CurrentEventsStopDateTime3", "CurrentEventsChannelNumber3", "CurrentEventsChannelName3", "CurrentEventsIsRecording3",
+	"TimerConflicts",
 	"PresentEndDateTime", "PresentDuration", "PresentProgress", "PresentRemaining",
+	"PresentLanguageCode", "PresentLanguageDescription", "PresentVideoAR", "PresentEventID",
 	"PresentTitle", "PresentShortText", "PresentDescription", "FollowingStartDateTime", 
 	"FollowingVPSDateTime", "FollowingEndDateTime", "FollowingDuration",
 	"FollowingTitle", "FollowingShortText", "FollowingDescription", "Language",
@@ -30,6 +35,8 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	
 	// Replay Display
 	"ReplayTitle", "ReplayPositionIndex", "ReplayDurationIndex", "ReplayPrompt", 
+	"ReplayName", "ReplayDateTime", "ReplayShortText", "ReplayDescription",
+	"ReplayLanguageCode", "ReplayLanguageDescription", "ReplayVideoAR",
 	"IsPlaying", "ReplayIsPlaying", "IsFastForward", "ReplayIsFastForward", "IsFastRewind", 
 	"ReplayIsFastRewind", "IsSlowForward", "ReplayIsSlowForward", "IsSlowRewind", 
 	"ReplayIsSlowRewind", "IsPausing", "ReplayIsPausing",
@@ -38,8 +45,10 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 
 	// Menu Page
 	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent", 
-	"IsMenuCurrent", "MenuText", "RecordingName", "RecordingDateTime", "RecordingTitle",
+	"IsMenuCurrent", "MenuText", "RecordingName", "RecordingFilename", "RecordingDateTime", "RecordingTitle",
 	"RecordingShortText", "RecordingDescription", "RecordingLanguageCode",
+	"FrontendSTR", "FrontendSNR", "FrontendHasLock", "FrontendHasSignal", "RecordingPriority", "RecordingLifetime",
+	"RecordingVideoAR", "RecordingSize", "RecordingLength", "RecordingCuttedLength", "OsdWidth", "OsdHeight",
 	"RecordingLanguageDescription", "ButtonRed", "ButtonGreen", 
 	"ButtonYellow", "ButtonBlue", "CanScrollUp", "CanScrollDown"
 };
