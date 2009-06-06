@@ -22,6 +22,7 @@ void cText2SkinSetupPage::Setup(void) {
 #if VDRVERSNUM >= 10344
 	Add(new cMenuEditBoolItem(tr("Show auxiliary infos of recordings"), &mData.ShowAux));
 	if (mData.ShowAux)
+		// TRANSLATORS: note the leading blanks!
 		Add(new cMenuEditBoolItem(tr("   Extract known tags"), &mData.StripAux));
 #endif
 #if VDRVERSNUM >= 10330
