@@ -358,7 +358,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 					const tComponent *c = components->Component(i);
 					if (c->stream != 2) // only audio-streams
 						index++;
-					{
+					if (i == index) {
 						std::string buffer(c->language);
 						if (c->type == 1)
 							buffer.append("MONO");
