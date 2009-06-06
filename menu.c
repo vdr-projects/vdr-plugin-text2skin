@@ -25,7 +25,7 @@ void cText2SkinSetupPage::Setup(void) {
 		Add(new cMenuEditBoolItem(tr("   Extract known tags"), &mData.StripAux, tr("no"), tr("yes")));
 #endif
 #if VDRVERSNUM >= 10330
-	Add(new cMenuEditBoolItem(tr("Use 'timeline' to check timer-conflicts"), &mData.CheckTimerConflict, tr("no"), tr("yes")));
+	Add(new cMenuEditBoolItem(tr("Use 'epgsearch' to check timer-conflicts"), &mData.CheckTimerConflict, tr("no"), tr("yes")));
 #endif
 	Add(new cOsdItem(tr("Flush image cache"), osUser1));
 	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill));
