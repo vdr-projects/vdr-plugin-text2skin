@@ -16,16 +16,16 @@ void cText2SkinSetupPage::Setup(void) {
 	int current = Current();
 	Clear();
 
-	Add(new cMenuEditBoolItem(tr("Show scrollbar in the menus"), &mData.MenuScrollbar, tr("no"), tr("yes")));
+	Add(new cMenuEditBoolItem(tr("Show scrollbar in the menus"), &mData.MenuScrollbar));
 	Add(new cMenuEditBoolItem(tr("Scrolling behaviour"), &mData.MarqueeLeftRight, tr("to the left"), tr("left and right")));
-	Add(new cMenuEditBoolItem(tr("Reset Marquee for new item"), &mData.MarqueeReset, tr("no"), tr("yes")));
+	Add(new cMenuEditBoolItem(tr("Reset Marquee for new item"), &mData.MarqueeReset));
 #if VDRVERSNUM >= 10344
-	Add(new cMenuEditBoolItem(tr("Show auxiliary infos of recordings"), &mData.ShowAux, tr("no"), tr("yes")));
+	Add(new cMenuEditBoolItem(tr("Show auxiliary infos of recordings"), &mData.ShowAux));
 	if (mData.ShowAux)
-		Add(new cMenuEditBoolItem(tr("   Extract known tags"), &mData.StripAux, tr("no"), tr("yes")));
+		Add(new cMenuEditBoolItem(tr("   Extract known tags"), &mData.StripAux));
 #endif
 #if VDRVERSNUM >= 10330
-	Add(new cMenuEditBoolItem(tr("Use 'epgsearch' to check timer-conflicts"), &mData.CheckTimerConflict, tr("no"), tr("yes")));
+	Add(new cMenuEditBoolItem(tr("Use 'epgsearch' to check timer-conflicts"), &mData.CheckTimerConflict));
 #endif
 	Add(new cOsdItem(tr("Flush image cache"), osUser1));
 	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill));
