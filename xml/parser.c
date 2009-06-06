@@ -45,7 +45,7 @@
 #define ATTRIB_OPT_NUMBER(_attr,_target) \
 	if (attrs.find(_attr) != attrs.end()) { \
 		char *_e; const char *_t = attrs[_attr].c_str(); \
-		long _l = strtol(_t, &_e, 10); \
+		long _l = strtol(_t, &_e, 0); \
 		if (_e ==_t || *_e != '\0') { \
 			esyslog("ERROR: Text2Skin: Invalid numeric value \"%s\" in attribute %s", \
 					_t, _attr); \
@@ -91,7 +91,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 
 	if      (context.size() == 0) {
 		if (name == "skin") {
-			ATTRIB_MAN_STRING("version",    skin->mVersion);
+			ATTRIB_MAN_FUNC  ("version",    skin->mVersion.Parse);
 			ATTRIB_MAN_STRING("name",       skin->mTitle);
 			ATTRIB_MAN_FUNC  ("screenBase", skin->ParseBase);
 		} 
@@ -102,7 +102,8 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 		if (name == "display") {
 			display = new cxDisplay(skin);
 			ATTRIB_MAN_FUNC  ("id",         display->ParseType);
-		} 
+			ATTRIB_OPT_FUNC  ("refresh",    display->mRefreshDefault.Parse);
+		}
 		else
 			TAG_ERR_REMAIN("skin");
 	}
@@ -129,12 +130,18 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 		else {
 			object = new cxObject(display);
 			if (object->ParseType(name)) {
+				if (parents.size() > 0)
+					object->mRefresh = parents.back()->mRefresh;
+				else
+					object->mRefresh = display->mRefreshDefault;
+
 				ATTRIB_OPT_NUMBER("x1",            object->mPos1.x);
 				ATTRIB_OPT_NUMBER("y1",            object->mPos1.y);
 				ATTRIB_OPT_NUMBER("x2",            object->mPos2.x);
 				ATTRIB_OPT_NUMBER("y2",            object->mPos2.y);
 				ATTRIB_OPT_FUNC  ("condition",     object->ParseCondition);
-
+				ATTRIB_OPT_FUNC  ("refresh",       object->mRefresh.Parse);
+				ATTRIB_OPT_FUNC  ("changed",       object->mRefresh.ParseChanged);
 				if      (name == "image") {
 					ATTRIB_OPT_NUMBER("x",         object->mPos1.x);
 					ATTRIB_OPT_NUMBER("y",         object->mPos1.y);
@@ -152,11 +159,12 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				      || name == "blink"
 				      || name == "scrolltext") {
 					ATTRIB_OPT_STRING("color",     object->mFg);
+					ATTRIB_OPT_STRING("bgColor",   object->mBg);
 					ATTRIB_OPT_FUNC  ("align",     object->ParseAlignment);
 					ATTRIB_OPT_FUNC  ("font",      object->ParseFontFace);
 
 					if      (name == "blink") {
-						ATTRIB_OPT_STRING("blinkColor", object->mBg);
+						ATTRIB_OPT_STRING("blinkColor", object->mBl);
 						ATTRIB_OPT_NUMBER("delay",      object->mDelay);
 						
 						if (object->mDelay == 0)
@@ -189,6 +197,11 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 				else if (name == "item") {
 					ATTRIB_MAN_NUMBER("height",  object->mPos2.y);
 					--object->mPos2.y;
+				}
+				else if (name == "block"
+				      || name == "list") {
+					ATTRIB_OPT_NUMBER("w",       object->mVirtSize.w);
+					ATTRIB_OPT_NUMBER("h",       object->mVirtSize.h);
 				}
 			} else
 				TAG_ERR_REMAIN(context[context.size() - 1].c_str());
@@ -249,6 +262,20 @@ bool xEndElem(const std::string &name) {
 				case cxObject::blink:
 				case cxObject::scrolltext:
 					object->mCondition = new cxFunction(object->mText);
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			if (object->mRefresh.mChanged == NULL) {
+				switch (object->mType) {
+				case cxObject::text:
+				case cxObject::marquee:
+				case cxObject::blink:
+				case cxObject::scrolltext:
+					object->mRefresh.mChanged = &object->mText;
 					break;
 
 				default:

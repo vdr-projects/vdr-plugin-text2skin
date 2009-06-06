@@ -35,6 +35,7 @@ private:
 	int       mNumWindows;
 	int       mNumMarquees;
 	cxObjects mObjects;
+	cxRefresh mRefreshDefault;
 
 public:
 	cxDisplay(cxSkin *Parent);
@@ -48,7 +49,7 @@ public:
 	cxSkin          *Skin(void)       const { return mSkin; }
 
 	uint             Objects(void)    const { return mObjects.size(); }
-	const cxObject  *GetObject(int n) const { return mObjects[n]; }
+	cxObject        *GetObject(int n) const { return mObjects[n]; }
 };
 
 class cxDisplays: public std::map<cxDisplay::eType,cxDisplay*> {

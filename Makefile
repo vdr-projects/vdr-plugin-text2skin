@@ -6,7 +6,8 @@
 #BENCH=1
 
 HAVE_IMAGEMAGICK=1
-#HAVE_IMLIB2=1 # not recommended
+#HAVE_IMLIB2=1
+# not recommended
 
 # comment this out if you don't want to use FreeType font rendering
 
@@ -99,7 +100,7 @@ ifdef DEBUG
 	CXXFLAGS += -g -fno-inline
 	DEFINES += -DDEBUG
 else
-	CXXFLAGS += -O2 -g
+	CXXFLAGS += -O3
 ifdef BENCH
 	DEFINES += -DBENCH
 endif

@@ -67,7 +67,10 @@ void cText2SkinScreen::DrawBitmap(int x, int y, const cBitmap &Bitmap, const tCo
 		DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorMask);
 		//mRegions[i]->DrawBitmap(x, y, Bitmap);
 #else
-	mOsd->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
+	// mOsd->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
+	cBitmap *bm = NULL;
+	for (int i = 0; (bm = mOsd->GetBitmap(i)) != NULL; ++i)
+		DrawBitmapOverlay(*bm, x, y, (cBitmap&)Bitmap, ColorMask);
 #endif
 }
 
@@ -122,6 +125,14 @@ void cText2SkinScreen::Flush(void)
 			mOsd->DrawBitmap(mRegions[i]->X0(), mRegions[i]->Y0(), *mRegions[i]);
 #endif
 	}
+#ifdef BENCH
+	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+	cBitmap *bm;
+	for (int j = 0; (bm = mOsd->GetBitmap(j)) != NULL; j++)
+		if (bm->Dirty(x1, y1, x2, y2))
+			fprintf(stderr, "Flush dirty screen area %2i: x1=%3i x2=%3i y1=%3i y2=%3i\n",
+				j, x1, x2, y1, y2);
+#endif
 	if (!mOffScreen)
 		mOsd->Flush();
 }

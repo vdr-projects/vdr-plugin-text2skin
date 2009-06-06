@@ -46,6 +46,26 @@ ____-__-__: Version 1.3
     RecordingFilename, RecordingPriority, RecordingLifetime
   - set EditableWidth. This is important for plugins like 'rotor' or
     'extrecmenu'
+- Added chr13-optimizations (thanks to Christian Tusche / closes #39)
+  - increased efficiency in drawing list items in the main menu
+  - introduce relative Pos and Size of objects to given BasePos, BaseSize
+    (used to draw list items)
+  - increase skin file version to 1.1
+  - the position of list items is interpreted relative to the "list" container
+    when file version >= 1.1
+  - when a position is specified for "block" elements, the position of all
+    contained elements is interpreted relative to the container position
+  - selective update of changed objects
+    refresh can be controlled for individual objects by the attributes
+    "refresh" and "changed"
+    default behaviour is to redraw everything (compatible with old skins)
+  - moved state tracking of marquee, blink, scroll from cText2SkinRender
+    to cxObject
+  - fixed use of Update.Lock() in render.h
+  - new: dynamic width/height of objects
+  - new: Option "bgColor" used for items "Text", "Marquee", and "Blink".
+  - remember period to next timeout when doing a non-timeout refresh
+    prevent occasional start/stop of marquee-text
 
 2009-06-01: Version 1.2
 
