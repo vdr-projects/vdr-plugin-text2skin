@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-text2skin 1.2\n"
 "Report-Msgid-Bugs-To: <sascha@akv-soft.de>\n"
-"POT-Creation-Date: 2009-06-01 17:47+0200\n"
+"POT-Creation-Date: 2009-06-07 12:12+0200\n"
 "PO-Revision-Date: 2009-06-02 16:11+0100\n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
 "Language-Team:  <vdr@linuxtv.org>\n"
@@ -18,8 +18,42 @@ msgstr ""
 "X-Poedit-Country: ITALY\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
+msgid "RERUNS OF THIS SHOW"
+msgstr ""
+
+msgid "AUXILIARY INFOS"
+msgstr ""
+
+msgid "Search timer"
+msgstr ""
+
 msgid "Skin too large or incorrectly aligned"
 msgstr "Interfaccia troppo grande o allineamento incorretto"
+
+msgid "Show scrollbar in the menus"
+msgstr ""
+
+msgid "Scrolling behaviour"
+msgstr ""
+
+msgid "to the left"
+msgstr ""
+
+msgid "left and right"
+msgstr ""
+
+msgid "Reset Marquee for new item"
+msgstr ""
+
+msgid "Show auxiliary infos of recordings"
+msgstr ""
+
+#. TRANSLATORS: note the leading blanks!
+msgid "   Extract known tags"
+msgstr ""
+
+msgid "Use 'epgsearch' to check timer-conflicts"
+msgstr ""
 
 msgid "Flush image cache"
 msgstr "Svuota cache immagini"
@@ -32,4 +66,3 @@ msgstr "Svuotamento cache immagini..."
 
 msgid "Loader for text-based skins"
 msgstr "Gestore di stili interfaccia basati su testo"
-
