@@ -4,6 +4,7 @@
 
 #DEBUG=1
 #BENCH=1
+STRIP=strip
 
 HAVE_IMAGEMAGICK=1
 #HAVE_IMLIB2=1
@@ -156,7 +157,7 @@ libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 ifndef DEBUG
-	strip $(LIBDIR)/$@.$(APIVERSION)
+	$(STRIP) $(LIBDIR)/$@.$(APIVERSION)
 endif
 
 dist: clean
