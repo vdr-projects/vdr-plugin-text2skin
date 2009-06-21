@@ -19,15 +19,11 @@ void cText2SkinSetupPage::Setup(void) {
 	Add(new cMenuEditBoolItem(tr("Show scrollbar in the menus"), &mData.MenuScrollbar));
 	Add(new cMenuEditBoolItem(tr("Scrolling behaviour"), &mData.MarqueeLeftRight, tr("to the left"), tr("left and right")));
 	Add(new cMenuEditBoolItem(tr("Reset Marquee for new item"), &mData.MarqueeReset));
-#if VDRVERSNUM >= 10344
 	Add(new cMenuEditBoolItem(tr("Show auxiliary infos of recordings"), &mData.ShowAux));
 	if (mData.ShowAux)
 		// TRANSLATORS: note the leading blanks!
 		Add(new cMenuEditBoolItem(tr("   Extract known tags"), &mData.StripAux));
-#endif
-#if VDRVERSNUM >= 10330
 	Add(new cMenuEditBoolItem(tr("Use 'epgsearch' to check timer-conflicts"), &mData.CheckTimerConflict));
-#endif
 	Add(new cOsdItem(tr("Flush image cache"), osUser1));
 	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill));
 
@@ -42,13 +38,9 @@ void cText2SkinSetupPage::Store(void) {
 	SetupStore("MenuScrollbar", mData.MenuScrollbar);
 	SetupStore("MarqueeLeftRight", mData.MarqueeLeftRight);
 	SetupStore("MarqueeReset", mData.MarqueeReset);
-#if VDRVERSNUM >= 10344
 	SetupStore("ShowAux", mData.ShowAux);
 	SetupStore("StripAux", mData.StripAux);
-#endif
-#if VDRVERSNUM >= 10330
 	SetupStore("CheckTimerConflict", mData.CheckTimerConflict);
-#endif
 	SetupStore("MaxCacheFill", mData.MaxCacheFill);
 	Text2SkinSetup = mData;
 }

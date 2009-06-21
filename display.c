@@ -130,22 +130,14 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 	
 	case tChannelBouquet:
-#if VDRVERSNUM < 10315
-		return false;
-#else
 		return mChannel != NULL
 		       ? (cxType)mChannel->Provider()
 		       : (cxType)false;
-#endif
 
 	case tChannelPortal:
-#if VDRVERSNUM < 10315
-		return false;
-#else
 		return mChannel != NULL
 		       ? (cxType)mChannel->PortalName()
 		       : (cxType)false;
-#endif
 
 	case tChannelSource:
 		return mChannel != NULL
@@ -241,7 +233,6 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tLanguage: {
-#if VDRVERSNUM >= 10318
 			cDevice *dev = cDevice::PrimaryDevice();
 			eTrackType trackType = dev->GetCurrentAudioTrack();
 			const tTrackId *track = dev->GetTrack(trackType);
@@ -252,17 +243,6 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 				return (cxType)buffer.c_str();
 			}
 			return (cxType)false;
-#else
-			int cur;
-			const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
-			if (tracks) {
-				int i = 0;
-				while (tracks[i] != NULL)
-					++i;
-				if (cur < i)
-					return tracks[cur];
-			}
-#endif
 		}
 		return false;
 		
@@ -272,11 +252,11 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tHasMultilang:
 	case tChannelHasMultilang:
-		return mChannel != NULL && mChannel->Apid2() != 0;
+		return mChannel != NULL && mChannel->Apid(1) != 0;
 
 	case tHasDolby:
 	case tChannelHasDolby:
-		return mChannel != NULL && mChannel->Dpid1() != 0;
+		return mChannel != NULL && mChannel->Dpid(0) != 0;
 
 	case tIsEncrypted:
 	case tChannelIsEncrypted:
@@ -593,7 +573,6 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return false;
 
 	case tLanguage: {
-#if VDRVERSNUM >= 10318
 		cDevice *dev = cDevice::PrimaryDevice();
 		eTrackType trackType = dev->GetCurrentAudioTrack();
 		const tTrackId *track = dev->GetTrack(trackType);
@@ -604,17 +583,6 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 			return (cxType)buffer.c_str();
 		}
 		return (cxType)false;
-#else
-		int cur;
-		const char **tracks = cDevice::PrimaryDevice()->GetAudioTracks(&cur);
-		if (tracks) {
-			int i = 0;
-			while (tracks[i] != NULL)
-				++i;
-			if (cur < i)
-				return tracks[cur];
-		}
-#endif
 	}
 	return false;
 
@@ -1120,22 +1088,17 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	case tPresentDescription:
 		if (mEvent) {
 			if (ExtPresentDescription == "") {
-#if VDRVERSNUM >= 10344
 				// find corresponding timer
 				const char *aux = NULL;
 				for (cTimer *tim = Timers.First(); tim; tim = Timers.Next(tim))
 					if (tim->Event() == mEvent)
 						aux = tim->Aux();
 				ExtPresentDescription = AddExtInfoToDescription(mEvent->Title(), mEvent->ShortText(), mEvent->Description(), aux, Text2SkinSetup.StripAux);
-#else
-				ExtPresentDescription = AddExtInfoToDescription(mEvent->Title(), mEvent->ShortText(), mEvent->Description());
-#endif
 			}
 			return (cxType)ExtPresentDescription;
 		} else
 			return (cxType)false;
 
-#if VDRVERSNUM >= 10318
 	case tPresentLanguageCode:
 		if (mEvent) {
 			const cComponents *components = mEvent->Components();
@@ -1198,7 +1161,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 			}
 		}
 		return false;
-#endif
 
 	case tPresentEventID:
 		return mEvent != NULL
@@ -1255,7 +1217,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	case tMenuText:
 		return mText;
 
-#if VDRVERSNUM >= 10325
 	case tRecordingName:
 		return mRecording != NULL
 		       ? (cxType)mRecording->Name()
@@ -1294,11 +1255,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	case tRecordingDescription:
 		if (mRecording) {
 			if (ExtRecordingDescription == "")
-#if VDRVERSNUM >= 10344
 				ExtRecordingDescription = AddExtInfoToDescription(mRecording->Info()->Title(), mRecording->Info()->ShortText(), mRecording->Info()->Description(), Text2SkinSetup.ShowAux ? mRecording->Info()->Aux() : NULL, Text2SkinSetup.StripAux);
-#else
-				ExtRecordingDescription = AddExtInfoToDescription(mRecording->Info()->Title(), mRecording->Info()->ShortText(), mRecording->Info()->Description());
-#endif
 			return (cxType)ExtRecordingDescription;
 		} else
 			return (cxType)false;
@@ -1365,7 +1322,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 			}
 		}
 		return false;
-#endif
 
 	case tRecordingSize:
 		return mRecording != NULL
@@ -1387,7 +1343,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	}
 }
 
-#if VDRVERSNUM >= 10318
 // --- cText2SkinDisplayTracks ------------------------------------------------
 
 const std::string ChannelNames[] = { "", "stereo", "left", "right" };
@@ -1492,5 +1447,3 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 		return cText2SkinRender::GetTokenData(Token);
 	}
 }
-
-#endif

@@ -131,7 +131,7 @@ cText2SkinRender::~cText2SkinRender()
 void cText2SkinRender::Action(void) 
 {
 	bool to = true;
-	uint start_time = time_ms();
+	uint start_time = cTimeMs::Now();
 	mActive = true;
 	UpdateLock();
 	mStarted.Broadcast();
@@ -143,7 +143,7 @@ void cText2SkinRender::Action(void)
 		else           mDoUpdate.Wait(mDoUpdateMutex);
 
 		if (!mActive)  break; // fall out if thread to be stopped
-		mNow = time_ms();
+		mNow = cTimeMs::Now();
 
 		if (mUpdateIn) {
 			if (!to || mNow >= start_time + mUpdateIn) {
@@ -843,7 +843,6 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tOsdHeight:     return (cxType)mBaseSize.h;
 
-#if VDRVERSNUM >=10318
 	case tAudioTrack:    {
 			cDevice *dev = cDevice::PrimaryDevice();
 			const tTrackId *Track = dev->GetTrack(dev->GetCurrentAudioTrack());
@@ -854,7 +853,6 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tAudioChannel:
 		return cText2SkinDisplayTracks::ChannelName(cDevice::PrimaryDevice()->GetAudioChannel());
-#endif
 
 	default:             return Text2SkinStatus.GetTokenData(Token);
 	}

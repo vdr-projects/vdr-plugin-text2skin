@@ -56,17 +56,10 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 				mReplayIsShuffle = Name[2] == 'S';
 			}
 		}
-#if VDRVERSNUM >= 10338
 		else if (const cRecording *rec = GetRecordingByFileName(FileName)) {
 			mReplay = rec;
 			mReplayMode = replayNormal;
 		}
-#else
-		else if (const cRecording *rec = GetRecordingByName(Name)) {
-			mReplay = rec;
-			mReplayMode = replayNormal;
-		}
-#endif
 		else if (strcmp(Name, "DVD") == 0)
 			mReplayMode = replayDVD;
 		else if (strcmp(Name, "VCD") == 0)
@@ -122,13 +115,8 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name,
 
 void cText2SkinStatus::OsdClear(void) 
 {
-#if VDRVERSNUM >= 10507
 	if (I18nCurrentLanguage() != mLastLanguage) {
 		mLastLanguage = I18nCurrentLanguage();
-#else
-	if (Setup.OSDLanguage != mLastLanguage) {
-		mLastLanguage = Setup.OSDLanguage;
-#endif
 		cxString::Reparse();
 	}
 
@@ -296,7 +284,6 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tTimerConflicts:
-#if VDRVERSNUM >= 10330
 		if (Text2SkinSetup.CheckTimerConflict) {
 			if (mRender->mUpdate.timerConflict) {
 				Epgsearch_lastconflictinfo_v1_0 conflict;
@@ -309,11 +296,8 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			}
 			return mTimerConflicts;
 		} else
-#endif
 			return 0;
 
-#if VDRVERSNUM >= 10325
-#if VDRVERSNUM >= 10338
 	case tReplayName:
 		return mReplay != NULL
 		       ? (cxType)mReplay->Name()
@@ -333,19 +317,6 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 		return mReplay != NULL
 		       ? (cxType)mReplay->Info()->Description()
 		       : (cxType)false;
-#else
-	case tReplayName:
-		return (cxType)false;
-
-	case tReplayDateTime:
-		return (cxType)false;
-
-	case tReplayShortText:
-		return (cxType)false;
-
-	case tReplayDescription:
-		return (cxType)false;
-#endif
 
 	case tReplayLanguageCode:
 		if (mReplay) {
@@ -409,7 +380,6 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			}
 		}
 		return false;
-#endif
 
 	case tCurrentRecording:
 		Dprintf("token attrib type is: %d, number: %d\n", Token.Attrib.Type, Token.Attrib.Number);
@@ -419,7 +389,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			       : (cxType)false;
 		} else if (mRecordings.size() > 0) {
 			mRecordingsLock.Lock();
-			uint now = time_ms();
+			uint now = cTimeMs::Now();
 			if (mNextRecording == 0)
 				mNextRecording = now + 2000;
 			else if (now >= mNextRecording) {

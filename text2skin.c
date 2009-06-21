@@ -14,6 +14,10 @@
 #include "loader.h"
 #include "status.h"
 
+#if APIVERSNUM < 10600
+#error "VDR-1.6.0 API version or greater is required!"
+#endif
+
 const char *cText2SkinPlugin::VERSION        = "1.2";
 const char *cText2SkinPlugin::SKINVERSION    = "1.1";
 const char *cText2SkinPlugin::DESCRIPTION    = trNOOP("Loader for text-based skins");
@@ -24,7 +28,6 @@ cText2SkinPlugin::cText2SkinPlugin(void) {
 cText2SkinPlugin::~cText2SkinPlugin() {
 }
 
-#if VDRVERSNUM >= 10331
 const char **cText2SkinPlugin::SVDRPHelpPages(void)
 {
 	static const char *HelpPages[] = {
@@ -45,15 +48,9 @@ cString cText2SkinPlugin::SVDRPCommand(const char *Command, const char *Option, 
 	}
 	return NULL;
 }
-#endif
 
 bool cText2SkinPlugin::Start(void) {
-#if VDRVERSNUM < 10507
-	RegisterI18n(Phrases);
-	Text2SkinStatus.SetLanguage(Setup.OSDLanguage);
-#else
 	Text2SkinStatus.SetLanguage(I18nCurrentLanguage());
-#endif
 	cText2SkinLoader::Start();
 	return true;
 }

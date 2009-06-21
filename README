@@ -33,7 +33,7 @@ No library
  - you can only load XPM files
  - XPMs don't support partial transparency / alpha channels
 
-ImageMagick 
+ImageMagick
  + you can load many different image types including animations
 
 Imlib2
@@ -56,27 +56,15 @@ Installation:
 
 Install text2skin like any other plugin. In this example I assume that you have
 changed to the folder where the VDR sourcecode is located, and that it is 
-version 0.0.1 of the plugin you wish to install. During the build process, 
-there will be generated two files called SKINS and SKINS.de, the skin format
-documentation.
+version 1.2 of the plugin you wish to install.
 
 root@linux # cd PLUGINS/src
-root@linux # wget http://www.magoa.net/linux/contrib/vdr-text2skin-1.0.tgz
-root@linux # tar -xfz vdr-text2skin-1.0.tgz
+root@linux # wget http://projects.vdr-developer.org/attachments/download/112/vdr-text2skin-1.2.tgz
+root@linux # tar -xzf vdr-text2skin-1.2.tgz
+root@linux # ln -s text2skin-1.2 text2skin
 root@linux # cd ../..
 root@linux # make plugins
 root@linux # ./vdr -P text2skin
-
-There are several patches included, which can be applied to VDR, but all of 
-them are considered optional.
-
-vdr-1.3.17-dvbplayer-buttons.diff
- - demonstration on how to use the colorbuttons in replay mode (no skin makes
-   use of that so far)
-
-vdr-1.3.17-osdbase-maxitems.diff
- - allows dynamic height menu lists, i.e. when some part of the list is 
-   overpainted with a special message
 
 
 Where to put the skins:

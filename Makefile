@@ -170,4 +170,4 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so $(I18Npot) *.tgz core* *~ SKINS SKINS.de
+	@-rm -f $(OBJS) $(DEPFILE) *.so $(I18Npot) *.tgz core* *~

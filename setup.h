@@ -16,13 +16,9 @@ public:
 	int MenuScrollbar;
 	int MarqueeLeftRight;
 	int MarqueeReset;
-#if VDRVERSNUM >= 10344
 	int ShowAux;
 	int StripAux;
-#endif
-#if VDRVERSNUM >= 10330
 	int CheckTimerConflict;
-#endif
 	int MaxCacheFill;
 };
 

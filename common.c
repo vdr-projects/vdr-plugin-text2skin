@@ -39,13 +39,6 @@ const char *ChannelName(const cChannel *Channel, int Number)
 		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
 	else if (!Number)
 		snprintf(buffer, sizeof(buffer), "%s", trVDR("*** Invalid Channel ***"));
-
-#if VDRVERSNUM < 10315
-	char *ptr;
-	if ((ptr = strchr(buffer, ',')) != NULL
-			|| (ptr = strchr(buffer, ';')) != NULL)
-		*ptr = '\0';
-#endif
 	return buffer;
 }
 
@@ -54,25 +47,9 @@ const char *ChannelShortName(const cChannel *Channel, int Number)
 	static char buffer[256];
 	buffer[0] = '\0';
 	if (Channel) 
-#if VDRVERSNUM < 10315
-		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
-#else
 		snprintf(buffer, sizeof(buffer), "%s", Channel->ShortName(true));
-#endif
 	else if (!Number)
 		snprintf(buffer, sizeof(buffer), "%s", trVDR("*** Invalid Channel ***"));
-
-#if VDRVERSNUM < 10315
-	char *ptr;
-	if ((ptr = strchr(buffer, ',')) != NULL) {
-		char *start = ptr + 1;
-		if ((ptr = strchr(start, ';')) != NULL)
-			*ptr = '\0';
-		return start;
-	} else if ((ptr = strchr(buffer, ';')) != NULL)
-		*ptr = '\0';
-#endif
-	
 	return buffer;
 }
 
@@ -83,30 +60,6 @@ const char *EventType(uint Number)
 	snprintf(buffer, sizeof(buffer), "%d", Number);
 	return buffer;
 }
-/*
-const char *ChannelBouquet(const cChannel *Channel, int Number) {
-	static char buffer[256];
-	buffer[0] = '\0';
-	if (Channel) 
-#if VDRVERSNUM < 10315
-		snprintf(buffer, sizeof(buffer), "%s", Channel->Name());
-#else
-		snprintf(buffer, sizeof(buffer), "%s", Channel->Provider());
-#endif
-	else if (!Number)
-		snprintf(buffer, sizeof(buffer), "%s", tr("*** Invalid Channel ***"));
-
-#if VDRVERSNUM < 10315
-	char *ptr;
-	if ((ptr = strchr(buffer, ';')) != NULL)
-		return ptr + 1;
-	else
-		return "";
-#else
-	return buffer;
-#endif
-}
-*/
 
 bool StoppedTimer(const char *Name) 
 {
@@ -269,54 +222,10 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 }
 
 int GetRecordingSize(const char *FileName)
-#if VDRVERSNUM >= 10338
-// use VDR's routine
 {
 	const cRecording *rec = GetRecordingByFileName(FileName);
 	return (rec) ? DirSizeMB(FileName) : 0;
 }
-#else
-// use our own approach
-{
-	if (FileName != NULL) {
-		bool bRet = false;
-		long long size = 0;
-		int nFiles;
-		struct stat fileinfo; // Holds file information structure
-		char *cmd = NULL;
-#if VDRVERSNUM >= 10318
-		cReadLine reader;
-#endif
-		asprintf(&cmd, "find '%s' -follow -type f -name '*.*'|sort ", FileName);
-
-		FILE *p = popen(cmd, "r");
-		int ret = 0;
-		if (p) {
-			char *s;
-
-#if VDRVERSNUM >= 10318
-			while ((s = reader.Read(p)) != NULL) {
-#else
-			while ((s = readline(p)) != NULL) {
-#endif
-				if ((ret=stat(s, &fileinfo)) != -1) {
-					size += (long long)fileinfo.st_size;
-					nFiles++;
-				}
-			}
-
-			bRet = true;
-		}
-
-		pclose(p);
-		delete cmd;
-
-		return (int)(size / 1024 / 1024); // [MB]
-	}
-	else
-		return 0;
-}
-#endif
 
 int GetRecordingLength(const char *FileName)
 {
@@ -346,11 +255,7 @@ int GetRecordingLength(const char *FileName)
 							}
 						last = (buf.st_size + delta) / sizeof(tIndex) - 1;
 						char hour[2], min[3];
-#if VDRVERSNUM >= 10318
 						snprintf(RecLength, sizeof(RecLength), "%s", *IndexToHMSF(last, true));
-#else
-						snprintf(RecLength, sizeof(RecLength), "%s", IndexToHMSF(last, true));
-#endif
 						snprintf(hour, sizeof(hour), "%c", RecLength[0]);
 						snprintf(min, sizeof(min), "%c%c", RecLength[2], RecLength[3]);
 						return (atoi(hour) * 60) + atoi(min);

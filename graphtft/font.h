@@ -24,9 +24,6 @@ class cGraphtftFont
 {
 private:
 	typedef map<string,cFont*> cache_map;
-#if VDRVERSNUM < 10503
-	typedef map<string,cFont::tPixelData*> del_map;
-#endif
 	
 public:
 	cGraphtftFont();
@@ -42,12 +39,6 @@ private:
 	FT_Face			_face;
 	FT_GlyphSlot		_slot;
 	cache_map 		_cache;
-#if VDRVERSNUM < 10503
-	del_map			_del;
-#endif
-
 };
-
-extern cGraphtftFont GraphtftFont;
 
 #endif

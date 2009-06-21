@@ -208,7 +208,6 @@ inline void cText2SkinDisplayMenu::Flush(void)
 		cText2SkinRender::Flush();
 }
 
-#if VDRVERSNUM >= 10318
 class cText2SkinDisplayTracks: public cSkinDisplayTracks, public cText2SkinRender {
 private:
 	int         mMaxItems;
@@ -246,6 +245,5 @@ inline bool cText2SkinDisplayTracks::HasTabText(int Index, int n)
 		return mItems[Index].length() > 0;
 	return false;
 }
-#endif
 
 #endif // VDR_TEXT2SKIN_SKIN_H

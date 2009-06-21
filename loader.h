@@ -32,10 +32,8 @@ public:
 	virtual cSkinDisplayMenu *DisplayMenu(void);
 	virtual cSkinDisplayReplay *DisplayReplay(bool ModeOnly);
 	virtual cSkinDisplayVolume *DisplayVolume(void);
-#if VDRVERSNUM >= 10318
 	virtual cSkinDisplayTracks *DisplayTracks(const char *Title, int NumTracks, 
 	                                          const char * const *Tracks);
-#endif
 	virtual cSkinDisplayMessage *DisplayMessage(void);
 
 	cxSkin          *Data(void) const { return mData; }

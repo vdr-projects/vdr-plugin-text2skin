@@ -20,24 +20,16 @@
 #	else
 #		define Dprintf(x...)
 #	endif
-#	define Dbench(x) uint64_t bench_##x = time_ms()
-#	define Ddiff(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
+#	define Dbench(x) uint64_t bench_##x = cTimeMs::Now()
+#	define Ddiff(t,x) fprintf(stderr, "%s took %llu ms\n", t, cTimeMs::Now() - bench_##x)
 #else
 #	define Dprintf(x...)
 #	define Dbench(x)
 #	define Ddiff(t,x)
 #endif
 
-#define DStartBench(x) uint64_t bench_##x = time_ms()
-#define DShowBench(t,x) fprintf(stderr, "%s took %llu ms\n", t, time_ms() - bench_##x)
-
-#if VDRVERSNUM >= 10318
-#	define time_ms() cTimeMs::Now()
-#	define Apid1() Apid(0)
-#	define Apid2() Apid(1)
-#	define Dpid1() Dpid(0)
-#	define Dpid2() Dpid(1)
-#endif
+#define DStartBench(x) uint64_t bench_##x = cTimeMs::Now()
+#define DShowBench(t,x) fprintf(stderr, "%s took %llu ms\n", t, cTimeMs::Now() - bench_##x)
 
 /* Check if a channel is a radio station. */
 #define ISRADIO(x) ((x)->Vpid()==0||(x)->Vpid()==1||(x)->Vpid()==0x1fff)
