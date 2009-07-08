@@ -16,7 +16,7 @@ This plugin is designed to load and interpret a set of files describing the
 layout of the On Screen Display and to make this "Skin" available to VDR via
 Setup -> OSD in the main menu. Of course it is possible to load more than one
 text-based skin this way and to choose between them while running VDR. All 
-skins may be themeable (you can create your own color-theme) and translateable
+skins may be themeable (you can create your own color-theme) and translatable
 as the author of the skin wishes.
 
 
@@ -55,7 +55,7 @@ Installation:
 -------------
 
 Install text2skin like any other plugin. In this example I assume that you have
-changed to the folder where the VDR sourcecode is located, and that it is 
+changed to the folder where the VDR source code is located, and that it is 
 version 1.2 of the plugin you wish to install.
 
 root@linux # cd PLUGINS/src
