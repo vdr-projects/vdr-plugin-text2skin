@@ -75,25 +75,20 @@ endif
 
 ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2
-	LIBS += -lImlib2
+	INCLUDES += $(shell pkg-config --cflags imlib2)
+	LIBS += $(shell pkg-config --libs imlib2)
 endif
 
 ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
-	INCLUDES += `pkg-config --cflags ImageMagick++`
-	LIBS += `pkg-config --libs ImageMagick++`
-#	LIBS += $(shell Magick++-config --ldflags --libs)
+	INCLUDES += $(shell pkg-config --cflags ImageMagick++)
+	LIBS += $(shell pkg-config --libs ImageMagick++)
 endif
 
 ifdef HAVE_FREETYPE
-	ifneq ($(shell which freetype-config),)
-		INCLUDES += $(shell freetype-config --cflags)
-		LIBS += $(shell freetype-config --libs)
-	else
-		INCLUDES += -I/usr/include/freetype -I/usr/local/include/freetype
-		LIBS += -lfreetype
-	endif
 	DEFINES += -DHAVE_FREETYPE
+	INCLUDES += $(shell pkg-config --cflags freetype2)
+	LIBS += $(shell pkg-config --libs freetype2)
 	OBJS += graphtft/font.o
 endif
 

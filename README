@@ -50,6 +50,10 @@ Some skins may use True Type Fonts, which requires the FreeType package to be
 installed. If you don't want to use FreeType font rendering, you may disable
 that in the Makefile, too.
 
+The Makefile uses pkg-config by default to find out the necessary compiler,
+preprocessor and linker flags and libraries for the above, so you'll need it
+and the *.pc files for the above packages properly installed as well.
+
 
 Installation:
 -------------
