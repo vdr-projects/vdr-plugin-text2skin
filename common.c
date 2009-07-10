@@ -119,7 +119,7 @@ int GetFrontendSNR(void)
 
 bool GetFrontendHasLock(void)
 {
-	uint16_t value = 0;
+	fe_status_t value = fe_status_t(0);
 	char *dev = NULL;
 
 	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
@@ -134,7 +134,7 @@ bool GetFrontendHasLock(void)
 
 bool GetFrontendHasSignal(void)
 {
-	uint16_t value = 0;
+	fe_status_t value = fe_status_t(0);
 	char *dev = NULL;
 
 	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
