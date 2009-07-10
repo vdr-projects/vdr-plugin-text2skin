@@ -19,15 +19,12 @@ void cText2SkinLoader::Start(void) {
 		struct dirent ent;
 		struct dirent *result;
 		while ((readdir_r(d, &ent, &result)) == 0 && result != NULL) {
-			char *path;
 			struct stat buf;
 			if (strcmp(result->d_name, ".") == 0 || strcmp(result->d_name, "..") == 0)
 				continue;
-			asprintf(&path, "%s/%s", SkinPath().c_str(), result->d_name);
 			if (stat((SkinPath() + "/" + result->d_name).c_str(), &buf) == 0 
 					&& S_ISDIR(buf.st_mode))
 				Load(result->d_name);
-			free(path);
 		}
 		closedir(d);
 	}
