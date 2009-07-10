@@ -90,60 +90,56 @@ const cRecording *GetRecordingByFileName(const char *FileName)
 int GetFrontendSTR(void)
 {
 	uint16_t value = 0;
-	char *dev = NULL;
+	cString dev = cString::sprintf(FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 
-	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 	int fe = open(dev, O_RDONLY | O_NONBLOCK);
-	free(dev);
-	if (fe >= 0) {
-		CHECK(ioctl(fe, FE_READ_SIGNAL_STRENGTH, &value));
-		close(fe);
-	}
+	if (fe < 0)
+		return 0;
+	CHECK(ioctl(fe, FE_READ_SIGNAL_STRENGTH, &value));
+	close(fe);
+
 	return value / 655;
 }
 
 int GetFrontendSNR(void)
 {
 	uint16_t value = 0;
-	char *dev = NULL;
+	cString dev = cString::sprintf(FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 
-	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 	int fe = open(dev, O_RDONLY | O_NONBLOCK);
-	free(dev);
-	if (fe >= 0) {
-		CHECK(ioctl(fe, FE_READ_SNR, &value));
-		close(fe);
-	}
+	if (fe < 0)
+		return 0;
+	CHECK(ioctl(fe, FE_READ_SNR, &value));
+	close(fe);
+
 	return value / 655;
 }
 
 bool GetFrontendHasLock(void)
 {
-	fe_status_t value = fe_status_t(0);
-	char *dev = NULL;
+	fe_status_t value;
+	cString dev = cString::sprintf(FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 
-	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 	int fe = open(dev, O_RDONLY | O_NONBLOCK);
-	free(dev);
-	if (fe >= 0) {
-		CHECK(ioctl(fe, FE_READ_STATUS, &value));
-		close(fe);
-	}
+	if (fe < 0)
+		return false;
+	CHECK(ioctl(fe, FE_READ_STATUS, &value));
+	close(fe);
+
 	return value & FE_HAS_LOCK;
 }
 
 bool GetFrontendHasSignal(void)
 {
-	fe_status_t value = fe_status_t(0);
-	char *dev = NULL;
+	fe_status_t value;
+	cString dev = cString::sprintf(FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 
-	asprintf(&dev, FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
 	int fe = open(dev, O_RDONLY | O_NONBLOCK);
-	free(dev);
-	if (fe >= 0) {
-		CHECK(ioctl(fe, FE_READ_STATUS, &value));
-		close(fe);
-	}
+	if (fe < 0)
+		return false;
+	CHECK(ioctl(fe, FE_READ_STATUS, &value));
+	close(fe);
+
 	return value & FE_HAS_SIGNAL;
 }
 
