@@ -72,7 +72,7 @@ const cFont *cText2SkinFont::Load(const string &Name, int Size)
 	if (mFontCache.Load(Name, cachename, Size))
 		res = mFontCache.GetFont(cachename);
 	else
-		esyslog("ERROR: Text2Skin: Couldn't load font %s:%d", Name.c_str(), Size);
+		esyslog("ERROR: Text2Skin: Couldn't load font %s@%d", Name.c_str(), Size);
 	free(cachename);
 	return res;
 }
