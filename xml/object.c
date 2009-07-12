@@ -116,7 +116,7 @@ bool cxObject::ParseFontFace(const std::string &Text)
 {
 	int size = 0, width = 0, pos;
 	std::string face = Text;
-	if ((pos = face.find(':')) != -1) {
+	if ((pos = face.find('@')) != -1) {
 		std::string s = face.substr(pos + 1);
 		const char *p = s.c_str(); 
 		char *end;
@@ -152,11 +152,7 @@ const cFont *cxObject::Font(void) const
 {
 	const cFont *font;
 
-	if ((font = cText2SkinFont::Load(SkinPath() + "/" + mSkin->Name(), mFontFace, mFontSize, 
-	                                 mFontWidth)) != NULL)
-		return font;
-
-	if ((font = cText2SkinFont::Load(SkinPath() + "/fonts", mFontFace, mFontSize, mFontWidth)) != NULL)
+	if ((font = cText2SkinFont::Load(mFontFace, mFontSize)) != NULL)
 		return font;
 
 	return cFont::GetFont(fontOsd);

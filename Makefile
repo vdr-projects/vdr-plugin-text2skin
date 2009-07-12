@@ -10,10 +10,6 @@ HAVE_IMAGEMAGICK=1
 #HAVE_IMLIB2=1
 # not recommended
 
-# comment this out if you don't want to use FreeType font rendering
-
-HAVE_FREETYPE=1
-
 
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
@@ -83,13 +79,6 @@ ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
 	INCLUDES += $(shell pkg-config --cflags ImageMagick++)
 	LIBS += $(shell pkg-config --libs ImageMagick++)
-endif
-
-ifdef HAVE_FREETYPE
-	DEFINES += -DHAVE_FREETYPE
-	INCLUDES += $(shell pkg-config --cflags freetype2)
-	LIBS += $(shell pkg-config --libs freetype2)
-	OBJS += graphtft/font.o
 endif
 
 ifdef DEBUG

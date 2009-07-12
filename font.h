@@ -6,23 +6,40 @@
 #define VDR_TEXT2SKIN_FONT_H
 
 #include "common.h"
-#ifdef HAVE_FREETYPE
-#	include "graphtft/font.h"
-#endif
+#include <map>
+#include <string>
+#include <vdr/font.h>
+
+using std::map;
+using std::string;
+
+
+class cText2SkinFontCache
+{
+private:
+	typedef map<string,cFont*> cache_map;
+	
+public:
+	cText2SkinFontCache();
+	~cText2SkinFontCache();
+
+	bool Load(string Name, string CacheName, int Size);
+	const cFont* GetFont(string CacheName);
+	void Clear();
+
+private:
+	cache_map 		_cache;
+};
 
 class cText2SkinFont {
 private:
-#ifdef HAVE_FREETYPE
-	static cGraphtftFont mFontCache;
-#endif
-
+	static cText2SkinFontCache mFontCache;
 	// disallow direct construction
 	cText2SkinFont(void);
 	virtual ~cText2SkinFont();
 
 public:
-	static const cFont *Load(const std::string &Path, const std::string &Filename, int Size, 
-	                         int Width);
+	static const cFont *Load(const string &Name, int Size);
 };
 
 #endif // VDR_TEXT2SKIN_FONT_H

@@ -117,7 +117,7 @@ Scroll- and progress-bars also need "bgColor", progress-bars "current" and "tota
   <rectangle x1="20" x2="99" y1="-83" y2="-44" color="#00000000"/>
   <text x1="42" x2="571" y1="-113" y2="-86" color="#FF000000" font="Osd">{ReplayTitle}</text>
   <progress x1="124" x2="577" y1="-70" y2="-55" color="#FF84ff00" bgColor="#FFFFFFFF" current="{ReplayPositionIndex}" total="{ReplayDurationIndex}"/>
-  <scrolltext x1="24" y1="138" y2="-72" x2="583" font="helmetr.ttf:20" color="#AFFFFF00">
+  <scrolltext x1="24" y1="138" y2="-72" x2="583" font="Sans Serif@20" color="#AFFFFF00">
   {PresentShortText}
   {PresentDescription}
   </scrolltext> 
@@ -269,15 +269,16 @@ There are three predefined fonts
 * Fix
 * Sml
 
-If the freetype library is installed it is possible to use every True-Type font in the directories
-  /etc/vdr/plugins/text2skin/fonts/
-or
-  /etc/vdr/plugins/text2skin/SkinName/
+It is possible to use True Type fonts installed and configured for fontconfig's
+use on the system.  See the fontconfig documentation for details how to do
+that; usually it's a matter of copying the font files somewhere and running
+fc-cache(1) (as root or the VDR user).
 
 In the skin file the font is defined with
 
   font="Osd"
 
-or with True-Type fonts with the desired size and if desirable width
+or with True Type fonts with the desired size and if desirable width
 
-  font="helmetr.ttf:size[,width]"
+  font="Sans Serif@size[,width]"
+  font="Monospaced:Bold@size[,width]"

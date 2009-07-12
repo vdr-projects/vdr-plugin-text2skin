@@ -46,10 +46,6 @@ HINT: Although the manual of ImageMagick claims that the used library Magick++
 is part of the source distribution, some binary distributions may have to 
 install Magick++ separately.
 
-Some skins may use True Type Fonts, which requires the FreeType package to be
-installed. If you don't want to use FreeType font rendering, you may disable
-that in the Makefile, too.
-
 The Makefile uses pkg-config by default to find out the necessary compiler,
 preprocessor and linker flags and libraries for the above, so you'll need it
 and the *.pc files for the above packages properly installed as well.
@@ -101,10 +97,6 @@ it there.
 Where to put the fonts:
 -----------------------
 
-Font files (.ttf) can be placed either in the directory of the skin itself or 
-in a subfolder fonts inside the text2skin directory.
-
-Example:
-/video0/plugins/text2skin/fonts/arial.ttf
-/video0/plugins/text2skin/myskin/arial.ttf
-
+Font files (.ttf) must be installed so that fontconfig can find them, see the
+fontconfig documentation for more information (usually copy *.ttf to some dir,
+run fc-cache on that dir as root or the vdr user).
