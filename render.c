@@ -604,7 +604,7 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 					const cMark *m2 = Marks->Next(m);
 					DrawRectangle(txPoint(pt.x, Pos.y + Size.h / 3), 
 					              txSize(((m2 ? m2->position : Total) - m->position) 
-					              * Size.w / Total, Size.h / 3), Selected);
+					              * Size.w / Total, Size.h - Size.h * 2 / 3), Selected);
 				}
 				DrawMark(pt, Size, start, m->position == Current, false, Mark, Cur);
 				start = !start;
@@ -620,7 +620,8 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
 					DrawRectangle(txPoint(Pos.x + Size.w / 3, pt.y), 
-					              txSize(Size.w / 3, ((m2 ? m2->position : Total) - m->position) 
+					              txSize(Size.w - Size.w * 2 / 3,
+					              ((m2 ? m2->position : Total) - m->position)
 					              * Size.h / Total), Selected);
 				}
 				DrawMark(pt, Size, start, m->position == Current, true, Mark, Cur);
@@ -642,7 +643,7 @@ void cText2SkinRender::DrawMark(const txPoint &Pos, const txSize &Size, bool Sta
 			const tColor *col = Current ? Cur : Mark;
 			int h = Start ? i : Size.w - 1 - i;
 			if (col)
-				DrawRectangle(txPoint(Pos.x + h, Pos.y - d + i), txSize(1, (d - i) * 2), col);
+				DrawRectangle(txPoint(Pos.x + h, Pos.y - d + i), txSize(1, (d - i) * 2 + 1), col);
 		}
 	} else {
 		if (Mark)
@@ -652,7 +653,7 @@ void cText2SkinRender::DrawMark(const txPoint &Pos, const txSize &Size, bool Sta
 			const tColor *col = Current ? Cur : Mark;
 			int h = Start ? i : Size.h - 1 - i;
 			if (col)
-				DrawRectangle(txPoint(Pos.x - d + i, Pos.y + h), txSize((d - i) * 2, 1), col);
+				DrawRectangle(txPoint(Pos.x - d + i, Pos.y + h), txSize((d - i) * 2 + 1, 1), col);
 		}
 	}
 }
