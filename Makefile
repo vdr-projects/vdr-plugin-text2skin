@@ -58,7 +58,7 @@ PACKAGE = vdr-$(ARCHIVE)
 
 OBJS = $(PLUGIN).o loader.o display.o render.o common.o bitmap.o \
        file.o i18n.o theme.o cache.o setup.o status.o scroller.o screen.o \
-       menu.o font.o quantize.o \
+       menu.o font.o \
        \
        xml/skin.o xml/parser.o xml/string.o xml/object.o xml/function.o \
        xml/type.o xml/display.o xml/xml.o
@@ -73,6 +73,7 @@ ifdef HAVE_IMLIB2
 	DEFINES += -DHAVE_IMLIB2
 	INCLUDES += $(shell pkg-config --cflags imlib2)
 	LIBS += $(shell pkg-config --libs imlib2)
+	OBJS += quantize.o
 endif
 
 ifdef HAVE_IMAGEMAGICK

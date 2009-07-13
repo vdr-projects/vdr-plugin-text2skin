@@ -3,11 +3,11 @@
  */
 
 #include "bitmap.h"
-#include "quantize.h"
 #include "setup.h"
 #include <vdr/tools.h>
 #define X_DISPLAY_MISSING
 #ifdef HAVE_IMLIB2
+#include "quantize.h"
 #include <Imlib2.h>
 #endif
 #ifdef HAVE_IMAGEMAGICK
