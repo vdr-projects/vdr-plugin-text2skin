@@ -62,16 +62,7 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 			if (fname.substr(len - 4, 4) == ".xpm")
 				result = res->LoadXpm(fname.c_str());
 			else {
-#ifdef HAVE_IMLIB2
-				result = res->LoadImlib(fname.c_str(),height,width,colors, Quiet);
-#else
-#	ifdef HAVE_IMAGEMAGICK
-				result = res->LoadMagick(fname.c_str(),height,width,colors, Quiet);
-#	else
-				if (!Quiet)
-					esyslog("ERROR: text2skin: unknown file format for %s", fname);
-#	endif
-#endif
+				result = res->LoadNonXpm(fname.c_str(), height, width, colors, Quiet);
 			}
 		} else if (!Quiet)
 			esyslog("ERROR: text2skin: filename %s too short to identify format", fname.c_str());
@@ -159,8 +150,15 @@ bool cText2SkinBitmap::LoadXpm(const char *Filename) {
 	return false;
 }
 
+#if !(defined(HAVE_IMLIB2) || defined(HAVE_IMAGEMAGICK))
+bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet) {
+	if (!Quiet)
+		esyslog("ERROR: text2skin: unknown file format for %s", Filename);
+}
+#endif
+
 #ifdef HAVE_IMLIB2
-bool cText2SkinBitmap::LoadImlib(const char *Filename, int height, int width, int colors, bool Quiet) {
+bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet) {
 	Imlib_Image image;
         unsigned char * outputImage = NULL;
 	unsigned int * outputPalette = NULL;
@@ -205,7 +203,7 @@ bool cText2SkinBitmap::LoadImlib(const char *Filename, int height, int width, in
 #endif
 
 #ifdef HAVE_IMAGEMAGICK
-bool cText2SkinBitmap::LoadMagick(const char *Filename, int height, int width, int colors, bool Quiet) {
+bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet) {
 	std::vector<Image> images;
 	cBitmap *bmp = NULL;
 	try {

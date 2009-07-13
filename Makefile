@@ -1,14 +1,14 @@
-# exchange the comments on the following to lines if you would like to use
-# Imlib2 for loading images. BEWARE that you can not use GraphTFT together with
-# Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
-
 #DEBUG=1
 #BENCH=1
 STRIP=strip
 
+# BEWARE that you can not use GraphTFT together with
+# Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
+# TBD: is this still true?
+
+# Define only one of these.
 HAVE_IMAGEMAGICK=1
-#HAVE_IMLIB2=1
-# not recommended
+#HAVE_IMLIB2=1 # not recommended
 
 
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING

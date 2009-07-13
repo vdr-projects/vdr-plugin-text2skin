@@ -72,6 +72,9 @@ private:
 	// disallow direct construction
 	cText2SkinBitmap(void);
 
+	bool LoadXpm(const char *Filename);
+	bool LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet);
+
 public:
 	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0, int height = 0, 
 	                              int width = 0, int colors = 0, bool Quiet = false);
@@ -86,14 +89,6 @@ public:
 	cBitmap &Get(uint &UpdateIn, uint Now);
 	void SetColor(int Index, tColor Color);
 	void SetAlpha(int Alpha);
-
-	bool LoadXpm(const char *Filename);
-#ifdef HAVE_IMLIB2
-	bool LoadImlib(const char *Filename,int height, int width, int colors, bool Quiet);
-#endif
-#ifdef HAVE_IMAGEMAGICK
-	bool LoadMagick(const char *Filename,int height, int width, int colors, bool Quiet);
-#endif
 };
 
 inline void cText2SkinBitmap::SetColor(int Index, tColor Color) {
