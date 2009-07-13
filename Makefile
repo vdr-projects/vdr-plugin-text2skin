@@ -6,8 +6,9 @@ STRIP=strip
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
 # TBD: is this still true?
 
-# Define only one of these.
+# Define only one of these, leave others commented out.
 HAVE_IMAGEMAGICK=1
+#HAVE_GRAPHICSMAGICK=1
 #HAVE_IMLIB2=1 # not recommended
 
 
@@ -80,6 +81,12 @@ ifdef HAVE_IMAGEMAGICK
 	DEFINES += -DHAVE_IMAGEMAGICK
 	INCLUDES += $(shell pkg-config --cflags ImageMagick++)
 	LIBS += $(shell pkg-config --libs ImageMagick++)
+endif
+
+ifdef HAVE_GRAPHICSMAGICK
+	DEFINES += -DHAVE_IMAGEMAGICK # yep, really HAVE_IMAGEMAGICK
+	INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
+	LIBS += $(shell pkg-config --libs GraphicsMagick++)
 endif
 
 ifdef DEBUG

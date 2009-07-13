@@ -36,7 +36,7 @@ Keine Bibliothek
  - Sie können nur XPM Dateien laden
  - XPMs haben weder Teiltransparenzen noch Alphakanäle
 
-ImageMagick
+ImageMagick oder GraphicsMagick
  + Sie können viele verschiedene Bildformate laden
  - ist aber etwas langsamer als Imlib2
 

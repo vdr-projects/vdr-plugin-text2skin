@@ -24,27 +24,28 @@ Prerequisites:
 --------------
 
 For loading images in format other than simple XPM, you will need an image 
-library. You can choose between two supported libraries, ImageMagick or Imlib2,
-from which the first one is the default. You can specify which library to use
-(if any) in the first few lines of the Makefile. Here is an overview of the
-advantages and drawbacks of each solution:
+library. You can choose between three supported libraries, ImageMagick,
+GraphicsMagick or Imlib2, of which the first one is the default. You can
+specify which library to use (if any) in the first few lines of the Makefile.
+Here is an overview of the advantages and drawbacks of each solution:
 
 No library
  - you can only load XPM files
  - XPMs don't support partial transparency / alpha channels
 
-ImageMagick
+ImageMagick and GraphicsMagick
  + you can load many different image types including animations
 
 Imlib2
  + you can load many different image types
  - CRASHES WHEN USED TOGETHER WITH THE GRAPHTFT-PLUGIN!
 
-Using both libraries at the same time doesn't make sense anyway.
+Using more than one of the above at the same time doesn't make sense, just
+choose one or none.
 
-HINT: Although the manual of ImageMagick claims that the used library Magick++
-is part of the source distribution, some binary distributions may have to 
-install Magick++ separately.
+HINT: Although the manuals of ImageMagick and GraphicsMagick claim that the
+used library Magick++ is part of the source distribution, some binary
+distributions may have to install Magick++ separately.
 
 The Makefile uses pkg-config by default to find out the necessary compiler,
 preprocessor and linker flags and libraries for the above, so you'll need it
