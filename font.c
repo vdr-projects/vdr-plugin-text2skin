@@ -67,12 +67,10 @@ const cFont *cText2SkinFont::Load(const string &Name, int Size)
 		return cFont::GetFont(fontSml);
 
 	const cFont *res = NULL;
-	char *cachename;
-	asprintf(&cachename, "%s_%d", Name.c_str(), Size);
+	string cachename = string(cString::sprintf("%s_%d", Name.c_str(), Size));
 	if (mFontCache.Load(Name, cachename, Size))
 		res = mFontCache.GetFont(cachename);
 	else
 		esyslog("ERROR: Text2Skin: Couldn't load font %s@%d", Name.c_str(), Size);
-	free(cachename);
 	return res;
 }
