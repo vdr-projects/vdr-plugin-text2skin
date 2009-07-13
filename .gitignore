@@ -2,6 +2,7 @@
 *.o
 *.so*
 *.mo
+*.gmo
 *.pot
 *.tgz
 *~
