@@ -6,10 +6,8 @@ STRIP=strip
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
 # TBD: is this still true?
 
-# Define only one of these, leave others commented out.
-HAVE_IMAGEMAGICK=1
-#HAVE_GRAPHICSMAGICK=1
-#HAVE_IMLIB2=1 # not recommended
+# External image lib to use: imagemagick, graphicsmagick, imlib2 or none
+IMAGELIB = imagemagick
 
 
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
@@ -70,23 +68,19 @@ ifdef DEVELOPMENT_FEATURES
 	DEFINES += -DDEVELOPMENT_FEATURES
 endif
 
-ifdef HAVE_IMLIB2
+ifeq ($(IMAGELIB), imagemagick)
+	DEFINES += -DHAVE_IMAGEMAGICK
+	INCLUDES += $(shell pkg-config --cflags ImageMagick++)
+	LIBS += $(shell pkg-config --libs ImageMagick++)
+else ifeq ($(IMAGELIB), graphicsmagick)
+	DEFINES += -DHAVE_IMAGEMAGICK # yep, really HAVE_IMAGEMAGICK here
+	INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
+	LIBS += $(shell pkg-config --libs GraphicsMagick++)
+else ifeq ($(IMAGELIB), imlib2)
 	DEFINES += -DHAVE_IMLIB2
 	INCLUDES += $(shell pkg-config --cflags imlib2)
 	LIBS += $(shell pkg-config --libs imlib2)
 	OBJS += quantize.o
-endif
-
-ifdef HAVE_IMAGEMAGICK
-	DEFINES += -DHAVE_IMAGEMAGICK
-	INCLUDES += $(shell pkg-config --cflags ImageMagick++)
-	LIBS += $(shell pkg-config --libs ImageMagick++)
-endif
-
-ifdef HAVE_GRAPHICSMAGICK
-	DEFINES += -DHAVE_IMAGEMAGICK # yep, really HAVE_IMAGEMAGICK
-	INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
-	LIBS += $(shell pkg-config --libs GraphicsMagick++)
 endif
 
 ifdef DEBUG

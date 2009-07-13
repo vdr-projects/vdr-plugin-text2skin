@@ -6,13 +6,12 @@
 #include "setup.h"
 #include <vdr/tools.h>
 #define X_DISPLAY_MISSING
-#ifdef HAVE_IMLIB2
-#include "quantize.h"
-#include <Imlib2.h>
-#endif
 #ifdef HAVE_IMAGEMAGICK
 #include <Magick++.h>
 using namespace Magick;
+#elif defined(HAVE_IMLIB2)
+#include "quantize.h"
+#include <Imlib2.h>
 #endif
 #include <glob.h>
 
@@ -150,60 +149,9 @@ bool cText2SkinBitmap::LoadXpm(const char *Filename) {
 	return false;
 }
 
-#if !(defined(HAVE_IMLIB2) || defined(HAVE_IMAGEMAGICK))
 bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet) {
-	if (!Quiet)
-		esyslog("ERROR: text2skin: unknown file format for %s", Filename);
-}
-#endif
-
-#ifdef HAVE_IMLIB2
-bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet) {
-	Imlib_Image image;
-        unsigned char * outputImage = NULL;
-	unsigned int * outputPalette = NULL;
-	cQuantizeWu* quantizer = new cQuantizeWu();
-	cBitmap *bmp = NULL;
-	image = imlib_load_image(Filename);
-	if (!image)
-		return false;
-	Imlib_Context ctx = imlib_context_new();
-	imlib_context_push(ctx);
-	if (height != 0 || width != 0){
-		imlib_context_set_image(image);
-		image = imlib_create_cropped_scaled_image(0,0,imlib_image_get_width(), imlib_image_get_height() ,width , height);
-	}
-	imlib_context_set_image(image);
-	bmp = new cBitmap(imlib_image_get_width(), imlib_image_get_height(), 8);
-	uint8_t *data = (uint8_t*)imlib_image_get_data_for_reading_only();
-	if ( colors != 0 ){
-        	quantizer->Quantize(data, imlib_image_get_width()* imlib_image_get_height(), colors);
-		outputImage = quantizer->OutputImage();
-		outputPalette = quantizer->OutputPalette();
-	}
-	int pos = 0;
-	for (int y = 0; y < bmp->Height(); ++y) {
-		for (int x = 0; x < bmp->Width(); ++x) {
-			if ( colors != 0 ){
-				bmp->DrawPixel(x, y ,  outputPalette[outputImage[y * bmp->Width() + x]] | 0xFF000000 );
-			}else{	
-				tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
-				bmp->DrawPixel(x, y, col);
-				pos += 4;
-			}
-		}
-	}
-	
-	imlib_free_image();
-	imlib_context_free(ctx);
-	mBitmaps.push_back(bmp);
-	delete(quantizer);
-	return true;
-}
-#endif
 
 #ifdef HAVE_IMAGEMAGICK
-bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet) {
 	std::vector<Image> images;
 	cBitmap *bmp = NULL;
 	try {
@@ -258,5 +206,53 @@ bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, i
 		return false;
 	}
 	return true;
-}
+
+#elif defined(HAVE_IMLIB2)
+	Imlib_Image image;
+        unsigned char * outputImage = NULL;
+	unsigned int * outputPalette = NULL;
+	cQuantizeWu* quantizer = new cQuantizeWu();
+	cBitmap *bmp = NULL;
+	image = imlib_load_image(Filename);
+	if (!image)
+		return false;
+	Imlib_Context ctx = imlib_context_new();
+	imlib_context_push(ctx);
+	if (height != 0 || width != 0){
+		imlib_context_set_image(image);
+		image = imlib_create_cropped_scaled_image(0,0,imlib_image_get_width(), imlib_image_get_height() ,width , height);
+	}
+	imlib_context_set_image(image);
+	bmp = new cBitmap(imlib_image_get_width(), imlib_image_get_height(), 8);
+	uint8_t *data = (uint8_t*)imlib_image_get_data_for_reading_only();
+	if ( colors != 0 ){
+        	quantizer->Quantize(data, imlib_image_get_width()* imlib_image_get_height(), colors);
+		outputImage = quantizer->OutputImage();
+		outputPalette = quantizer->OutputPalette();
+	}
+	int pos = 0;
+	for (int y = 0; y < bmp->Height(); ++y) {
+		for (int x = 0; x < bmp->Width(); ++x) {
+			if ( colors != 0 ){
+				bmp->DrawPixel(x, y ,  outputPalette[outputImage[y * bmp->Width() + x]] | 0xFF000000 );
+			}else{	
+				tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
+				bmp->DrawPixel(x, y, col);
+				pos += 4;
+			}
+		}
+	}
+	
+	imlib_free_image();
+	imlib_context_free(ctx);
+	mBitmaps.push_back(bmp);
+	delete(quantizer);
+	return true;
+
+#else /* Not built with external image library */
+	if (!Quiet)
+		esyslog("ERROR: text2skin: unknown file format for %s", Filename);
+	return false;
+
 #endif
+}
