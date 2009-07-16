@@ -223,55 +223,29 @@ int GetRecordingSize(const char *FileName)
 	return (rec) ? DirSizeMB(FileName) : 0;
 }
 
-int GetRecordingLength(const char *FileName)
+int GetRecordingLength(const char *FileName, double FramesPerSecond, bool IsPesRecording)
 {
-	// based on the enAIO-Patch for VDR
-	#define INDEXFILESUFFIX   "/index.vdr"
-
+#define INDEXFILESUFFIX     "/index"
 	struct tIndex { int offset; uchar type; uchar number; short reserved; };
-	tIndex *index;
-	char RecLength[21];
-	char *filename = NULL;
-	int last = -1;
-	index = NULL;
-	if (FileName) {
-		filename = MALLOC(char, strlen(FileName) + strlen(INDEXFILESUFFIX) + 1);
-			if (filename) {
-				strcpy(filename, FileName);
-				char *pFileExt = filename + strlen(filename);
-				strcpy(pFileExt, INDEXFILESUFFIX);
-				int delta = 0;
-				if (access(filename, R_OK) == 0) {
-					struct stat buf;
-					if (stat(filename, &buf) == 0) {
-						delta = buf.st_size % sizeof(tIndex);
-						if (delta) {
-							delta = sizeof(tIndex) - delta;
-							esyslog("ERROR: invalid file size (%ld) in '%s'", (long)buf.st_size, filename);
-							}
-						last = (buf.st_size + delta) / sizeof(tIndex) - 1;
-						char hour[2], min[3];
-						snprintf(RecLength, sizeof(RecLength), "%s", *IndexToHMSF(last, true));
-						snprintf(hour, sizeof(hour), "%c", RecLength[0]);
-						snprintf(min, sizeof(min), "%c%c", RecLength[2], RecLength[3]);
-						return (atoi(hour) * 60) + atoi(min);
-						}
-					}
-				free(filename);
-				}
-			}
-
+	struct stat buf;
+	cString fullname = cString::sprintf("%s%s", FileName, IsPesRecording ? INDEXFILESUFFIX ".vdr" : INDEXFILESUFFIX);
+	if (FileName && *fullname && access(fullname, R_OK) == 0 && stat(fullname, &buf) == 0)
+		return buf.st_size ? ((buf.st_size - 1) / sizeof(tIndex) + 1) / (60 * FramesPerSecond) : 0;
 	return 0;
 }
 
-int GetRecordingCuttedLength(const char *FileName)
+int GetRecordingCuttedLength(const char *FileName, double FramesPerSecond, bool IsPesRecording)
 {
 	cMarks marks;
 	double length = 0;
-	int totalLength = GetRecordingLength(FileName);
-	const double diffIFrame = FRAMESPERSEC / 2; // approx. 1/2 sec.
+	int totalLength = GetRecordingLength(FileName, FramesPerSecond, IsPesRecording);
+	const double diffIFrame = FramesPerSecond / 2; // approx. 1/2 sec.
 
+#if VDRVERSNUM >= 10703
+	marks.Load(FileName, FramesPerSecond, IsPesRecording);
+#else
 	marks.Load(FileName);
+#endif
 
 	if (marks.Count()) {
 		int start = 1; // first frame
@@ -281,14 +255,14 @@ int GetRecordingCuttedLength(const char *FileName)
 			if (isStart)
 				start = m->position;
 			else
-				length += (double)(m->position - start + 1 + diffIFrame) / (FRAMESPERSEC * 60); // [min]
+				length += (double)(m->position - start + 1 + diffIFrame) / (60 * FramesPerSecond); // [min]
 
 			isStart = !isStart;
 		}
 
 		// if there is no end-mark the last segment goes to the end of the rec.
 		if (!isStart)
-			length += totalLength - (double)(start - 1 - diffIFrame) / (FRAMESPERSEC * 60); // [min]
+			length += totalLength - (double)(start - 1 - diffIFrame) / (60 * FramesPerSecond); // [min]
 	}
 
 	// just to avoid, that the cutted length is bigger than the total length
@@ -321,18 +295,27 @@ cxType TimeType(time_t Time, const std::string &Format)
 	return false;
 }
 
-cxType DurationType(uint Index, const std::string &Format) 
+cxType DurationType(uint Index, double FramesPerSecond, const std::string &Format)
+{
+	if (FramesPerSecond && Format.length() > 0) {
+		double Seconds = (Index + 0.5) / FramesPerSecond;
+		int Frame = int((Seconds - int(Seconds)) * FramesPerSecond) + 1;
+		return DurationType(int(Seconds), Format, Frame);
+	}
+	return int(Index);
+}
+
+cxType DurationType(int Seconds, const std::string &Format, int Frame)
 {
 	static char result[1000];
-	if (Index > 0) {
+	if (Seconds >= 0) {
 		if (Format.length() > 0) {
 			uint update = 0;
 			const char *ptr = Format.c_str(); 
 			char *res = result;
 			enum { normal, format } state = normal;
 			int n = 0;
-			int f = (Index % FRAMESPERSEC) + 1;
-			int s = (Index / FRAMESPERSEC);
+			int s = Seconds;
 			int m = s / 60 % 60;
 			int h = s / 3600;
 			s %= 60;
@@ -371,7 +354,8 @@ cxType DurationType(uint Index, const std::string &Format)
 						break;
 					
 					case 'f':
-						n = snprintf(res, sizeof(result) - (res - result), "%d", f);
+						if (Frame)
+							n = snprintf(res, sizeof(result) - (res - result), "%02d", Frame);
 						update = 1000;
 						break;
 
@@ -391,7 +375,7 @@ cxType DurationType(uint Index, const std::string &Format)
 			r.SetUpdate(update);
 			return r;
 		} else
-			return (int)Index;
+			return Seconds;
 	}
 	return false;
 }

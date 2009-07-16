@@ -22,7 +22,8 @@ cText2SkinStatus::cText2SkinStatus(void):
 		mRecordings(),
 		mCurrentRecording(0),
 		mNextRecording(0),
-		mLastLanguage(0)
+		mLastLanguage(0),
+		mReplayFramesPerSecond(0)
 {
 }
 
@@ -83,6 +84,13 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 	  mReplayIsLoop = false;
 	  mReplayIsShuffle = false;
 	}
+
+#if VDRVERSNUM >= 10703
+	// Workaround: Control->FramesPerSecond() not possible because its not const
+	mReplayFramesPerSecond = mReplay != NULL ? mReplay->FramesPerSecond() : DEFAULTFRAMESPERSECOND;
+#else
+	mReplayFramesPerSecond = FRAMESPERSEC;
+#endif
 
 	if (mRender != NULL) {
 		if (mReplayMode != oldMode)

@@ -817,7 +817,7 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 			VideoDiskSpace(&FreeMB);
 			Dprintf("FreeMB: %d, attrib type is %d\n", FreeMB,Token.Attrib.Type);
 			return Token.Attrib.Type == aString && Token.Attrib.Text.length() > 0
-			       ? (cxType)DurationType((int)(FreeMB * 60 * FRAMESPERSEC / MB_PER_MINUTE), 
+			       ? (cxType)DurationType(FreeMB * 60 / MB_PER_MINUTE,
 			                              Token.Attrib.Text)
 			       : (cxType)FreeMB;
 		}

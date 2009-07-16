@@ -71,6 +71,7 @@ private:
 	uint              mNextRecording;
 	int               mLastLanguage;
 	int               mTimerConflicts;
+	double            mReplayFramesPerSecond;
 
 protected:
 	virtual void Replaying(const cControl *Control, const char *Name, 
@@ -91,6 +92,8 @@ public:
 	cxType GetTokenData(const txToken &Token);
 
 	eReplayMode ReplayMode(void) const { return mReplayMode; }
+
+	double ReplayFramesPerSecond(void) const { return mReplayFramesPerSecond; }
 };
 
 extern cText2SkinStatus Text2SkinStatus;

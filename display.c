@@ -165,20 +165,20 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tPresentProgress:
 		return mPresent != NULL
-		       ? (cxType)DurationType((time(NULL) - mPresent->StartTime()) * FRAMESPERSEC, 
+		       ? (cxType)DurationType(time(NULL) - mPresent->StartTime(),
 		                              Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentDuration:
 		return mPresent != NULL
-		       ? (cxType)DurationType(mPresent->Duration() * FRAMESPERSEC, Token.Attrib.Text)
+		       ? (cxType)DurationType(mPresent->Duration(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentRemaining:
 		if (mPresent != NULL && time(NULL) - mPresent->StartTime() 
 		                        <= mPresent->Duration()) {
-			return (cxType)DurationType((mPresent->Duration() - (time(NULL) - mPresent->StartTime()))
-		                                * FRAMESPERSEC, Token.Attrib.Text);
+			return (cxType)DurationType(mPresent->Duration() - (time(NULL) - mPresent->StartTime()),
+		                                    Token.Attrib.Text);
 		}
 		return false;
 
@@ -214,7 +214,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 
 	case tFollowingDuration:
 		return mFollowing != NULL
-		       ? (cxType)DurationType(mFollowing->Duration() * FRAMESPERSEC, Token.Attrib.Text)
+		       ? (cxType)DurationType(mFollowing->Duration(), Token.Attrib.Text)
 		       : (cxType)false;
 		
 	case tFollowingTitle:
@@ -511,10 +511,14 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return mTitle;
 
 	case tReplayPositionIndex:
-		return DurationType(mCurrent, Token.Attrib.Text);
+		return DurationType(mCurrent,
+		                    Text2SkinStatus.ReplayFramesPerSecond(),
+		                    Token.Attrib.Text);
 
 	case tReplayDurationIndex:
-		return DurationType(mTotal, Token.Attrib.Text);
+		return DurationType(mTotal,
+		                    Text2SkinStatus.ReplayFramesPerSecond(),
+		                    Token.Attrib.Text);
 
 	case tReplayPosition:
 		return mPosition;
@@ -523,7 +527,9 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return mDuration;
 
 	case tReplayRemaining:
-		return DurationType(mTotal - mCurrent, Token.Attrib.Text);
+		return DurationType(mTotal - mCurrent,
+		                    Text2SkinStatus.ReplayFramesPerSecond(),
+		                    Token.Attrib.Text);
 
 	case tReplayPrompt:
 		return mPrompt;
@@ -1060,19 +1066,19 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tPresentProgress:
 		return mEvent != NULL
-		       ? (cxType)DurationType((time(NULL) - mEvent->StartTime()) * FRAMESPERSEC, 
+		       ? (cxType)DurationType(time(NULL) - mEvent->StartTime(),
 		                              Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentDuration:
 		return mEvent != NULL
-		       ? (cxType)DurationType(mEvent->Duration() * FRAMESPERSEC, Token.Attrib.Text)
+		       ? (cxType)DurationType(mEvent->Duration(), Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentRemaining:
 		return mEvent != NULL
-		       ? (cxType)DurationType((mEvent->Duration() - (time(NULL) - mEvent->StartTime()))
-		                              * FRAMESPERSEC, Token.Attrib.Text)
+		       ? (cxType)DurationType(mEvent->Duration() - (time(NULL) - mEvent->StartTime()),
+		                              Token.Attrib.Text)
 		       : (cxType)false;
 
 	case tPresentTitle:
@@ -1330,12 +1336,20 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tRecordingLength:
 		return mRecording != NULL
-		       ? (cxType)GetRecordingLength(mRecording->FileName())
+#if VDRVERSNUM >= 10703
+		       ? (cxType)GetRecordingLength(mRecording->FileName(), mRecording->FramesPerSecond(), mRecording->IsPesRecording())
+#else
+		       ? (cxType)GetRecordingLength(mRecording->FileName(), FRAMESPERSEC, true)
+#endif
 		       : (cxType)false;
 
 	case tRecordingCuttedLength:
 		return mRecording != NULL
-		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName())
+#if VDRVERSNUM >= 10703
+		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName(), mRecording->FramesPerSecond(), mRecording->IsPesRecording())
+#else
+		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName(), FRAMESPERSEC, true)
+#endif
 		       : (cxType)false;
 
 	default:

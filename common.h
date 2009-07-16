@@ -11,9 +11,6 @@
 #include <vdr/config.h>
 #include <vdr/epg.h>
 
-// from recording.h (VDR <= 1.7.2)
-#define FRAMESPERSEC 25
-
 #if defined(DEBUG) || defined(BENCH)
 #	ifdef DEBUG
 #		define Dprintf(x...) fprintf(stderr, x)
@@ -58,11 +55,12 @@ bool GetFrontendHasLock(void);
 bool GetFrontendHasSignal(void);
 std::string AddExtInfoToDescription(const char *Title, const char *ShortText, const char *Description, const char *Aux = NULL, bool StripAux = false);
 int GetRecordingSize(const char *FileName); // [MB]
-int GetRecordingLength(const char *FileName); // [min]
-int GetRecordingCuttedLength(const char *FileName); // [min]
+int GetRecordingLength(const char *FileName, double FramesPerSecond, bool IsPesRecording); // [min]
+int GetRecordingCuttedLength(const char *FileName, double FramesPerSecond, bool IsPesRecording); // [min]
 
 cxType TimeType(time_t Time, const std::string &Format);
-cxType DurationType(uint Index, const std::string &Format);
+cxType DurationType(uint Index, double FramesPerSecond, const std::string &Format);
+cxType DurationType(int Seconds, const std::string &Format, int Frame = 0);
 
 bool ParseVar(const char *Text, const char *Name, std::string &Value);
 bool ParseVar(const char *Text, const char *Name, tColor *Value);
