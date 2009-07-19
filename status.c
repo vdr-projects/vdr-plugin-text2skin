@@ -39,6 +39,7 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 {
 	Dprintf("cText2SkinStatus::Replaying(%s)\n", Name);
 	eReplayMode oldMode = mReplayMode;
+	mReplay = NULL;
 
 	if (mRender != NULL)
 		mRender->UpdateLock();
