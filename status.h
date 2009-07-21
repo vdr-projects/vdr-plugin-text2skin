@@ -20,8 +20,9 @@ public:
 		replayDVD,
 		replayVCD,
 		replayImage,
+		replayAudioCd,
 
-#define __REPLAY_COUNT__ (cText2SkinStatus::replayImage+1)
+#define __REPLAY_COUNT__ (cText2SkinStatus::replayAudioCd+1)
 	};
 
 	typedef std::string tRecordingInfo;

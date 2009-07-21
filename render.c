@@ -772,7 +772,8 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				Dprintf("MenuTitle 'clean' result: |%s|\n", res.String().c_str());
 			}
 			else if (Token.Type == tReplayTitle) {
-				if (Text2SkinStatus.ReplayMode() == cText2SkinStatus::replayMP3) {
+				if (Text2SkinStatus.ReplayMode() == cText2SkinStatus::replayMP3
+				    && str[0] == '[' && str[3] == ']') {
 					str.erase(0, 4);
 					res = str;
 				}

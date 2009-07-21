@@ -10,7 +10,7 @@
 #include <vdr/menu.h>
 
 const std::string ReplayNames[__REPLAY_COUNT__] =
-	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image" };
+	{ "", "normal", "mp3", "mplayer", "dvd", "vcd", "image", "audiocd" };
 
 cText2SkinStatus Text2SkinStatus;
 
@@ -70,6 +70,8 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 			mReplayMode = replayMPlayer;
 		else if (strncmp(Name, "[image]", 7) == 0)
 			mReplayMode = replayImage;
+		else if (strncmp(Name, "[cdda]", 6) == 0)
+			mReplayMode = replayAudioCd;
 		else if (strlen(Name) > 7) {
 			int i, n;
 			for (i = 0, n = 0; Name[i]; ++i) {
