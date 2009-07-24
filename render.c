@@ -505,7 +505,7 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 	else if (mNow >= state.nexttime) {
 		uint nextin = Delay;
 		if (state.direction > 0) {
-			if (Font->Width(Text.c_str() + state.offset) <= Size.w) {
+			if (Font->Width(Text.c_str() + Utf8SymChars(Text.c_str(), state.offset)) <= Size.w) {
 				--state.direction;
 				nextin = 1500;
 			} else
@@ -532,7 +532,7 @@ void cText2SkinRender::DrawMarquee(const txPoint &Pos, const txSize &Size, const
 	if (Bg)
 		mScreen->DrawRectangle(Pos.x, Pos.y, Pos.x + Size.w - 1, Pos.y + Size.h - 1, *Bg);
 
-	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + state.offset, Fg ? *Fg : 0, clrTransparent, Font,
+	mScreen->DrawText(Pos.x, Pos.y, Text.c_str() + Utf8SymChars(Text.c_str(), state.offset), Fg ? *Fg : 0, clrTransparent, Font,
 	                  Size.w, Size.h, Align);
 }
 
