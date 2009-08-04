@@ -3,7 +3,7 @@ REFERENCE text2skin-skins
 Thomas Wehrspann
 
 17.12.2004
-Last update 20.01.2005
+Last update 13.07.2009
 
 This is a short reference of the XML based skin-format of the 
 text2skin-plugin.

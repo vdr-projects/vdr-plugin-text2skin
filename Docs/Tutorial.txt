@@ -5,7 +5,7 @@ Sascha Volkenandt
 english translation by Thomas Wehrspann
 
 16.12.2004
-Last update 02.01.2005
+Last update 13.07.2009
 
 Table of Contents
  1. General Stucture of XML Documents
