@@ -140,7 +140,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tChannelSource:
-		return mChannel != NULL
+		return mChannel != NULL && Sources.Get(mChannel->Source()) != NULL
 		       ? (cxType)Sources.Get(mChannel->Source())->Description()
 		       : (cxType)false;
 

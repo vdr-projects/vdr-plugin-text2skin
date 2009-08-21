@@ -102,6 +102,8 @@ ____-__-__: Version 1.3
 - Fixed width and height of the selected parts of the replay progress bar,
   so that its fully compatible with the replay progress bar of the standard
   skins (closes #158)
+- Fixed segmentation fault with token ChannelSource (closes #159 - thanks to
+  a.g.prosat at tochka.ru for reporting this)
 
 2009-06-01: Version 1.2
 
