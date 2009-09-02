@@ -50,6 +50,7 @@ Table of Contents
 4.1 arc
 4.2 color
 4.3 font
+4.4 refresh
 
 1. Elements
 ===========
@@ -61,8 +62,7 @@ container.
 -----------------------------------------------------------------------------
 | Attribute  | Value          | Description
 =============================================================================
-| version    | VERSION        | Version of the skin format (this is
-|            |                | fix value, currently "1.0")
+| version    | VERSION        | Version of the skin format ("1.0" or "1.1")
 -----------------------------------------------------------------------------
 | name       | NAME           | Name to display in the VDR-OSD
 -----------------------------------------------------------------------------
@@ -95,6 +95,8 @@ For each type of a OSD display a <display>-section is required.
 |            | * replaySmall  |
 |            | * menu         |
 |            | * audioTracks  |
+-----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
 -----------------------------------------------------------------------------
 
  <?xml version="1.0"?>
@@ -155,6 +157,10 @@ Draws a filled rectangle.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
 | color      | STRING         | Color of the rectangle (see 4.2 color)
 -----------------------------------------------------------------------------
 
@@ -177,6 +183,10 @@ Draws a circle, a pitch circle, or a ellipse.
 | y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
+-----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
 -----------------------------------------------------------------------------
 | color      | STRING         | Color (see 4.2 color)
 -----------------------------------------------------------------------------
@@ -202,6 +212,10 @@ Draws a curve.
 | y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
+-----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
 -----------------------------------------------------------------------------
 | color      | STRING         | Color (see 4.2 color)
 -----------------------------------------------------------------------------
@@ -231,6 +245,10 @@ Display an image.
 | y2         | NUMBER         | Position of the bottom border (with scaling)
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
+-----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
 -----------------------------------------------------------------------------
 | alpha      | NUMBER         | Transparency (0-255) (see 4.2 color)
 -----------------------------------------------------------------------------
@@ -270,7 +288,13 @@ A static or compound text.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
 | color      | STRING         | Text color (see 4.2 color)
+-----------------------------------------------------------------------------
+| bgColor    | STRING         | Background color (see 4.2 color)
 -----------------------------------------------------------------------------
 | align      | * center       | Alignment of the text
 |            | * right        |
@@ -299,7 +323,13 @@ An alternative to <text> for oversized texts. Scrolls text if needed.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
 | color      | STRING         | Text color (see 4.2 color)
+-----------------------------------------------------------------------------
+| bgColor    | STRING         | Background color (see 4.2 color)
 -----------------------------------------------------------------------------
 | delay      | NUMBER         | Scroll rate (in msec)
 -----------------------------------------------------------------------------
@@ -330,7 +360,13 @@ An alternative to <text> which lets the text blink.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
 | color      | STRING         | Text color (see 4.2 color)
+-----------------------------------------------------------------------------
+| bgColor    | STRING         | Background color (see 4.2 color)
 -----------------------------------------------------------------------------
 | blinkColor | STRING         | Highlight color (see 4.2 color)
 |            |                |  (optional; default: on/off)
@@ -364,7 +400,13 @@ A multiline text.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
 | color      | STRING         | Text color (see 4.2 color)
+-----------------------------------------------------------------------------
+| bgColor    | STRING         | Background color (see 4.2 color)
 -----------------------------------------------------------------------------
 | align      | * center       | Alignment of the text
 |            | * right        |
@@ -396,6 +438,10 @@ A scrollbar.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
 | color      | STRING         | Color of the bar (see 4.2 color)
 -----------------------------------------------------------------------------
 | bgColor    | STRING         | Color of the background (see 4.2 color)
@@ -420,6 +466,10 @@ A progressbar.
 | y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
+-----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
 -----------------------------------------------------------------------------
 | color      | STRING         | Color of the bar (see 4.2 color)
 -----------------------------------------------------------------------------
@@ -450,6 +500,21 @@ A '''<block></block>''' groups several objects together.
 =============================================================================
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
+| w          | NUMBER         | Virtual width of the block
+-----------------------------------------------------------------------------
+| h          | NUMBER         | Virtual height of the block
+-----------------------------------------------------------------------------
+
+If a position is specified the position of all containing elements is
+interpreted relative to the position of the block.
+
+If the virtual size is specified the position and size of all containing
+elements are dynamically adjusted (scaling factor = base size / virtual
+size).
 
  <block condition="file('logos/{ChannelName}.mng')"> 
   <rectangle x1="4" x2="67" y1="4" y2="51" color="#AF000000" />
@@ -474,6 +539,21 @@ Defines a list in the menu.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
+-----------------------------------------------------------------------------
+| w          | NUMBER         | Virtual width of the list
+-----------------------------------------------------------------------------
+| h          | NUMBER         | Virtual height of the list
+-----------------------------------------------------------------------------
+
+The position of list items is interpreted relative to the "list" container
+if skin file version >= 1.1.
+
+If the virtual size is specified the position and size of all containing
+elements are dynamically adjusted (scaling factor = base size / virtual
+size).
 
  <list x1="24" y1="62" x2="569" y2="-82">
    <item height="28"/>
@@ -494,6 +574,10 @@ Defines an item for the list.
 =============================================================================
 | condition  | FUNCTION/TOKEN | Complex condition (possible, but makes 
 |            |                | little sense)
+-----------------------------------------------------------------------------
+| refresh    | STRING         | Redraw optimization (see 4.4 refresh)
+-----------------------------------------------------------------------------
+| changed    | FUNCTION/TOKEN | Condition for refresh
 -----------------------------------------------------------------------------
 | height     | NUMBER         | Height of one list item
 -----------------------------------------------------------------------------
@@ -1081,3 +1165,25 @@ size, and width its width.  For example:
   font="Serif@20"
   font="Monospaced:Bold@22"
   font="Bitstream Vera Sans:Italic@22,85"
+
+4.4 refresh
+-----------
+
+With the attribute refresh the redraw of the osd could be optimized by using
+selective update of changed objects.
+
+-----------------------------------------------------------------------------
+| Attribute | Value                  | Meaning
+=============================================================================
+| refresh   | * always               | default (compatible with old skins)
+|           | * full                 | complete redraw
+|           | * force                | force a redraw
+|           | * comma separated list |
+|           |   of one or more of    |
+|           |   the following:       |
+|           |   - all                | redraw all
+|           |   - timeout            | redraw due to a timeout (e.g. for marquee, blink)
+|           |   - update             | redraw if element is changed
+|           |   - list               | redraw if list item or current item is changed
+|           |   - scroll             | redraw when a scroll event occurred
+-----------------------------------------------------------------------------
