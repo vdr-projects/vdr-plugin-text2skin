@@ -340,7 +340,7 @@ bool cxRefresh::Parse(const std::string &Text)
 	if (Text.find("scroll") != std::string::npos)
 		refresh |= (1<<scroll);
 
-	if (Text.find("allways") != std::string::npos)
+	if (Text.find("always") != std::string::npos)
 		refresh |= 0xFF;
 
 	if (Text.find("full") != std::string::npos)
