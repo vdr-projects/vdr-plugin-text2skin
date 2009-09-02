@@ -3,9 +3,9 @@ REFERENCE text2skin-skins
 Thomas Wehrspann
 
 17.12.2004
-Last update 13.07.2009
+Last update 03.09.2009
 
-This is a short reference of the XML based skin-format of the 
+This is a short reference of the XML based skin format of the
 text2skin-plugin.
 
 Table of Contents
@@ -59,17 +59,17 @@ This is the root element of the skins. All further elements go inside this
 container.
 
 -----------------------------------------------------------------------------
-| Attribute  | Value                 | Description
+| Attribute  | Value          | Description
 =============================================================================
-| version    | VERSION               | Version of the skin-format (this is
-|            |                       | fix value, currently "1.0")
+| version    | VERSION        | Version of the skin format (this is
+|            |                | fix value, currently "1.0")
 -----------------------------------------------------------------------------
-| name       | NAME                  | Name to display in the VDR-OSD
+| name       | NAME           | Name to display in the VDR-OSD
 -----------------------------------------------------------------------------
-| screenBase | "relative","absolute" | Should the skin be drawn "relative"
-|            |                       | (OSD left, top, width, height)
-|            |                       | to the VDR setup or "absolute" to 
-|            |                       | an area of 720x576
+| screenBase | * relative     | Should the skin be drawn "relative"
+|            | * absolute     | (OSD left, top, width, height)
+|            |                | to the VDR setup or "absolute" to
+|            |                | an area of 720x576
 -----------------------------------------------------------------------------
 
  <?xml version="1.0"?>
@@ -85,16 +85,16 @@ container.
 For each type of a OSD display a <display>-section is required.
 
 -----------------------------------------------------------------------------
-| Attribute  | Value                 | Description
+| Attribute  | Value          | Description
 =============================================================================
-| id         | * channelInfo         | Type of the OSD display
-|            | * channelSmall        |
-|            | * volume              |
-|            | * message             |
-|            | * replayInfo          |
-|            | * replaySmall         |
-|            | * menu                |
-|            | * audioTracks         |
+| id         | * channelInfo  | Type of the OSD display
+|            | * channelSmall |
+|            | * volume       |
+|            | * message      |
+|            | * replayInfo   |
+|            | * replaySmall  |
+|            | * menu         |
+|            | * audioTracks  |
 -----------------------------------------------------------------------------
 
  <?xml version="1.0"?>
@@ -112,18 +112,18 @@ For each type of a OSD display a <display>-section is required.
 Each <display>-container has to start with a definition of drawing areas.
 
 -----------------------------------------------------------------------------
-| Attribute  | Value                 | Description
+| Attribute  | Value          | Description
 =============================================================================
-| x1         | NUMBER                | Position of the left border
+| x1         | NUMBER         | Position of the left border
 -----------------------------------------------------------------------------
-| y1         | NUMBER                | Position of the top border
+| y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| x2         | NUMBER                | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| y2         | NUMBER                | Position of the bottom border 
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
-| bpp        | NUMBER                | Color depth of the drawing area
-|            |                       | 4 = 16Farben, 8 = 256Farben
+| bpp        | NUMBER         | Color depth of the drawing area
+|            |                | 4 = 16 colors, 8 = 256 colors
 -----------------------------------------------------------------------------
 
  <?xml version="1.0"?>
@@ -172,15 +172,15 @@ Draws a circle, a pitch circle, or a ellipse.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
 | color      | STRING         | Color (see 4.2 color)
 -----------------------------------------------------------------------------
-| arc        | NUMBER         | pitch circle (see 4.1 arc)
+| arc        | NUMBER         | Pitch circle (see 4.1 arc)
 -----------------------------------------------------------------------------
 
  <ellipse x1="5" y1="7" x2="14" y2="15" color="GraphLight" condition="{IsMenuCurrent}"/>
@@ -197,9 +197,9 @@ Draws a curve.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
@@ -208,7 +208,7 @@ Draws a curve.
 | arc        | NUMBER         | Direction (see 4.1 arc)
 -----------------------------------------------------------------------------
 
- ;-(
+ <slope x1="10" x2="100" y1="10" y2="100" arc="1" color="#CC000066" />
 
 
 1.7 <image>
@@ -232,15 +232,18 @@ Display an image.
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
-| alpha      | NUMBER         | Blended transparency (0-255) (see 4.2 color)
+| alpha      | NUMBER         | Transparency (0-255) (see 4.2 color)
 -----------------------------------------------------------------------------
 | colors     | NUMBER         | Maximum amount of colors in the scaled image
 |            |                | (if scaling should be applied)
 -----------------------------------------------------------------------------
-| color      | STRING         | replacement color for color 1 of the image
+| color      | STRING         | Replacement color for color 1 of the image
 |            |                | (see 4.2 color)
 -----------------------------------------------------------------------------
-| bgColor    | STRING         | replacement color for color 0 of the image
+| bgColor    | STRING         | Replacement color for color 0 of the image
+|            |                | (see 4.2 color)
+-----------------------------------------------------------------------------
+| maskColor  | STRING         | Mask color (skipped when image is drawn)
 |            |                | (see 4.2 color)
 -----------------------------------------------------------------------------
 | path       | STRING/TOKEN   | Image file
@@ -261,9 +264,9 @@ A static or compound text.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
@@ -280,8 +283,8 @@ A static or compound text.
 
 
 1.9 <marquee>
-----------
-An alternative to <text> for legth texts
+-------------
+An alternative to <text> for oversized texts. Scrolls text if needed.
 
 -----------------------------------------------------------------------------
 | Attribute  | Value          | Description
@@ -290,15 +293,15 @@ An alternative to <text> for legth texts
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
 | color      | STRING         | Text color (see 4.2 color)
 -----------------------------------------------------------------------------
-| delay      | NUMBER         | Scroll rate (in ms)
+| delay      | NUMBER         | Scroll rate (in msec)
 -----------------------------------------------------------------------------
 | align      | * center       | Alignment of the text
 |            | * right        |
@@ -307,11 +310,12 @@ An alternative to <text> for legth texts
 | font       | STRING         | Font name (see 4.3 font)
 -----------------------------------------------------------------------------
 
- <marquee x1="130" x2="480" y1="423" y2="445" color="Text" font="Sml">{ReplayTitle}</marquee>;
+ <marquee x1="130" x2="480" y1="423" y2="445" color="Text" font="Sml">{ReplayTitle}</marquee>
+
 
 1.9 <blink>
-----------
-An alternative to <text> for legth texts
+-----------
+An alternative to <text> which lets the text blink.
 
 -----------------------------------------------------------------------------
 | Attribute  | Value          | Description
@@ -320,18 +324,18 @@ An alternative to <text> for legth texts
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
 | color      | STRING         | Text color (see 4.2 color)
 -----------------------------------------------------------------------------
 | blinkColor | STRING         | Highlight color (see 4.2 color)
-|            |                |  (Optional: On/Off otherwise)
+|            |                |  (optional; default: on/off)
 -----------------------------------------------------------------------------
-| delay      | NUMBER         | Delay between switches
+| delay      | NUMBER         | Blink rate (in msec)
 -----------------------------------------------------------------------------
 | align      | * center       | Alignment of the text
 |            | * right        |
@@ -340,9 +344,7 @@ An alternative to <text> for legth texts
 | font       | STRING         | Font name (see 4.3 font)
 -----------------------------------------------------------------------------
 
- <blink x1="30" x2="80" y1="90" y2="80" color="Text" blinkColor="Green" delay="800" font="Sml" condition="{IsRunning}">
- {PresentStartDateTime:%H\:%M}
- </blink>;
+ <blink x1="30" x2="80" y1="90" y2="80" color="Text" blinkColor="Green" delay="800" font="Sml" condition="{IsRunning}">{PresentStartDateTime:%H\:%M}</blink>
 
 
 1.11 <scrolltext>
@@ -356,9 +358,9 @@ A multiline text.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
@@ -388,9 +390,9 @@ A scrollbar.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
@@ -403,7 +405,7 @@ A scrollbar.
 
 
 1.13 <progress>
---------------
+---------------
 A progressbar.
 
 -----------------------------------------------------------------------------
@@ -413,9 +415,9 @@ A progressbar.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
 | condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
@@ -430,22 +432,23 @@ A progressbar.
 | keep       | STRING         | Color of the video area that should be 
 |            |                | kept (see 4.2 color)
 -----------------------------------------------------------------------------
-| current    | ZAHL/TOKEN     | Current index value
+| current    | NUMBER/TOKEN   | Current index value
 -----------------------------------------------------------------------------
-| total      | ZAHL/TOKEN     | Maximum index value
+| total      | NUMBER/TOKEN   | Maximum index value
 -----------------------------------------------------------------------------
 
  <progress x1="19" x2="556" y1="-17" y2="-7" color="#AF000000" current="{VolumeCurrent}" total="{VolumeTotal}" />
  <progress x1="129" x2="478" y1="487" y2="502" color="#FFCE7B00" bgColor="Blue" mark="Black" active="Black" keep="Black" current="{ReplayPositionIndex}" total="{ReplayDurationIndex}" />
 
+
 1.14 <block>
 ------------
-A '''<block></block>''' pools several objects together.
+A '''<block></block>''' groups several objects together.
 
 -----------------------------------------------------------------------------
 | Attribute  | Value          | Description
 =============================================================================
-| condition  | FUNCTION       | Complex condition
+| condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
 
  <block condition="file('logos/{ChannelName}.mng')"> 
@@ -465,12 +468,11 @@ Defines a list in the menu.
 -----------------------------------------------------------------------------
 | y1         | NUMBER         | Position of the top border
 -----------------------------------------------------------------------------
-| y2         | NUMBER         | Position of the right border
+| x2         | NUMBER         | Position of the right border
 -----------------------------------------------------------------------------
-| x2         | NUMBER         | Position of the bottom border
+| y2         | NUMBER         | Position of the bottom border
 -----------------------------------------------------------------------------
-| condition  | FUNCTION/TOKEN | Complex condition (possible, but makes 
-|            |                | little sense)
+| condition  | FUNCTION/TOKEN | Complex condition
 -----------------------------------------------------------------------------
 
  <list x1="24" y1="62" x2="569" y2="-82">
@@ -513,15 +515,30 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | Token                  | Comment                   | Description
 =============================================================================
-| DateTime               | (s.h. "man strftime")     | Current date/time
+| DateTime               | (see "man strftime")      | Current date/time
 -----------------------------------------------------------------------------
 | IsRecording            |                           | True, if VDR is currently recording
 -----------------------------------------------------------------------------
-| CurrentRecording       |                           | delivers every 2 secs all actual recordings 
+| CurrentRecording       |                           | Delivers every 2 secs all current recordings
 |                        |                           |  Attribute: Number to choose n-th current recording
 -----------------------------------------------------------------------------
 | FreeDiskSpace          |                           | Remaining free disk space in MB
 |                        |                           |  Attribute: return as formatted time.
+-----------------------------------------------------------------------------
+| CanScrollUp            |                           | True, if scrollable text can be scrolled up
+-----------------------------------------------------------------------------
+| CanScrollDown          |                           | True, if scrollable text can be scrolled down
+-----------------------------------------------------------------------------
+| AudioTrack             |                           | Identifier of the current audio-track
+-----------------------------------------------------------------------------
+| AudioChannel           |                           | Identifier of the switched channel
+|                        |                           | ("stereo", "left" or "right")
+-----------------------------------------------------------------------------
+| ReplayMode             |                           | Type of the replay (e.g. "dvd", "vcd", "mp3", "normal", ...)
+-----------------------------------------------------------------------------
+| ReplayIsShuffle        |                           | True, if replay is in shuffle mode (currently only in mp3 mode)
+-----------------------------------------------------------------------------
+| ReplayIsLoop           |                           | True, if replay is in loop mode (currently only in mp3 mode)
 -----------------------------------------------------------------------------
 
 
@@ -530,17 +547,19 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | Token                  | Comment                   | Description
 =============================================================================
-| ChannelNumber          |                           | Channel number ("channel number-" on ongoing input
+| ChannelNumber          |                           | Channel number ("channel number-" if there is an input at this time)
 -----------------------------------------------------------------------------
-| ChannelName            |                           | Channel- or group name
+| ChannelName            |                           | Channel or group name
 -----------------------------------------------------------------------------
 | ChannelShortName       |                           | Short name of channel if available
 -----------------------------------------------------------------------------
-| ChannelBouquet         |                           | Provider-/bouquet name if available
+| ChannelBouquet         |                           | Provider/bouquet name if available
 -----------------------------------------------------------------------------
 | ChannelPortal          |                           | Portal name if available
 -----------------------------------------------------------------------------
 | ChannelSource          |                           | Signal source (e.g. "S19.2E")
+-----------------------------------------------------------------------------
+| ChannelID              |                           | Identifier of the current channel
 -----------------------------------------------------------------------------
 | PresentStartDateTime   | (also in Menu Display)    | Start time of current title
 -----------------------------------------------------------------------------
@@ -554,17 +573,19 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | PresentRemaining       | (also in Menu Display)    | Remaining time of current title
 -----------------------------------------------------------------------------
-| PresentTitle           | (also in Menu Display)    | Title/Heading of current title
+| PresentTitle           | (also in Menu Display)    | Title/heading of current title
 -----------------------------------------------------------------------------
 | PresentShortText       | (also in Menu Display)    | Short text/episode of current title
 -----------------------------------------------------------------------------
-| PresentDescription     | (also in Menu Display)    | Description  of current title
+| PresentDescription     | (also in Menu Display)    | Description of current title
 -----------------------------------------------------------------------------
-| PresentHasTimer        | (auch in Menu Display)    | True, if a timer for the following title is set
+| PresentHasTimer        | (also in Menu Display)    | True, if a timer for the current title is set
+|  (alt: HasTimer)       |                           |
 -----------------------------------------------------------------------------
-| PresentIsRunning       | (also in Menu Display)    | True, if the following title has the state "running"
+| PresentIsRunning       | (also in Menu Display)    | True, if the current title has the state "running"
+|  (alt: IsRunning)      |                           |
 -----------------------------------------------------------------------------
-| PresentHasVPS          | (also in Menu Display)    | True, if VPS for the following title is available
+| PresentHasVPS          | (also in Menu Display)    | True, if VPS for the current title is available
 -----------------------------------------------------------------------------
 | FollowingStartDateTime |                           | Start time of following title
 -----------------------------------------------------------------------------
@@ -574,11 +595,11 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | FollowingDuration      |                           | Duration of following title
 -----------------------------------------------------------------------------
-| FollowingTitle         |                           | Title/Heading of following title
+| FollowingTitle         |                           | Title/heading of following title
 -----------------------------------------------------------------------------
 | FollowingShortText     |                           | Short text/episode of following title
 -----------------------------------------------------------------------------
-| FollowingDescription   |                           | Description  of following title
+| FollowingDescription   |                           | Description of following title
 -----------------------------------------------------------------------------
 | FollowingHasTimer      |                           | True, if the following title is targeted by a timer
 -----------------------------------------------------------------------------
@@ -600,22 +621,22 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | Language               |                           | Language (currently only "Audio 1", "Audio 2" or "Digital Audio")
 -----------------------------------------------------------------------------
-| ChannelHasTeletext     |                           | True, if video text is available
+| ChannelHasTeletext     |                           | True, if teletext is available on current channel
 |  (alt: HasTeletext)    |                           |
 -----------------------------------------------------------------------------
-| ChannelHasMultilang    |                           | True, if if several sound tracks are available
+| ChannelHasMultilang    |                           | True, if multi language on current channel
 |  (alt: HasMultilang)   |                           |
 -----------------------------------------------------------------------------
-| ChannelHasDolby        |                           | True, if digital multi-channel sound is available
+| ChannelHasDolby        |                           | True, if Dolby Digital on current channel
 |  (alt: HasDolby)       |                           |
 -----------------------------------------------------------------------------
-| ChannelIsEncrypted     |                           | True, if the channel is encrypted
+| ChannelIsEncrypted     |                           | True, if current channel is encrypted
 |  (alt: IsEncrypted)    |                           |
 -----------------------------------------------------------------------------
-| ChannelIsRadio         |                           | True, if the channel is a radio channel
+| ChannelIsRadio         |                           | True, if current channel is a radio channel
 |  (alt: IsRadio)        |                           |
 -----------------------------------------------------------------------------
-| ChannelHasVPS          |                           | True, if the channel can broadcast VPS
+| ChannelHasVPS          | (also in Menu Display)    | True, if current channel can broadcast VPS
 |  (alt: HasVPS)         |                           |
 -----------------------------------------------------------------------------
 
@@ -625,7 +646,7 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | Token                  | Comment                   | Description
 =============================================================================
-| VolumeCurrent          |                           | Current volume  (0-VolumeTotal) (numeric)
+| VolumeCurrent          |                           | Current volume (0-VolumeTotal) (numeric)
 -----------------------------------------------------------------------------
 | VolumeTotal            |                           | Maximum value for volume
 -----------------------------------------------------------------------------
@@ -639,15 +660,20 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | Token                  | Comment                   | Description
 =============================================================================
-| Message                | (in every Display)        | Text of the current message if available (whatever type)
+| Message                | (also in all other        | Text of the current message if available (whatever type)
+|                        |  displays)                |
 -----------------------------------------------------------------------------
-| MessageStatus          | (in every Display)        | Text of the current message if available (status message)
+| MessageStatus          | (also in all other        | Text of the current message if available (status message)
+|                        |  displays)                |
 -----------------------------------------------------------------------------
-| MessageInfo            | (in every Display)        | Text of the current message if available (information)
+| MessageInfo            | (also in all other        | Text of the current message if available (information)
+|                        |  displays)                |
 -----------------------------------------------------------------------------
-| MessageWarning         | (in every Display)        | Text of the current message if available (warning)
+| MessageWarning         | (also in all other        | Text of the current message if available (warning)
+|                        |  displays)                |
 -----------------------------------------------------------------------------
-| MessageError           | (in every Display)        | Text of the current message if available (error)
+| MessageError           | (also in all other        | Text of the current message if available (error)
+|                        |  displays)                |
 -----------------------------------------------------------------------------
 
 
@@ -656,7 +682,7 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | Token                  | Comment                   | Description
 =============================================================================
-| ReplayTitle            | Attribut: clean           | Title of the current replay
+| ReplayTitle            | Attribute: clean          | Title of the current replay
 -----------------------------------------------------------------------------
 | ReplayPositionIndex    |                           | Position in the current replay 
 |                        |                           | (numeric, analog to PresentProgress)
@@ -664,41 +690,45 @@ Defines an item for the list.
 | ReplayDurationIndex    |                           | Duration of the current replay 
 |                        |                           | (numeric, analog to PresentDuration)
 -----------------------------------------------------------------------------
-| ReplayRemaining        |                           | Remaining time of the current replay to elapse 
+| ReplayRemaining        |                           | Remaining time of the current replay
 |                        |                           | (numeric, analog to PresentRemaining)
 -----------------------------------------------------------------------------
-| ReplayPrompt           |                           | Prompt if available (e.g. "Jump: --:--")
+| ReplayPrompt           |                           | Input request, if available (e.g. "Jump: --:--")
 -----------------------------------------------------------------------------
-| ReplayIsPlaying        | Attribut: 0=no Multispeed,| True, if a replay is runnning
-|  (alt: IsPlaying)      | 1-3 = Multispeed,         |
-|                        | keines = egal             |
+| ReplayIsPlaying        | Attribute:                | True, if a replay is runnning at normal speed
+|  (alt: IsPlaying)      |  0 = no multispeed,       |
+|                        |  1-3 = multispeed,        |
+|                        |  nothing = any            |
 -----------------------------------------------------------------------------
-| ReplayIsFastForward    | Attribut: 0=no Multispeed,| True, if fast forward
-|  (alt: IsFastForward)  | 1-3 = Multispeed,         |
-|                        | keines = egal             |
+| ReplayIsFastForward    | Attribute:                | True, if fast forward
+|  (alt: IsFastForward)  |  0 = no multispeed,       |
+|                        |  1-3 = multispeed,        |
+|                        |  nothing = any            |
 -----------------------------------------------------------------------------
-| ReplayIsFastRewind     | Attribut: 0=no Multispeed,| True, if fase rewind
-|  (alt: IsFastRewind)   | 1-3 = Multispeed,         |
-|                        | keines = egal             |
+| ReplayIsFastRewind     | Attribute:                | True, if fast rewind
+|  (alt: IsFastRewind)   |  0 = no multispeed,       |
+|                        |  1-3 = multispeed,        |
+|                        |  nothing = any            |
 -----------------------------------------------------------------------------
-| ReplayIsSlowForward    | Attribut: 0=no Multispeed,| True, if slow forward
-|  (alt: IsSlowForward)  | 1-3 = Multispeed,         |
-|                        | keines = egal             |
+| ReplayIsSlowForward    | Attribute:                | True, if slow forward
+|  (alt: IsSlowForward)  |  0 = no multispeed,       |
+|                        |  1-3 = multispeed,        |
+|                        |  nothing = any            |
 -----------------------------------------------------------------------------
-| ReplayIsSlowRewind     | Attribut: 0=no Multispeed,| True, if slow rewind
-|  (alt: IsSlowRewind)   | 1-3 = Multispeed,         |
-|                        | keines = egal             |
+| ReplayIsSlowRewind     | Attribute:                | True, if slow rewind
+|  (alt: IsSlowRewind)   |  0 = no multispeed,       |
+|                        |  1-3 = multispeed,        |
+|                        |  nothing = any            |
 -----------------------------------------------------------------------------
-| ReplayIsPausing        | Attribut: 0=no Multispeed,| True, if replay is pausing
-|  (alt: IsPausing)      | 1-3 = Multispeed,         |
-|                        | keines = egal             |
+| ReplayIsPausing        | Attribute:                | True, if replay is pausing
+|  (alt: IsPausing)      |  0 = no multispeed,       |
+|                        |  1-3 = multispeed,        |
+|                        |  nothing = any            |
 -----------------------------------------------------------------------------
 | ReplayPosition         |                           | Position in the replay, completely formatted, 
 |                        |                           | with frames at cutting marks, otherwise without frames
 -----------------------------------------------------------------------------
 | ReplayDuration         |                           | Duration of the replay, completely formatted
------------------------------------------------------------------------------
-| ReplayMode             |                           | Type of the replay (e.g. "dvd", "vcd", "normal",...)
 -----------------------------------------------------------------------------
 | ButtonRed              | (also in Menu Display     | Caption of red button if available
 |                        |  and Channel Display)     |
@@ -711,10 +741,6 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | ButtonBlue             | (also in Menu Display     | Caption of blue button if available
 |                        |  and Channel Display)     |
------------------------------------------------------------------------------
-| ReplayIsShuffle        |                           | True, if the replay is in shuffle mode (only MP3)
------------------------------------------------------------------------------
-| ReplayIsLoop           |                           | True, if the replay is in loop mode (only MP3)
 -----------------------------------------------------------------------------
 
 
@@ -734,11 +760,25 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | IsMenuItem             |                           | True, if currently drawn list item is a normal entry
 -----------------------------------------------------------------------------
-| MenuCurrent            | Atrribute: "clean"        | Text of the current list item if it is the selected entry
+| MenuCurrent            | Attribute: "clean"        | Text of the current list item if it is the selected entry
 -----------------------------------------------------------------------------
-| IsMenuCurrent          |                           | True, if currently drawn list item is a currently selected one
+| IsMenuCurrent          |                           | True, if currently drawn list item is the selected entry
 -----------------------------------------------------------------------------
 | MenuText               | Attribute: "clean"        | Text page to display instead of the list (e.g. display in the command menu)
+-----------------------------------------------------------------------------
+| RecordingName          |                           | Name of the current recording
+-----------------------------------------------------------------------------
+| RecordingDateTime      |                           | Start time of the current recording
+-----------------------------------------------------------------------------
+| RecordingTitle         |                           | Title/heading of the current recording
+-----------------------------------------------------------------------------
+| RecordingShortText     |                           | Short text/episode of the current recording
+-----------------------------------------------------------------------------
+| RecordingDescription   |                           | Description of the current recording
+-----------------------------------------------------------------------------
+| RecordingLanguageCode  |                           |
+-----------------------------------------------------------------------------
+| RecordingLanguageDescription |                     |
 -----------------------------------------------------------------------------
 | ButtonRed              | (also in Channel Display  | Caption of red button if available
 |                        |  and Replay Display)      |
@@ -752,47 +792,55 @@ Defines an item for the list.
 | ButtonBlue             | (also in Channel Display  | Caption of blue button if available
 |                        |  and Replay Display)      |
 -----------------------------------------------------------------------------
-| CanScrollUp            |                           | True, if a scroll-text can be scrolled upward
+| PresentStartDateTime   | (also in Channel Display) | Start time of current title
 -----------------------------------------------------------------------------
-| CanScrollDown          |                           | True, if a scroll-text can be scrolled downward
+| PresentVPSDateTime     | (also in Channel Display) | VPS start time of current title if available
 -----------------------------------------------------------------------------
-| PresentStartDateTime   | (also in Channel Display) | 
+| PresentEndDateTime     | (also in Channel Display) | End time of current title
 -----------------------------------------------------------------------------
-| PresentVPSDateTime     | (also in Channel Display) | 
+| PresentDuration        | (also in Channel Display) | Duration of current title
 -----------------------------------------------------------------------------
-| PresentEndDateTime     | (also in Channel Display) | 
+| PresentProgress        | (also in Channel Display) | Elapsed time of current title
 -----------------------------------------------------------------------------
-| PresentDuration        | (also in Channel Display) | 
+| PresentRemaining       | (also in Channel Display) | Remaining time of current title
 -----------------------------------------------------------------------------
-| PresentProgress        | (also in Channel Display) | 
+| PresentTitle           | (also in Channel Display) | Title/heading of current title
 -----------------------------------------------------------------------------
-| PresentTitle           | (also in Channel Display) | 
+| PresentShortText       | (also in Channel Display) | Short text/episode of current title
 -----------------------------------------------------------------------------
-| PresentShortText       | (also in Channel Display) | 
+| PresentDescription     | (also in Channel Display) | Description of current title
 -----------------------------------------------------------------------------
-| PresentDescription     | (also in Channel Display) | 
+| PresentHasTimer        | (also in Channel Display) | True, if a timer for the current title is set
+|  (alt: HasTimer)       |                           |
 -----------------------------------------------------------------------------
-| PresentHasVPS          | (also in Channel Display) | 
+| PresentIsRunning       | (also in Channel Display) | True, if the current title has the state "running"
+|  (alt: IsRunning)      |                           |
 -----------------------------------------------------------------------------
-| PresentHasTimer        | (also in Channel Display) | 
+| PresentHasVPS          | (also in Channel Display) | True, if VPS for the current title is available
 -----------------------------------------------------------------------------
-| PresentIsRunning       | (also in Channel Display) | 
------------------------------------------------------------------------------
-| ChannelHasVPS          | (also in Channel Display) |  
+| ChannelHasVPS          | (also in Channel Display) | True, if current channel can broadcast VPS
 |  (alt: HasVPS)         |                           |
 -----------------------------------------------------------------------------
 
 
 2.7 Audio Tracks Display
-----------------
+------------------------
 -----------------------------------------------------------------------------
 | Token                  | Comment                   | Description
 =============================================================================
 | MenuTitle              |                           | Title display of the audio-track list 
 -----------------------------------------------------------------------------
-| AudioTrack             | (also all other displays) | Identifier the current selected audio-track 
+| MenuItem               |                           | Text of the current list item if it is a normal entry
 -----------------------------------------------------------------------------
-| AudioChannel           | (also all other displays) | Identifier of the switched channeld 
+| IsMenuItem             |                           | True, if currently drawn list item is a normal entry
+-----------------------------------------------------------------------------
+| MenuCurrent            |                           | Text of the current list item if it is the selected entry
+-----------------------------------------------------------------------------
+| IsMenuCurrent          |                           | True, if currently drawn list item is the selected entry
+-----------------------------------------------------------------------------
+| AudioTrack             |                           | Identifier of the current selected audio-track 
+-----------------------------------------------------------------------------
+| AudioChannel           |                           | Identifier of the switched channel
 |                        |                           | ("stereo", "left" or "right")
 -----------------------------------------------------------------------------
 
@@ -807,72 +855,67 @@ Negation of the term.
 
 3.2 and
 -------
-True, if all parameter are true.
+True, if all parameters are true.
 
  and({CanScrollUp},{CanScrollDown})
 
 3.3 or
 ------
-True, if one parameter is true.
+True, if at least one parameter is true.
 
  or({CanScrollUp},{CanScrollDown})
 
 3.4 equal
 ---------
-True, if both parameters are true.
+True, if both parameters are equal.
 
  equal('Kanäle', trans('Channels'))
 
 3.5 ne
----------
-
+------
 True, if both parameter are unequal (not equal).
 
  ne({ReplayMode}, 'normal')
 
 3.6 gt
----------
-
+------
 True, if the first parameter is greater than the second.
 
  gt({FreeDiskSpace},5000)
 
 3.7 ge
----------
-
-True, if the first parameter is greater or equal than the second
+------
+True, if the first parameter is greater or equal than the second.
 
  ge({FreeDiskSpace},5000)
 
 3.8 lt
----------
-
+------
 True, if the first parameter is less than the second.
 
  lt({FreeDiskSpace},5000)
 
 3.9 le
----------
-
+------
 True, if the first parameter is less or equal than the second.
 
  gt({FreeDiskSpace},5000)
 
 3.10 file
---------
+---------
 Returns the parameter, if the file exists in the skin directory.
 
  file('logos/{ChannelName}.png')
 
 3.11 trans
----------
-Rreturn the translation (i18n) of the parameter, false, if no translation is found.
+----------
+Returns the translation (i18n) of the parameter or false, if no translation is found.
 
  equal('Kanäle', trans('Channels'))
 
 
 4. Attributes
-==============
+=============
 4.1 arc
 -------
 -----------------------------------------------------------------------------
@@ -892,23 +935,31 @@ Rreturn the translation (i18n) of the parameter, false, if no translation is fou
 
 4.2 color
 ---------
-Also concerns bgColor, blinkColor, mark, active, keep
-Colors are given in RGB-format transparency information
+Also concerns bgColor, maskColor, blinkColor, mark, active, keep.
 
-  color=#AARRGGBB
+Colors are given in RGB format with transparency like this:
+
+  color="#AARRGGBB"
 
 * A - alpha value (transparency 0-255)
 * R - red value
-* G - gree value
+* G - green value
 * B - blue value
 
-Some examples
+Some examples:
 
-         AARRGGBB
-  color=#00000000 = Black, fully transparent
-  color=#FF000000 = Black, full opacity
-  color=#7F000000 = Black, half translucent
-  color=#7FFFFFFF = White, half translucent
+          AARRGGBB
+  color="#00000000" = black, fully transparent (translucent)
+  color="#FF000000" = black, full opacity
+  color="#7F000000" = black, half translucent
+  color="#7FFFFFFF" = white, half translucent
+
+For sure you can use every value between.
+
+Colors might also be given as symbolic value which has to be defined in .colors
+file of the skin, e.g.:
+
+  color="MenuTextFg"
 
 4.3 font
 --------
