@@ -25,11 +25,11 @@ Voraussetzungen:
 ----------------
 
 Um andere Bildformate als einfaches XPM zu laden, brauchen Sie eine 
-Grafikbibliothek. Es werden zwei Bibliotheken unterstützt, aus der Sie eine
-zu benutzende wählen können. Dies sind ImageMagick oder Imlib2, wobei erstere
-standardmäßig herangezogen wird. Sie können beeinflussen, welche Bibliothek
-(wenn überhaupt eine) genutzt werden soll, indem Sie die ersten paar Zeilen
-der Datei Makefile ändern. Hier ist eine Übersicht über Möglichkeiten und 
+Grafikbibliothek. Es werden drei Bibliotheken unterstützt, aus der Sie eine
+zu benutzende wählen können. Dies sind ImageMagick, GraphicsMagick oder
+Imlib2, wobei ImageMagick standardmäßig herangezogen wird. Sie können mit
+der Makefile-Variable IMAGELIB beeinflussen, welche Bibliothek (wenn überhaupt
+eine) genutzt werden soll. Hier ist eine Übersicht über Möglichkeiten und
 Nachteile jeder möglichen Lösung:
 
 Keine Bibliothek
@@ -37,18 +37,21 @@ Keine Bibliothek
  - XPMs haben weder Teiltransparenzen noch Alphakanäle
 
 ImageMagick oder GraphicsMagick
- + Sie können viele verschiedene Bildformate laden
- - ist aber etwas langsamer als Imlib2
+ + Sie können viele verschiedene Bildformate laden einschließlich Animationen
 
 Imlib2
  + Sie können viele verschiedene Bildformate laden
  - STÜRZT AB, WENN ES ZUSAMMEN MIT DEM GRAPHTFT-PLUGIN ZUM EINSATZ KOMMT!
 
-Beide Bibliotheken gleichzeitig zu benutzen macht keinen Sinn.
+HINWEIS: Obwohl die Handbücher von ImageMagick und GraphicsMagick behaupten,
+dass die hier benutzte Bibliothek Magick++ integraler Bestandteil der Quellen
+ist, muss auf manchen Distributionen das Paket Magick++ zusätzlich installiert
+werden.
 
-HINWEIS: Obwohl das Handbuch von ImageMagick behauptet, dass die hier benutzte
-Bibliothek Magick++ integraler Bestandteil der Quellen sind, muss auf manchen
-Distributionen das Paket Magick++ zusätzlich installiert werden.
+Die Datei Makefile verwendet standardmäßig pkg-config, um die notwendigen
+Compiler-, Preprocessor- und Linker-Flags und -Bibliotheken zu finden, d.h.
+pkg-config muss installiert sein zusammen mit den *.pc-Dateien für die
+verwendeten Pakete.
 
 
 Installation:
@@ -91,6 +94,14 @@ Beispiel (das Skin heisst myskin):
 Die anderen Dateien in dem Skin-Ordner sind weitere Beschreibungsdateien (für
 Farben und Übersetzungen) sowie Bilder, Logos und Symbole.
 
-Wenn Sie ein Skin herunterladen, wechseln Sie normalerweise einfach in den
+Wenn Sie einen Skin herunterladen, wechseln Sie normalerweise einfach in den
 plugins/text2skin Ordner und entpacken es dort.
 
+
+Wo die Fonts hingehören:
+------------------------
+
+Font-Dateien (.ttf) müssen so installiert sein, dass fontconfig sie findet,
+siehe die Dokumentation zu fontconfig für mehr Informationen (normalerweise
+*.ttf in ein Verzeichnis kopieren und fc-cache für dieses Verzeichnis aufrufen,
+als root oder als User vdr).
