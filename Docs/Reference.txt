@@ -624,69 +624,70 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | ReplayIsLoop           |                           | True, if replay is in loop mode (currently only in mp3 mode)
 -----------------------------------------------------------------------------
-| OsdWidth               |                           |
+| OsdWidth               |                           | Width of the OSD
 -----------------------------------------------------------------------------
-| OsdHeight              |                           |
+| OsdHeight              |                           | Height of the OSD
 -----------------------------------------------------------------------------
-| ReplayName             |                           |
+| ReplayName             |                           | Name of the current replay
 -----------------------------------------------------------------------------
-| ReplayDateTime         |                           |
+| ReplayDateTime         |                           | Start time of the current replay
 -----------------------------------------------------------------------------
-| ReplayShortText        |                           |
+| ReplayShortText        |                           | Short text/episode of the current replay
 -----------------------------------------------------------------------------
-| ReplayDescription      |                           |
+| ReplayDescription      |                           | Description of the current replay
 -----------------------------------------------------------------------------
-| ReplayLanguageCode     |                           |
+| ReplayLanguageCode     |                           | Audio language code and type of the current replay
+|                        |                           | (e.g. "deuDD", "deuMONO", "deuDUAL", ...)
 -----------------------------------------------------------------------------
-| ReplayLanguageDescription |                        |
+| ReplayLanguageDescription |                        | Audio language description of the current replay
 -----------------------------------------------------------------------------
-| ReplayVideoAR          |                           |
+| ReplayVideoAR          |                           | Video format (aspect ratio) of the current replay ("4:3" or "16:9")
 -----------------------------------------------------------------------------
-| FrontendSTR            |                           |
+| FrontendSTR            |                           | Signal strength (0-100)
 -----------------------------------------------------------------------------
-| FrontendSNR            |                           |
+| FrontendSNR            |                           | Signal-to-noise ratio (0-100)
 -----------------------------------------------------------------------------
-| FrontendHasLock        |                           |
+| FrontendHasLock        |                           | True, if channel is locked (everything's working...)
 -----------------------------------------------------------------------------
-| FrontendHasSignal      |                           |
+| FrontendHasSignal      |                           | True, if signal found (something above the noise level)
 -----------------------------------------------------------------------------
-| CurrentEventsTitle1    |                           |
+| CurrentEventsTitle1    |                           | Title of the first timer
 -----------------------------------------------------------------------------
-| CurrentEventsStartDateTime1 |                      |
+| CurrentEventsStartDateTime1 |                      | Start time of the first timer
 -----------------------------------------------------------------------------
-| CurrentEventsStopDateTime1  |                      |
+| CurrentEventsStopDateTime1  |                      | End time of the first timer
 -----------------------------------------------------------------------------
-| CurrentEventsChannelNumber1 |                      |
+| CurrentEventsChannelNumber1 |                      | Channel number of the first timer
 -----------------------------------------------------------------------------
-| CurrentEventsChannelName1   |                      |
+| CurrentEventsChannelName1   |                      | Channel name of the first timer
 -----------------------------------------------------------------------------
-| CurrentEventsIsRecording1   |                      |
+| CurrentEventsIsRecording1   |                      | True, if the first timer is currently recording
 -----------------------------------------------------------------------------
-| CurrentEventsTitle2    |                           |
+| CurrentEventsTitle2    |                           | Title of the second timer
 -----------------------------------------------------------------------------
-| CurrentEventsStartDateTime2 |                      |
+| CurrentEventsStartDateTime2 |                      | Start time of the second timer
 -----------------------------------------------------------------------------
-| CurrentEventsStopDateTime2  |                      |
+| CurrentEventsStopDateTime2  |                      | End time of the second timer
 -----------------------------------------------------------------------------
-| CurrentEventsChannelNumber2 |                      |
+| CurrentEventsChannelNumber2 |                      | Channel number of the second timer
 -----------------------------------------------------------------------------
-| CurrentEventsChannelName2   |                      |
+| CurrentEventsChannelName2   |                      | Channel name of the second timer
 -----------------------------------------------------------------------------
-| CurrentEventsIsRecording2   |                      |
+| CurrentEventsIsRecording2   |                      | True, if the second timer is currently recording
 -----------------------------------------------------------------------------
-| CurrentEventsTitle3    |                           |
+| CurrentEventsTitle3    |                           | Title of the third timer
 -----------------------------------------------------------------------------
-| CurrentEventsStartDateTime3 |                      |
+| CurrentEventsStartDateTime3 |                      | Start time of the third timer
 -----------------------------------------------------------------------------
-| CurrentEventsStopDateTime3  |                      |
+| CurrentEventsStopDateTime3  |                      | End time of the third timer
 -----------------------------------------------------------------------------
-| CurrentEventsChannelNumber3 |                      |
+| CurrentEventsChannelNumber3 |                      | Channel number of the third timer
 -----------------------------------------------------------------------------
-| CurrentEventsChannelName3   |                      |
+| CurrentEventsChannelName3   |                      | Channel name of the third timer
 -----------------------------------------------------------------------------
-| CurrentEventsIsRecording3   |                      |
+| CurrentEventsIsRecording3   |                      | True, if the third timer is currently recording
 -----------------------------------------------------------------------------
-| TimerConflicts         |                           |
+| TimerConflicts         |                           | Number of timer conflicts
 -----------------------------------------------------------------------------
 
 
@@ -767,7 +768,8 @@ Defines an item for the list.
 | ButtonBlue             | (also in Menu Display     | Caption of blue button if available
 |                        |  and Replay Display)      |
 -----------------------------------------------------------------------------
-| Language               |                           | Language (currently only "Audio 1", "Audio 2" or "Digital Audio")
+| Language               |                           | Audio language code + "DD" if Dolby Digital
+|                        |                           | (e.g. "deu", "deuDD", ...)
 -----------------------------------------------------------------------------
 | ChannelHasTeletext     |                           | True, if teletext is available on current channel
 |  (alt: HasTeletext)    |                           |
@@ -890,7 +892,8 @@ Defines an item for the list.
 | ButtonBlue             | (also in Menu Display     | Caption of blue button if available
 |                        |  and Channel Display)     |
 -----------------------------------------------------------------------------
-| Language               |                           |
+| Language               |                           | Audio language code + "DD" if Dolby Digital
+|                        |                           | (e.g. "deu", "deuDD", ...)
 -----------------------------------------------------------------------------
 
 
@@ -926,23 +929,24 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | RecordingDescription   |                           | Description of the current recording
 -----------------------------------------------------------------------------
-| RecordingLanguageCode  |                           |
+| RecordingLanguageCode  |                           | Audio language code and type of the current recording
+|                        |                           | (e.g. "deuDD", "deuMONO", "deuDUAL", ...)
 -----------------------------------------------------------------------------
-| RecordingLanguageDescription |                     |
+| RecordingLanguageDescription |                     | Audio language description of the current recording
 -----------------------------------------------------------------------------
-| RecordingFilename      |                           |
+| RecordingFilename      |                           | Filename of the current recording
 -----------------------------------------------------------------------------
-| RecordingPriority      |                           |
+| RecordingPriority      |                           | Priority of the current recording
 -----------------------------------------------------------------------------
-| RecordingLifetime      |                           |
+| RecordingLifetime      |                           | Lifetime of the current recording
 -----------------------------------------------------------------------------
-| RecordingVideoAR       |                           |
+| RecordingVideoAR       |                           | Video format (aspect ratio) of the current recording ("4:3" or "16:9")
 -----------------------------------------------------------------------------
-| RecordingSize          |                           |
+| RecordingSize          |                           | Size of the current recording (in MB)
 -----------------------------------------------------------------------------
-| RecordingLength        |                           |
+| RecordingLength        |                           | Length of the current recording
 -----------------------------------------------------------------------------
-| RecordingCuttedLength  |                           |
+| RecordingCuttedLength  |                           | Cutted length of the current recording
 -----------------------------------------------------------------------------
 | ButtonRed              | (also in Channel Display  | Caption of red button if available
 |                        |  and Replay Display)      |
@@ -982,13 +986,14 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | PresentHasVPS          | (also in Channel Display) | True, if VPS for the current title is available
 -----------------------------------------------------------------------------
-| PresentLanguageCode    |                           |
+| PresentLanguageCode    |                           | Audio language code and type of the current title
+|                        |                           | (e.g. "deuDD", "deuMONO", "deuDUAL", ...)
 -----------------------------------------------------------------------------
-| PresentLanguageDescription  |                      |
+| PresentLanguageDescription  |                      | Audio language description of the current title
 -----------------------------------------------------------------------------
-| PresentVideoAR         |                           |
+| PresentVideoAR         |                           | Video format (aspect ratio) of the current title ("4:3" or "16:9")
 -----------------------------------------------------------------------------
-| PresentEventID         |                           |
+| PresentEventID         |                           | Event number of the current title
 -----------------------------------------------------------------------------
 | ChannelName            |                           | Channel name
 -----------------------------------------------------------------------------
