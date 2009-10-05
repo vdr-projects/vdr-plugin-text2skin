@@ -66,10 +66,11 @@ container.
 -----------------------------------------------------------------------------
 | name       | NAME           | Name to display in the VDR-OSD
 -----------------------------------------------------------------------------
-| screenBase | * relative     | Should the skin be drawn "relative"
-|            | * absolute     | (OSD left, top, width, height)
-|            |                | to the VDR setup or "absolute" to
-|            |                | an area of 720x576
+| screenBase | * relative     | Draw the skin relative to the area specified
+|            |                | by the VDR setup (OSD left, top, width, height)
+|            | * absolute     | Draw the skin absolute to an area of 720x576
+|            | * abs1280x720  | Draw the skin absolute to an area of 1280x720
+|            | * abs1920x1080 | Draw the skin absolute to an area of 1920x1080
 -----------------------------------------------------------------------------
 
  <?xml version="1.0"?>
