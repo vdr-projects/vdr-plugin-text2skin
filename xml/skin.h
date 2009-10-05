@@ -65,7 +65,9 @@ public:
 	enum eScreenBase {
 		relative,
 		absolute,
-#define __COUNT_BASE__ (absolute + 1)
+		abs1280x720,
+		abs1920x1080,
+#define __COUNT_BASE__ (abs1920x1080 + 1)
 	};
 
 private:

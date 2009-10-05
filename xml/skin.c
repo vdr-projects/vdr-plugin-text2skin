@@ -7,7 +7,7 @@
 #include <vdr/tools.h>
 #include <vdr/config.h>
 
-const std::string ScreenBases[] = { "relative", "absolute" };
+const std::string ScreenBases[] = { "relative", "absolute", "abs1280x720", "abs1920x1080" };
 
 cxVersion::cxVersion(int ma, int min):
 		mMajor(ma),
@@ -61,6 +61,16 @@ void cxSkin::SetBase(eScreenBase Base)
 	case absolute:
 		mBaseOffset = txPoint(0, 0);
 		mBaseSize   = txSize(720, 576); //XXX
+		break;
+
+	case abs1280x720:
+		mBaseOffset = txPoint(0, 0);
+		mBaseSize   = txSize(1280, 720); //XXX
+		break;
+
+	case abs1920x1080:
+		mBaseOffset = txPoint(0, 0);
+		mBaseSize   = txSize(1920, 1080); //XXX
 		break;
 
 	default:
