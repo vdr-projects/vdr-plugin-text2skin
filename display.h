@@ -241,7 +241,7 @@ public:
 
 inline bool cText2SkinDisplayTracks::HasTabText(int Index, int n)
 {
-	if (Index < 0 || mItems.size () > (uint)Index && n <= 0)
+	if (Index < 0 || (mItems.size () > (uint)Index && n <= 0))
 		return mItems[Index].length() > 0;
 	return false;
 }

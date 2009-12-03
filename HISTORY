@@ -1,6 +1,10 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
+20xx-xx-xx: Version 1.4
+
+- Fixed some compiler warnings.
+
 2009-10-06: Version 1.3
 
 - Added Italian language texts (thanks to Diego Pierotto / closes #134)
