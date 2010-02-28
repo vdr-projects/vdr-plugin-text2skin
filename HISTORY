@@ -4,6 +4,7 @@ VDR Plugin 'text2skin' Revision History
 20xx-xx-xx: Version 1.4
 
 - Fixed some compiler warnings.
+- Makefile adjustments for VDR 1.7.13.
 
 2009-10-06: Version 1.3
 
