@@ -181,7 +181,7 @@ bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, i
 				return false;
 			}
 			*/
-			bmp = new cBitmap(w, h, (*it).depth());
+			bmp = new cBitmap(w, h, std::min((*it).depth(), 8U));
 			//Dprintf("this image has %d colors\n", (*it).totalColors());
 
 			const PixelPacket *pix = (*it).getConstPixels(0, 0, w, h);
