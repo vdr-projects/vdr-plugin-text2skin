@@ -90,6 +90,12 @@ bool cText2SkinBitmap::Available(const std::string &Filename, int Alpha, int hei
 		return access(Filename.c_str(), F_OK) == 0;
 }
 
+void cText2SkinBitmap::Init(void) {
+#ifdef HAVE_IMAGEMAGICK
+	InitializeMagick(NULL);
+#endif
+}
+
 cText2SkinBitmap::cText2SkinBitmap(void) {
 	mCurrent = 0;
 	mLastGet = 0;

@@ -51,6 +51,7 @@ cString cText2SkinPlugin::SVDRPCommand(const char *Command, const char *Option, 
 
 bool cText2SkinPlugin::Start(void) {
 	Text2SkinStatus.SetLanguage(I18nCurrentLanguage());
+	cText2SkinBitmap::Init();
 	cText2SkinLoader::Start();
 	return true;
 }

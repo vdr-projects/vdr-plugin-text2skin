@@ -82,6 +82,7 @@ public:
 	                      int width = 0, int colors = 0);
 	static void ResetCache(void) { mCache.Reset(); }
 	static void FlushCache(void) { mCache.Flush(); }
+	static void Init(void);
 	
 	virtual ~cText2SkinBitmap();
 
