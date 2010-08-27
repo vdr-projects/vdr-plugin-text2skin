@@ -1,7 +1,3 @@
-/*
- * $Id: common.h,v 1.4 2005/01/27 17:31:12 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_COMMON_H
 #define VDR_TEXT2SKIN_COMMON_H
 

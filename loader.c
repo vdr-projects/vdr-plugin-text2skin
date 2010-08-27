@@ -1,7 +1,3 @@
-/*
- * $Id: loader.c,v 1.3 2005/01/02 19:56:05 lordjaxom Exp $
- */
-
 #include "loader.h"
 #include "i18n.h"
 #include "theme.h"

@@ -1,7 +1,3 @@
-/*
- * $Id: text2skin.h,v 1.1 2004/12/19 22:03:19 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_H
 #define VDR_TEXT2SKIN_H
 

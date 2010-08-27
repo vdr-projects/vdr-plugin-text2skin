@@ -1,7 +1,3 @@
-/*
- * $Id: status.h,v 1.8 2006/03/17 18:25:57 lordjaxom Exp $
- */
- 
 #ifndef VDR_TEXT2SKIN_STATUS_H
 #define VDR_TEXT2SKIN_STATUS_H
 

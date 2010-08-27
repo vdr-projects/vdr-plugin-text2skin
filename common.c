@@ -1,7 +1,3 @@
-/*
- * $Id: common.c,v 1.6 2005/01/07 21:46:51 lordjaxom Exp $
- */
-
 #include "common.h"
 #include <sstream>
 #include <vdr/plugin.h>

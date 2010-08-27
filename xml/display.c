@@ -1,7 +1,3 @@
-/*
- *  $Id: display.c,v 1.4 2005/01/26 20:40:08 lordjaxom Exp $
- */
-
 #include "xml/display.h"
 
 static const std::string DisplayNames[] = 

@@ -1,7 +1,3 @@
-/*
- * $Id: render.h,v 1.12 2005/01/26 20:42:41 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_RENDER_H
 #define VDR_TEXT2SKIN_RENDER_H
 

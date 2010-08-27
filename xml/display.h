@@ -1,7 +1,3 @@
-/*
- *  $Id: display.h,v 1.5 2005/01/26 20:40:08 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_DISPLAY_H 
 #define VDR_TEXT2SKIN_DISPLAY_H 
 

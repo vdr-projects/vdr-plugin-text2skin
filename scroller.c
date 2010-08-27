@@ -1,7 +1,3 @@
-/*
- *  $Id: scroller.c,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
- */
-
 #include "scroller.h"
 #include "screen.h"
 #include <vdr/tools.h>

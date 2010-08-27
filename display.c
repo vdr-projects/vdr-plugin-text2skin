@@ -1,7 +1,3 @@
-/*
- * $Id: display.c,v 1.26 2005/12/17 21:51:43 lordjaxom Exp $
- */
-
 #include "render.h"
 #include "loader.h"
 #include "display.h"

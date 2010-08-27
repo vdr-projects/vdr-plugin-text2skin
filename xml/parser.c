@@ -1,7 +1,3 @@
-/*
- *  $Id: parser.c,v 1.9 2005/01/26 20:39:12 lordjaxom Exp $
- */
-
 #include "xml/parser.h"
 #include "xml/xml.h"
 #include "xml/skin.h"

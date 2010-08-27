@@ -1,7 +1,3 @@
-/*
- *  $Id: skin.c,v 1.3 2005/01/01 23:44:36 lordjaxom Exp $
- */
-
 #include "xml/skin.h"
 #include "i18n.h"
 #include <vdr/tools.h>

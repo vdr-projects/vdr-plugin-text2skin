@@ -1,7 +1,3 @@
-/*
- * $Id: file.c,v 1.2 2005/11/06 15:58:30 lordjaxom Exp $
- */
-
 #include "file.h"
 #include <unistd.h>
 

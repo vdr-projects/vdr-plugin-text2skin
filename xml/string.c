@@ -1,7 +1,3 @@
-/*
- *  $Id: string.c,v 1.17 2005/05/30 13:03:13 lordjaxom Exp $
- */
-
 #include "xml/string.h"
 #include "render.h"
 

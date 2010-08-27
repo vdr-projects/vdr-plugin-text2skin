@@ -1,7 +1,3 @@
-/*
- * $Id: cache.h,v 1.7 2005/01/31 14:40:29 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_CACHE_HPP
 #define VDR_TEXT2SKIN_CACHE_HPP
 

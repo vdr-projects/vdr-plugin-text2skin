@@ -1,7 +1,3 @@
-/*
- *  $Id: string.h,v 1.18 2005/05/30 13:03:13 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_XML_STRING_H
 #define VDR_TEXT2SKIN_XML_STRING_H
 

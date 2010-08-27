@@ -1,7 +1,3 @@
-/*
- *  $Id: scroller.h,v 1.1 2004/12/19 22:03:18 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_SCROLLER_H
 #define VDR_TEXT2SKIN_SCROLLER_H
 

@@ -1,7 +1,3 @@
-/*
- *  $Id: screen.c,v 1.4 2005/05/30 09:23:41 lordjaxom Exp $
- */
-
 #include "screen.h"
 
 cText2SkinScreen::cText2SkinScreen(bool OffScreen) 

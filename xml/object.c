@@ -1,7 +1,3 @@
-/*
- *  $Id: object.c,v 1.11 2005/01/26 20:39:34 lordjaxom Exp $
- */
-
 #include "xml/object.h"
 #include "render.h"
 #include "font.h"

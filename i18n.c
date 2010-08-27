@@ -1,7 +1,3 @@
-/*
- * $Id: i18n.c,v 1.4 2005/05/30 09:23:41 lordjaxom Exp $
- */
-
 #include "i18n.h"
 #include <vdr/config.h>
 

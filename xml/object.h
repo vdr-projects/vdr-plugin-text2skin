@@ -1,7 +1,3 @@
-/*
- *  $Id: object.h,v 1.6 2005/01/26 20:39:12 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_XML_OBJECT_H
 #define VDR_TEXT2SKIN_XML_OBJECT_H
 

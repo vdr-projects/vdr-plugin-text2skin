@@ -13,8 +13,6 @@ IMAGELIB = imagemagick
 # DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
 # -------------------------------------------------------------
 #
-# $Id: Makefile,v 1.4 2005/01/27 17:32:07 lordjaxom Exp $
-#
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.

@@ -1,7 +1,3 @@
-/*
- * $Id: bitmap.h,v 1.8 2005/01/31 14:40:29 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_BITMAP_H
 #define VDR_TEXT2SKIN_BITMAP_H
 

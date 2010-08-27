@@ -1,7 +1,3 @@
-/* 
- * $Id: status.c,v 1.11 2006/03/17 18:25:57 lordjaxom Exp $
- */
- 
 #include "status.h"
 #include "render.h"
 #include "menu.h"

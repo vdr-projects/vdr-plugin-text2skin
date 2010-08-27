@@ -2,8 +2,6 @@
  * text2skin.c: A plugin for the Video Disk Recorder
  *
  * See the README file for copyright information and how to reach the author.
- *
- * $Id: text2skin.c,v 1.7 2005/05/30 10:09:50 lordjaxom Exp $
  */
 
 #include "text2skin.h"

@@ -1,7 +1,3 @@
-/*
- * $Id: menu.c,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
- */
-
 #include "menu.h"
 #include "bitmap.h"
 

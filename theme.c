@@ -1,6 +1,3 @@
-/*
- * $Id: theme.c,v 1.2 2004/12/28 01:24:35 lordjaxom Exp $
- */
 #include "theme.h"
 #include <vdr/osd.h>
 

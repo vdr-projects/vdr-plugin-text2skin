@@ -1,7 +1,3 @@
-/*
- * $Id: font.c,v 1.3 2005/01/05 19:29:10 lordjaxom Exp $
- */
-
 #include "font.h"
 #include "render.h"
 #include <vdr/tools.h>

@@ -1,7 +1,3 @@
-/*
- * $Id: setup.c,v 1.1 2004/12/19 22:03:19 lordjaxom Exp $
- */
-
 #include "setup.h"
 
 cText2SkinSetup Text2SkinSetup;

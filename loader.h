@@ -1,7 +1,3 @@
-/*
- * $Id: loader.h,v 1.2 2005/01/02 19:56:12 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_LOADER_H
 #define VDR_TEXT2SKIN_LOADER_H
 

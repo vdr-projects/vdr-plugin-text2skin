@@ -1,7 +1,3 @@
-/*
- *  $Id: function.c,v 1.14 2005/01/26 20:40:28 lordjaxom Exp $
- */
-
 #include "xml/function.h"
 #include "render.h"
 #include "bitmap.h"

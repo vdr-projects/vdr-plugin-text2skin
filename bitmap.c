@@ -1,7 +1,3 @@
-/*
- * $Id: bitmap.c,v 1.11 2005/06/03 08:54:10 lordjaxom Exp $
- */
-
 #include "bitmap.h"
 #include "setup.h"
 #include <vdr/tools.h>

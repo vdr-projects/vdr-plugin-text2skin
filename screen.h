@@ -1,7 +1,3 @@
-/*
- *  $Id: screen.h,v 1.3 2005/01/26 20:42:21 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_SCREEN_H
 #define VDR_TEXT2SKIN_SCREEN_H
 

@@ -1,7 +1,3 @@
-/*
- * $Id: render.c,v 1.30 2006/03/17 18:24:52 lordjaxom Exp $
- */
-
 #include "render.h"
 #include "loader.h"
 #include "i18n.h"

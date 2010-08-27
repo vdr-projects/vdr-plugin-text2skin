@@ -1,7 +1,3 @@
-/*
- * $Id: menu.h,v 1.1 2004/12/19 22:03:14 lordjaxom Exp $
- */
-
 #ifndef VDR_TEXT2SKIN_MENU_H
 #define VDR_TEXT2SKIN_MENU_H
 
