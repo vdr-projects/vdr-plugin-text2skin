@@ -846,7 +846,7 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | ReplayPrompt           |                           | Input request, if available (e.g. "Jump: --:--")
 -----------------------------------------------------------------------------
-| ReplayIsPlaying        | Attribute:                | True, if a replay is runnning at normal speed
+| ReplayIsPlaying        | Attribute:                | True, if a replay is running at normal speed
 |  (alt: IsPlaying)      |  0 = no multispeed,       |
 |                        |  1-3 = multispeed,        |
 |                        |  nothing = any            |
@@ -888,7 +888,7 @@ Defines an item for the list.
 |                        |  and Channel Display)     |
 -----------------------------------------------------------------------------
 | ButtonYellow           | (also in Menu Display     | Caption of yellow button if available
-|                        |  and ReChannel Display)   |
+|                        |  and Channel Display)     |
 -----------------------------------------------------------------------------
 | ButtonBlue             | (also in Menu Display     | Caption of blue button if available
 |                        |  and Channel Display)     |
@@ -1112,7 +1112,7 @@ Returns the translation (i18n) of the parameter or false, if no translation is f
 |           | 6       | upper half           | vertical, decreasing, right
 |           | 7       | left half            | vertical, decreasing, left
 |           | 8       | lower half           |
-|           | -1..-8  | invers of the above  |
+|           | -1..-8  | inverse of the above |
 -----------------------------------------------------------------------------
 
 4.2 color
@@ -1175,7 +1175,7 @@ size, and width its width.  For example:
 4.4 refresh
 -----------
 
-With the attribute refresh the redraw of the osd could be optimized by using
+With the attribute refresh the redraw of the OSD could be optimized by using
 selective update of changed objects.
 
 -----------------------------------------------------------------------------

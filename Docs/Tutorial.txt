@@ -8,7 +8,7 @@ english translation by Thomas Wehrspann
 Last update 13.07.2009
 
 Table of Contents
- 1. General Stucture of XML Documents
+ 1. General Structure of XML Documents
  2. General Structure of the Skin file
  3. Structure of the individual Sections
  4. Drawing Objects
@@ -23,21 +23,21 @@ Table of Contents
 13. True-type Fonts
 
 
-1. General Stucture of XML Documents
-====================================
-Those, who already worked with XML ca omit this section.
+1. General Structure of XML Documents
+=====================================
+Those, who already worked with XML can skip this section.
 
-XML files has a tree-like structure of elements. Each document starts with a root element (a container) which includes all other elements hierachically. Elements, so called tags, are written in spiky brackets, a slash before the name marks an end tag.
+XML files have a tree-like structure of elements. Each document starts with a root element (a container) which includes all other elements hierarchically. Elements, so called tags, are written in spiky brackets, a slash before the name marks an end tag.
 
   <element>
-    <subemelent>
+    <subelement>
       ...
     </subelement>
   </element>
 
 Every element can provide attributes to specify further properties. Attributes are following the element name inside the brackets, their values are written after an equal in quotation marks
 
-  <element attribute="value" anotherattribtute="another value"
+  <element attribute="value" anotherattribute="another value"
     ...
   </element>
 
@@ -56,7 +56,7 @@ Normal XML files start with a control instruction to specify the XML version use
 
 2. General Structure of the Skin file
 =====================================
-Each skin file (ending with the extension ".skin") starts with the XML control incstruction (see above) followed by the root element <skin>. This element has three attributes which must be specified
+Each skin file (ending with the extension ".skin") starts with the XML declaration (see above) followed by the root element <skin>. This element has three attributes which must be specified
 
 * version    - Version of the skin format (current: "1.0")
 * name       - Name of the skin
@@ -110,7 +110,7 @@ After the definition of the drawing areas objects can be drawn on it freely. The
   * list       - defines the list in the menu
   * item       - defines one item in the list
 
-The simple object are mostly self-explanatory, they all have attributes "x1", "y1", "x2" and "y2" which decribe the position and dimension (exception: <image>, which only uses "x" and "y" when no scaling should be applied) and "color" which is a symbolic or hexadecimal color description. Images need furthermore the attributes "path" and can have the attributes "bgColor" and "alpha" (transparency 0-255). Texts can have the attribute align (with values "left", "right" and "center"), scrolltexts furthermore "font". Ellipses will be pitch circles with the "arc" attribute curves get the direction with it. 
+The simple object are mostly self-explanatory, they all have attributes "x1", "y1", "x2" and "y2" which describe the position and dimension (exception: <image>, which only uses "x" and "y" when no scaling should be applied) and "color" which is a symbolic or hexadecimal color description. Images need furthermore the attributes "path" and can have the attributes "bgColor" and "alpha" (transparency 0-255). Texts can have the attribute align (with values "left", "right" and "center"), scrolltexts furthermore "font". Ellipses will be pitch circles with the "arc" attribute curves get the direction with it. 
 Scroll- and progress-bars also need "bgColor", progress-bars "current" and "total".
 
   <image x="0" y="-70" path="Aluminium_volumebar.png"/>
@@ -148,7 +148,7 @@ Shows the image only, if ...
 
 6. Token Attributes
 ===================
-Some tokens can also have attributes (these are no XML attributes). At the moment these tokens are "{MenuTitle}", "{MenuCurrent}" and all date/time-token. Attributes follow follow the token name seperated by a colon ":". Colons in the attribute content are escaped with a backslash.
+Some tokens can also have attributes (these are no XML attributes). At the moment these tokens are "{MenuTitle}", "{MenuCurrent}" and all date/time-token. Attributes follow follow the token name separated by a colon ":". Colons in the attribute content are escaped with a backslash.
 
   <text .....>{DateTime:%H\:%M}</text>
 
@@ -200,7 +200,7 @@ The special element <list> specifies the display area of a list of entries. The 
     <text x1="0" x2="25" y1="0" y2="27" color="#AFFFFFFF" font="Osd" condition="{IsMenuCurrent}">-></text>
   </list>
 
-It might be a bit demanding to understand how a list is rendered. Coordinates of objects inside a list is relative to the display area of the list itself. Every object in the list is draw several times, for each entry in the list one time. The Y-coordinates are incremented by one <item> "height" each time. The tokens "{MenuCurrent}", "{MenuItem}" and "{MenuGroup}" are draw per tab (in seperated menus like schedule), whereas "{IsMenuCurrent}", "{IsMenuGroup}" or "{IsMenuItem}" are drawn only one time per list element.
+It might be a bit demanding to understand how a list is rendered. Coordinates of objects inside a list is relative to the display area of the list itself. Every object in the list is draw several times, for each entry in the list one time. The Y-coordinates are incremented by one <item> "height" each time. The tokens "{MenuCurrent}", "{MenuItem}" and "{MenuGroup}" are draw per tab (in separate menus like schedule), whereas "{IsMenuCurrent}", "{IsMenuGroup}" or "{IsMenuItem}" are drawn only one time per list element.
 
   <text x1="25" x2="569" y1="3" y2="27" color="#AF00FFFF" font="Sml">{MenuGroup}</text>
   <text x1="25" x2="569" y1="3" y2="27" color="#AFFFFFFF" font="Sml">{MenuItem}</text>
@@ -209,7 +209,7 @@ It might be a bit demanding to understand how a list is rendered. Coordinates of
 
 9. Creation of Image-Maps for Menu Logos
 ========================================
-To show a logo dependend on the currently selected element, the cleaned text (attribute "clean") of the element (e.g. "Aufzeichnungen") is compared with translations (here "Recordings"). With plugins the main menu entry (e.g. "MP3") of the plugin (here mp3) is compared to the translations. (Beware: This element is not part of the list and has also to be quoted outside the <list> container).
+To show a logo depending on the currently selected element, the cleaned text (attribute "clean") of the element (e.g. "Aufzeichnungen") is compared with translations (here "Recordings"). With plugins the main menu entry (e.g. "MP3") of the plugin (here mp3) is compared to the translations. (Beware: This element is not part of the list and has also to be quoted outside the <list> container).
 
   <image x="25" y="100" path="logos/schedule.png" condition="equal({MenuCurrent:clean},trans('Schedule'))" />
   <image x="25" y="100" path="logos/channels.png" condition="equal({MenuCurrent:clean},trans('Channels'))" />
@@ -249,7 +249,7 @@ Colors are given in RGB-format transparency information
 
 * A - alpha value (transparency 0-255)
 * R - red value
-* G - gree value
+* G - green value
 * B - blue value
 
 Some examples
