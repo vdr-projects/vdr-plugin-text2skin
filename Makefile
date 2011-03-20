@@ -147,7 +147,7 @@ ifndef DEBUG
 	$(STRIP) $(LIBDIR)/$@.$(APIVERSION)
 endif
 
-dist: $(I18Npo) clean
+dist: $(addprefix $(PODIR)/,$(I18Npo)) clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@mkdir $(TMPDIR)/$(ARCHIVE)
 	@cp -a * $(TMPDIR)/$(ARCHIVE)
