@@ -21,7 +21,7 @@ void cText2SkinSetupPage::Setup(void) {
 		Add(new cMenuEditBoolItem(tr("   Extract known tags"), &mData.StripAux));
 	Add(new cMenuEditBoolItem(tr("Use 'epgsearch' to check timer-conflicts"), &mData.CheckTimerConflict));
 	Add(new cOsdItem(tr("Flush image cache"), osUser1));
-	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill));
+	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill, 1));
 
 	SetCurrent(Get(current));
 	Display();
