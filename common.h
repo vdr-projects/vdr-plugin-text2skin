@@ -21,9 +21,6 @@
 #	define Ddiff(t,x)
 #endif
 
-#define DStartBench(x) uint64_t bench_##x = cTimeMs::Now()
-#define DShowBench(t,x) fprintf(stderr, "%s took %llu ms\n", t, cTimeMs::Now() - bench_##x)
-
 /* Check if a channel is a radio station. */
 #define ISRADIO(x) ((x)->Vpid()==0||(x)->Vpid()==1||(x)->Vpid()==0x1fff)
 
