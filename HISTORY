@@ -8,6 +8,7 @@ VDR Plugin 'text2skin' Revision History
 - Added experimental RELAX NG schema for skin XML files.
 - Set minimum value of bitmap cache size in menu to 1.
 - Fix bitmap cache size initialization when built with gcc 4.6.
+- Update epgsearch recording search timer name parsing for epgsearch >= 0.9.21.
 - Warning and code cleanups.
 
 2010-06-21: Version 1.3.1
