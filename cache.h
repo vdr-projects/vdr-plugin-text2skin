@@ -31,6 +31,7 @@ public:
 	bool Contains(const key_type &Key);
 	data_type &operator[](const key_type &Key);
 	uint Count(void) { return mUsage.size(); }
+	void SetMaxItems(uint MaxItems) { mMaxItems = MaxItems; }
 };
 
 template<class key_type, class data_type>
@@ -85,7 +86,7 @@ data_type &cxCache<key_type, data_type>::operator[](const key_type &Key)
 		return it->second;
 	} 
 
-	if (mUsage.size() == mMaxItems) {
+	while (mUsage.size() >= mMaxItems) {
 		item_iterator it = mItems.find(*mUsage.begin());
 		DeleteObject(it->first, it->second);
 		mUsage.erase(mUsage.begin());

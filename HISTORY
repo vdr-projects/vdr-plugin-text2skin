@@ -7,6 +7,7 @@ VDR Plugin 'text2skin' Revision History
 - Documentation spelling fixes.
 - Added experimental RELAX NG schema for skin XML files.
 - Set minimum value of bitmap cache size in menu to 1.
+- Fix bitmap cache size initialization when built with gcc 4.6.
 
 2010-06-21: Version 1.3.1
 

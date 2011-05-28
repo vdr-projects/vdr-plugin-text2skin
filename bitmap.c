@@ -90,6 +90,7 @@ void cText2SkinBitmap::Init(void) {
 #ifdef HAVE_IMAGEMAGICK
 	InitializeMagick(NULL);
 #endif
+	mCache.SetMaxItems(Text2SkinSetup.MaxCacheFill);
 }
 
 cText2SkinBitmap::cText2SkinBitmap(void) {
