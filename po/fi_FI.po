@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: vdr-text2skin 1.3\n"
 "Report-Msgid-Bugs-To: http://projects.vdr-developer.org/projects/show/plg-text2skin\n"
 "POT-Creation-Date: 2010-08-29 17:12+0300\n"
-"PO-Revision-Date: 2009-07-11 09:28+0200\n"
+"PO-Revision-Date: 2011-05-28 15:38+0200\n"
 "Last-Translator: Ville Skyttä <ville.skytta@iki.fi>\n"
 "Language-Team: Finnish <vdr@linuxtv.org>\n"
 "Language: fi\n"
@@ -49,7 +49,7 @@ msgstr "Näytä tallenteiden lisätiedot"
 
 #. TRANSLATORS: note the leading blanks!
 msgid "   Extract known tags"
-msgstr ""
+msgstr "   Tulkitse tunnetut tagit"
 
 msgid "Use 'epgsearch' to check timer-conflicts"
 msgstr "Tarkista ajastinongelmat epgsearch:lla"
