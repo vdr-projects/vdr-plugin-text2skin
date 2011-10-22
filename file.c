@@ -1,8 +1,9 @@
 #include "file.h"
 #include <unistd.h>
 
-cText2SkinFile::cText2SkinFile(const char *Skin) {
-	mSkin = Skin;
+cText2SkinFile::cText2SkinFile(const char *Skin):
+	mSkin(Skin)
+{
 }
 
 cText2SkinFile::~cText2SkinFile() {

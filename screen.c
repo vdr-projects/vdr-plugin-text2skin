@@ -1,15 +1,10 @@
 #include "screen.h"
 
-cText2SkinScreen::cText2SkinScreen(bool OffScreen) 
+cText2SkinScreen::cText2SkinScreen(bool OffScreen):
+	mOsd(OffScreen ? NULL : cOsdProvider::NewOsd(0, 0)),
+	mScreen(OffScreen ? new cBitmap(720, 576, 8) : NULL),
+	mOffScreen(OffScreen)
 {
-	mOsd       = NULL;
-	mScreen    = NULL;
-	mOffScreen = OffScreen;
-
-	if (mOffScreen)
-		mScreen = new cBitmap(720, 576, 8);
-	else
-		mOsd = cOsdProvider::NewOsd(0, 0);
 }
 
 cText2SkinScreen::~cText2SkinScreen() 

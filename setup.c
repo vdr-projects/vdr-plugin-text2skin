@@ -4,14 +4,15 @@ cText2SkinSetup Text2SkinSetup;
 
 // --- cText2SkinSetup --------------------------------------------------------
 
-cText2SkinSetup::cText2SkinSetup(void) {
-	MenuScrollbar = false;
-	MarqueeLeftRight = true;
-	MarqueeReset = false;
-	ShowAux = true;
-	StripAux = true;
-	CheckTimerConflict = false;
-	MaxCacheFill = 25;
+cText2SkinSetup::cText2SkinSetup(void):
+	MenuScrollbar(false),
+	MarqueeLeftRight(true),
+	MarqueeReset(false),
+	ShowAux(true),
+	StripAux(true),
+	CheckTimerConflict(false),
+	MaxCacheFill(25)
+{
 }
 
 bool cText2SkinSetup::SetupParse(const char *Name, const char *Value) {

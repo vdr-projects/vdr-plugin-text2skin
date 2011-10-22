@@ -3,8 +3,9 @@
 
 // --- cText2SkinSetupPage ----------------------------------------------------
 
-cText2SkinSetupPage::cText2SkinSetupPage(void) {
-	mData = Text2SkinSetup;
+cText2SkinSetupPage::cText2SkinSetupPage(void):
+	mData(Text2SkinSetup)
+{
 	Setup();
 }
 

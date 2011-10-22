@@ -93,9 +93,10 @@ void cText2SkinBitmap::Init(void) {
 	mCache.SetMaxItems(Text2SkinSetup.MaxCacheFill);
 }
 
-cText2SkinBitmap::cText2SkinBitmap(void) {
-	mCurrent = 0;
-	mLastGet = 0;
+cText2SkinBitmap::cText2SkinBitmap(void):
+	mCurrent(0),
+	mLastGet(0)
+{
 }
 
 cText2SkinBitmap::~cText2SkinBitmap() {
