@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "setup.h"
 
 cText2SkinSetup Text2SkinSetup;

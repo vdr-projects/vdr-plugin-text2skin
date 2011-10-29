@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "xml/string.h"
 #include "render.h"
 

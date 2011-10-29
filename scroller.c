@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "scroller.h"
 #include "screen.h"
 #include <vdr/tools.h>

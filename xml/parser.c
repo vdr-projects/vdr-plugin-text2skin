@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "xml/parser.h"
 #include "xml/xml.h"
 #include "xml/skin.h"

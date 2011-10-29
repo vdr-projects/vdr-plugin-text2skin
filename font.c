@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "font.h"
 #include "render.h"
 #include <vdr/tools.h>

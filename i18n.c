@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "i18n.h"
 #include <vdr/config.h>
 

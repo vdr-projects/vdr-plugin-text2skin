@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "theme.h"
 #include <vdr/osd.h>
 

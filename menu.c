@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "menu.h"
 #include "bitmap.h"
 

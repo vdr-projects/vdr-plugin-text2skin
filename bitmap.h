@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #ifndef VDR_TEXT2SKIN_BITMAP_H
 #define VDR_TEXT2SKIN_BITMAP_H
 

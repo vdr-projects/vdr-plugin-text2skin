@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "screen.h"
 
 cText2SkinScreen::cText2SkinScreen(bool OffScreen):

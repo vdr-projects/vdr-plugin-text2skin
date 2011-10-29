@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "xml/skin.h"
 #include "i18n.h"
 #include <vdr/tools.h>

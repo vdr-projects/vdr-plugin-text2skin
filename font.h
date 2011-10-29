@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #ifndef VDR_TEXT2SKIN_FONT_H
 #define VDR_TEXT2SKIN_FONT_H
 

@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "xml/function.h"
 #include "render.h"
 #include "bitmap.h"

@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "render.h"
 #include "loader.h"
 #include "display.h"

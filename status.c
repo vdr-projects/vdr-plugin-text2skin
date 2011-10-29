@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "status.h"
 #include "render.h"
 #include "menu.h"

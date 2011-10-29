@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "bitmap.h"
 #include "setup.h"
 #include <vdr/tools.h>

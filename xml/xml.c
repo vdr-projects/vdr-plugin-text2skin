@@ -1,4 +1,4 @@
-/*
+/*								-*- c++ -*-
  *  This module was kindly provided by Clemens Kirchgatterer
  */
 

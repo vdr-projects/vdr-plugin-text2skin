@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "common.h"
 #include <sstream>
 #include <vdr/plugin.h>

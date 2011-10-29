@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "render.h"
 #include "loader.h"
 #include "i18n.h"

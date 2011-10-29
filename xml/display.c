@@ -1,3 +1,5 @@
+//								-*- c++ -*-
+
 #include "xml/display.h"
 
 static const std::string DisplayNames[] = 
