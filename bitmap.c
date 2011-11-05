@@ -164,7 +164,7 @@ bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, i
 		int w, h;
 		std::vector<Image>::iterator it;
 		readImages(&images, Filename);
-		if (images.size() == 0) {
+		if (images.empty()) {
 			esyslog("ERROR: text2skin: Couldn't load %s", Filename);
 			return false;
 		}

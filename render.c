@@ -174,7 +174,7 @@ void cText2SkinRender::Update(void)
 		DrawObject(mDisplay->GetObject(i));
 
 	mDirty = 0;
-	while (mDirtyItems.size() > 0)
+	while (!mDirtyItems.empty())
 		mDirtyItems.pop_back();
 
 	Dbench(flush);

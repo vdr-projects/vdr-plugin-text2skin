@@ -87,7 +87,7 @@ static uint                      oindex  = 0;
 bool xStartElem(const std::string &name, std::map<std::string,std::string> &attrs) {
 	//Dprintf("start element: %s\n", name.c_str());
 
-	if      (context.size() == 0) {
+	if      (context.empty()) {
 		if (name == "skin") {
 			ATTRIB_MAN_FUNC  ("version",    skin->mVersion.Parse);
 			ATTRIB_MAN_STRING("name",       skin->mTitle);
@@ -128,7 +128,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 		else {
 			object = new cxObject(display);
 			if (object->ParseType(name)) {
-				if (parents.size() > 0)
+				if (!parents.empty())
 					object->mRefresh = parents.back()->mRefresh;
 				else
 					object->mRefresh = display->mRefreshDefault;
@@ -246,7 +246,7 @@ bool xEndElem(const std::string &name) {
 			display = NULL;
 			oindex = 0;
 		}
-		else if (object != NULL || parents.size() > 0) {
+		else if (object != NULL || !parents.empty()) {
 			if (object == NULL) {
 				Dprintf("rotating parent to object\n");
 				object = parents[parents.size() - 1];
@@ -282,7 +282,7 @@ bool xEndElem(const std::string &name) {
 			}
 
 			object->mIndex = oindex++;
-			if (parents.size() > 0) {
+			if (!parents.empty()) {
 				Dprintf("pushing to parent\n");
 				cxObject *parent = parents[parents.size() - 1];
 				if (parent->mObjects == NULL)
