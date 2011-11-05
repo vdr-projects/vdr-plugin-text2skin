@@ -748,7 +748,6 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 		cxType res = mRender->GetTokenData(Token);
 		if      (Token.Attrib.Type == aClean) {
 			std::string str = res.String();
-			int pos = -1;
 
 			if (Token.Type == tMenuCurrent) {
 				const char *ptr = str.c_str(); 
@@ -761,6 +760,7 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 				Dprintf("MenuCurrent result: |%s|\n", res.String().c_str());
 			}
 			else if (Token.Type == tMenuTitle) {
+				int pos;
 				if ((pos = str.find(" - ")) != -1) {
 					str.erase(pos);
 					while (str[str.length() - 1] == ' ')
@@ -780,9 +780,9 @@ cxType cText2SkinRender::GetToken(const txToken &Token)
 		}
 		else if (Token.Attrib.Type == aRest) {
 			std::string str = res.String();
-			int pos = -1;
 
 			if (Token.Type == tMenuTitle) {
+				int pos;
 				if ((pos = str.find(" - ")) != -1) {
 					str.erase(0, pos + 3);
 					while (str[0] == ' ')

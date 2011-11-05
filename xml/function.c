@@ -54,7 +54,6 @@ bool cxFunction::Parse(const std::string &Text)
 	const char *text = Text.c_str();
 	const char *ptr = text, *last = text;
 	eType type = undefined_function;
-	int inExpr = 0;
 	cxFunction *expr;
 
 	if (*ptr == '\'' || *ptr == '{') {
@@ -95,6 +94,7 @@ bool cxFunction::Parse(const std::string &Text)
 	}
 	else {
 		// expression
+		int inExpr = 0;
 		for (; *ptr; ++ptr) {
 			if (*ptr == '(') {
 				if (inExpr++ == 0) {
