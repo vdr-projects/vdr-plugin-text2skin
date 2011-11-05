@@ -37,8 +37,7 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 		res = mCache[spec];
 		Dprintf("..cache ok\n");
 	} else {
-		int pos;
-		if ((pos = fname.find('*')) != -1) {
+		if (fname.find('*') != std::string::npos) {
 			glob_t gbuf;
 			if (glob(fname.c_str(), 0, NULL, &gbuf) == 0){
 				Dprintf("GLOB: FOUND %s\n", gbuf.gl_pathv[0]);
