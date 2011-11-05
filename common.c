@@ -389,7 +389,8 @@ bool ParseVar(const char *Text, const char *Name, std::string &Value)
 	const char *ptr1, *ptr2;
 	char *str;
 	bool res = false;
-	asprintf(&str, ",%s=", Name);
+	if (asprintf(&str, ",%s=", Name) == -1)
+		return res;
 	if ((ptr1 = strstr(Text, str)) || (strncmp(ptr1 = Text, str + 1, strlen(str) - 1) == 0)) {
 		if (ptr1 == Text)
 			--ptr1;
