@@ -1,7 +1,7 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
-201x-xx-xx: Version x.x.x
+2011-11-06: Version 1.3.2
 
 - Fix build with ImageMagick >= 6.6.2 (thanks to Anssi Hannula / closes #409)
 - Documentation spelling fixes.
