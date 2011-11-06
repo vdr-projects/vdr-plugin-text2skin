@@ -1081,7 +1081,7 @@ True, if the first parameter is less than the second.
 ------
 True, if the first parameter is less or equal than the second.
 
- gt({FreeDiskSpace},5000)
+ le({FreeDiskSpace},5000)
 
 3.10 file
 ---------
