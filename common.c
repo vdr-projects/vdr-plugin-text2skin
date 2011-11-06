@@ -196,18 +196,18 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 			std::string auxRaw(Aux);
 			std::string auxEpgsearch = StripXmlTag(auxRaw, "epgsearch");
 			if (!auxEpgsearch.empty()) {
-				if (!desc.str().empty())
-					desc << "\n";
-				desc << tr("AUXILIARY INFOS") << ":\n";
 				std::string searchTimer = StripXmlTag(auxEpgsearch, "searchtimer");
 				if (searchTimer.empty())
 					// epgsearch < 0.9.21?
 					searchTimer = StripXmlTag(auxEpgsearch, "Search timer");
-				if (searchTimer.empty())
-					searchTimer = auxEpgsearch;
-				std::stringstream buf;
-				buf << " - " << tr("Search timer") << ": " << searchTimer;
-				desc << FitToWidth(buf, MAX_CHARS) << "\n";
+				if (!searchTimer.empty()) {
+					if (!desc.str().empty())
+						desc << "\n";
+					desc << tr("AUXILIARY INFOS") << ":\n";
+					std::stringstream buf;
+					buf << " - " << tr("Search timer") << ": " << searchTimer;
+					desc << FitToWidth(buf, MAX_CHARS) << "\n";
+				}
 			}
 		}
 		else {
