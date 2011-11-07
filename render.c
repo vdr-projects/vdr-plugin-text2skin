@@ -821,6 +821,18 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 			       : (cxType)FreeMB;
 		}
 
+	case tUsedDiskSpace: {
+			int FreeMB, UsedMB;
+			VideoDiskSpace(&FreeMB, &UsedMB);
+			return (cxType)UsedMB;
+		}
+
+	case tTotalDiskSpace: {
+			int FreeMB, UsedMB;
+			VideoDiskSpace(&FreeMB, &UsedMB);
+			return (cxType)FreeMB+UsedMB;
+		}
+
 	case tDateTime:      return TimeType(time(NULL), Token.Attrib.Text);
 
 	case tCanScrollUp:

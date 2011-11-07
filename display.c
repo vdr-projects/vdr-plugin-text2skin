@@ -243,7 +243,31 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 			return (cxType)false;
 		}
 		return false;
-		
+
+	case tVideoSizeWidth:    {
+#if VDRVERSNUM >= 10707
+			int width, height;
+			double aspect;
+			cDevice *dev = cDevice::PrimaryDevice();
+			dev->GetVideoSize(width, height, aspect);
+			return (cxType)width;
+#else
+			return 0;
+#endif
+		}
+
+	case tVideoSizeHeight:    {
+#if VDRVERSNUM >= 10707
+			int width, height;
+			double aspect;
+			cDevice *dev = cDevice::PrimaryDevice();
+			dev->GetVideoSize(width, height, aspect);
+			return (cxType)height;
+#else
+			return 0;
+#endif
+		}
+
 	case tHasTeletext:
 	case tChannelHasTeletext:
 		return mChannel != NULL && mChannel->Tpid() != 0;

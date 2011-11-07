@@ -4,7 +4,7 @@
 #include "render.h"
 
 static const char *Tokens[__COUNT_TOKEN__] = {
-	"DateTime", "FreeDiskSpace", "AudioTrack", "AudioChannel",
+	"DateTime", "FreeDiskSpace", "UsedDiskSpace", "TotalDiskSpace", "VideoSizeWidth", "VideoSizeHeight", "AudioTrack", "AudioChannel",
 
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal", 

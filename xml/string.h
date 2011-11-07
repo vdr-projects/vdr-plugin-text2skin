@@ -10,6 +10,10 @@
 enum exToken {
 	tDateTime,
 	tFreeDiskSpace,
+	tUsedDiskSpace,
+	tTotalDiskSpace,
+	tVideoSizeWidth,
+	tVideoSizeHeight,
 	tAudioTrack,
 	tAudioChannel,
 

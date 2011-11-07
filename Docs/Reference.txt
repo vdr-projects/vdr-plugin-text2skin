@@ -610,6 +610,10 @@ Defines an item for the list.
 | FreeDiskSpace          |                           | Remaining free disk space in MB
 |                        |                           |  Attribute: return as formatted time.
 -----------------------------------------------------------------------------
+| UsedDiskSpace          |                           | Used disk space in MB
+-----------------------------------------------------------------------------
+| TotalDiskSpace         |                           | Total disk space in MB
+-----------------------------------------------------------------------------
 | CanScrollUp            |                           | True, if scrollable text can be scrolled up
 -----------------------------------------------------------------------------
 | CanScrollDown          |                           | True, if scrollable text can be scrolled down
