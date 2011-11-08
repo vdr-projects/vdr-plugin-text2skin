@@ -776,6 +776,10 @@ Defines an item for the list.
 | Language               |                           | Audio language code + "DD" if Dolby Digital
 |                        |                           | (e.g. "deu", "deuDD", ...)
 -----------------------------------------------------------------------------
+| VideoSizeWidth         | (VDR >= 1.7.7)            | Video width as reported by primary device
+-----------------------------------------------------------------------------
+| VideoSizeHeight        | (VDR >= 1.7.7)            | Video height as reported by primary device
+-----------------------------------------------------------------------------
 | ChannelHasTeletext     |                           | True, if teletext is available on current channel
 |  (alt: HasTeletext)    |                           |
 -----------------------------------------------------------------------------
