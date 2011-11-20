@@ -396,7 +396,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 			return mRecordings.size() > (uint)Token.Attrib.Number
 			       ? (cxType)mRecordings[Token.Attrib.Number]
 			       : (cxType)false;
-		} else if (mRecordings.size() > 0) {
+		} else if (!mRecordings.empty()) {
 			mRecordingsLock.Lock();
 			uint now = cTimeMs::Now();
 			if (mCurrentRecording >= mRecordings.size())
