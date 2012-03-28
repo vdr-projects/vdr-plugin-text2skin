@@ -16,7 +16,7 @@ class cText2SkinFontCache
 {
 private:
 	typedef map<string,cFont*> cache_map;
-	
+
 public:
 	cText2SkinFontCache();
 	~cText2SkinFontCache();

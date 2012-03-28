@@ -37,24 +37,24 @@ public:
 };
 
 template<class key_type, class data_type>
-inline bool cxCache<key_type, data_type>::Contains(const key_type &Key) 
+inline bool cxCache<key_type, data_type>::Contains(const key_type &Key)
 {
 	return mItems.find(Key) != mItems.end();
 }
 
 template<class key_type, class data_type>
-cxCache<key_type, data_type>::cxCache(uint MaxItems) 
+cxCache<key_type, data_type>::cxCache(uint MaxItems)
 {
 	mMaxItems = MaxItems;
 }
 
 template<class key_type, class data_type>
-cxCache<key_type, data_type>::~cxCache() 
+cxCache<key_type, data_type>::~cxCache()
 {
 }
 
 template<class key_type, class data_type>
-void cxCache<key_type, data_type>::Flush(void) 
+void cxCache<key_type, data_type>::Flush(void)
 {
 	item_iterator it = mItems.begin();
 	for (; it != mItems.end(); ++it)
@@ -65,7 +65,7 @@ void cxCache<key_type, data_type>::Flush(void)
 }
 
 template<class key_type, class data_type>
-void cxCache<key_type, data_type>::Reset(void) 
+void cxCache<key_type, data_type>::Reset(void)
 {
 	item_iterator it = mItems.begin();
 	for (; it != mItems.end(); ++it)
@@ -73,7 +73,7 @@ void cxCache<key_type, data_type>::Reset(void)
 }
 
 template<class key_type, class data_type>
-data_type &cxCache<key_type, data_type>::operator[](const key_type &Key) 
+data_type &cxCache<key_type, data_type>::operator[](const key_type &Key)
 {
 	item_iterator it = mItems.find(Key);
 	if (it != mItems.end()) {
@@ -86,7 +86,7 @@ data_type &cxCache<key_type, data_type>::operator[](const key_type &Key)
 		}
 		mUsage.push_back(Key);
 		return it->second;
-	} 
+	}
 
 	while (mUsage.size() >= mMaxItems) {
 		item_iterator it = mItems.find(*mUsage.begin());

@@ -21,7 +21,7 @@ struct tBitmapSpec {
 	bool operator==(const tBitmapSpec &Src) const;
 };
 
-inline bool tBitmapSpec::operator<(const tBitmapSpec &Src) const 
+inline bool tBitmapSpec::operator<(const tBitmapSpec &Src) const
 {
 	if (Filename == Src.Filename) {
 		if (Alpha == Src.Alpha) {
@@ -36,7 +36,7 @@ inline bool tBitmapSpec::operator<(const tBitmapSpec &Src) const
 	}
 	return Filename < Src.Filename;
 }
-	
+
 inline bool tBitmapSpec::operator==(const tBitmapSpec &Src) const
 {
 	return Filename == Src.Filename
@@ -74,14 +74,14 @@ private:
 	bool LoadNonXpm(const char *Filename, int height, int width, int colors, bool Quiet);
 
 public:
-	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0, int height = 0, 
+	static cText2SkinBitmap *Load(const std::string &Filename, int Alpha = 0, int height = 0,
 	                              int width = 0, int colors = 0, bool Quiet = false);
-	static bool Available(const std::string &Filename, int Alpha = 0, int height = 0, 
+	static bool Available(const std::string &Filename, int Alpha = 0, int height = 0,
 	                      int width = 0, int colors = 0);
 	static void ResetCache(void) { mCache.Reset(); }
 	static void FlushCache(void) { mCache.Flush(); }
 	static void Init(void);
-	
+
 	virtual ~cText2SkinBitmap();
 
 	void Reset(void) { mCurrent = 0; mLastGet = 0; }

@@ -51,7 +51,7 @@
 		} else \
 			_target = _l; \
 	}
-		
+
 #define ATTRIB_MAN_NUMBER(_attr,_target) \
 	ATTRIB_OPT_NUMBER(_attr,_target) \
 	else { \
@@ -92,7 +92,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 			ATTRIB_MAN_FUNC  ("version",    skin->mVersion.Parse);
 			ATTRIB_MAN_STRING("name",       skin->mTitle);
 			ATTRIB_MAN_FUNC  ("screenBase", skin->ParseBase);
-		} 
+		}
 		else
 			TAG_ERR_REMAIN("document");
 	}
@@ -164,7 +164,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 					if      (name == "blink") {
 						ATTRIB_OPT_STRING("blinkColor", object->mBl);
 						ATTRIB_OPT_NUMBER("delay",      object->mDelay);
-						
+
 						if (object->mDelay == 0)
 							object->mDelay = 1000;
 					}
@@ -182,7 +182,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 					ATTRIB_OPT_STRING("color",   object->mFg);
 					ATTRIB_OPT_NUMBER("arc",     object->mArc);
 				}
-				else if (name == "progress" 
+				else if (name == "progress"
 				      || name == "scrollbar") {
 					ATTRIB_OPT_STRING("color",   object->mFg);
 					ATTRIB_OPT_STRING("bgColor", object->mBg);
@@ -204,7 +204,7 @@ bool xStartElem(const std::string &name, std::map<std::string,std::string> &attr
 			} else
 				TAG_ERR_REMAIN(context[context.size() - 1].c_str());
 		}
-	} else 
+	} else
 		TAG_ERR_CHILD(context[context.size() - 1].c_str());
 	context.push_back(name);
 	return true;
@@ -220,7 +220,7 @@ bool xCharData(const std::string &text) {
 
 	while (text[end] == '\012' || text[end] == '\015' || text[end] == ' ' || text[end] == '\t')
 		--end;
-	
+
 	//Dprintf("char data after: %s\n", text.substr(start, end - start + 1).c_str());
 
 	if (end - start + 1 > 0) {
@@ -320,4 +320,4 @@ cxSkin *xmlParse(const std::string &name, const std::string &fileName, cText2Ski
 	skin = NULL;
 	return result;
 }
-	
+

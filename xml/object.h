@@ -27,7 +27,7 @@ struct txWindow {
 	txPoint pos1;
 	txPoint pos2;
 	int bpp;
-	txWindow(int _x1 = 0, int _y1 = 0, int _x2 = -1, int _y2 = -1, int _bpp=4): 
+	txWindow(int _x1 = 0, int _y1 = 0, int _x2 = -1, int _y2 = -1, int _bpp=4):
 			pos1(_x1, _y2), pos2(_x2, _y2), bpp(_bpp) {}
 };
 
@@ -103,7 +103,7 @@ public:
 		item,
 #define __COUNT_OBJECT__ (item + 1)
 	};
-	
+
 private:
 	cxDisplay     *mDisplay;
 	cxSkin        *mSkin;

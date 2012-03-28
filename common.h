@@ -60,7 +60,7 @@ cxType DurationType(int Seconds, const std::string &Format, int Frame = 0);
 
 bool ParseVar(const char *Text, const char *Name, std::string &Value);
 bool ParseVar(const char *Text, const char *Name, tColor *Value);
-	
+
 void SkipQuotes(std::string &Value);
 std::string FitToWidth(std::string &Line, uint Width);
 std::string FitToWidth(std::stringstream &Line, uint Width);

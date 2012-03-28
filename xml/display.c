@@ -2,8 +2,8 @@
 
 #include "xml/display.h"
 
-static const std::string DisplayNames[] = 
-	{ "channelInfo", "channelSmall", "volume", "audioTracks", "message", "replayInfo", 
+static const std::string DisplayNames[] =
+	{ "channelInfo", "channelSmall", "volume", "audioTracks", "message", "replayInfo",
       "replaySmall", "menu" };
 
 cxDisplay::cxDisplay(cxSkin *parent):
@@ -14,7 +14,7 @@ cxDisplay::cxDisplay(cxSkin *parent):
 {
 }
 
-bool cxDisplay::ParseType(const std::string &Text) 
+bool cxDisplay::ParseType(const std::string &Text)
 {
 	for (int i = 0; i < (int)__COUNT_DISPLAY__; ++i) {
 		if (DisplayNames[i].length() > 0 && DisplayNames[i] == Text) {

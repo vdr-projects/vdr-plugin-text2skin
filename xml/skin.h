@@ -1,7 +1,7 @@
 //								-*- c++ -*-
 
-#ifndef VDR_TEXT2SKIN_XML_SKIN_H 
-#define VDR_TEXT2SKIN_XML_SKIN_H 
+#ifndef VDR_TEXT2SKIN_XML_SKIN_H
+#define VDR_TEXT2SKIN_XML_SKIN_H
 
 #include "xml/display.h"
 #include <vdr/osd.h>
@@ -77,7 +77,7 @@ private:
 	cxVersion        mVersion;
 
 	cxDisplays       mDisplays;
-	
+
 	cText2SkinI18n  *mI18n; // TODO: should move here completely
 	cText2SkinTheme *mTheme;
 
@@ -106,4 +106,4 @@ inline cxDisplay *cxSkin::Get(cxDisplay::eType Type) {
 	return NULL;
 }
 
-#endif // VDR_TEXT2SKIN_XML_SKIN_H 
+#endif // VDR_TEXT2SKIN_XML_SKIN_H

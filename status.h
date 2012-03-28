@@ -73,9 +73,9 @@ private:
 	double            mReplayFramesPerSecond;
 
 protected:
-	virtual void Replaying(const cControl *Control, const char *Name, 
+	virtual void Replaying(const cControl *Control, const char *Name,
 						   const char *FileName, bool On);
-	virtual void Recording(const cDevice *Device, const char *Name, 
+	virtual void Recording(const cDevice *Device, const char *Name,
 						   const char *FileName, bool On);
 	virtual void OsdClear(void);
 

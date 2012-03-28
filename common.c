@@ -9,14 +9,14 @@
 
 #define FRONTEND_DEVICE "/dev/dvb/adapter%d/frontend%d"
 
-const std::string &SkinPath(void) 
+const std::string &SkinPath(void)
 {
 	// should never change
 	static std::string path = cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
 	return path;
 }
 
-const char *ChannelNumber(const cChannel *Channel, int Number) 
+const char *ChannelNumber(const cChannel *Channel, int Number)
 {
 	static char buffer[256];
 	buffer[0] = '\0';
@@ -29,7 +29,7 @@ const char *ChannelNumber(const cChannel *Channel, int Number)
   return buffer;
 }
 
-const char *ChannelName(const cChannel *Channel, int Number) 
+const char *ChannelName(const cChannel *Channel, int Number)
 {
 	static char buffer[256];
 	buffer[0] = '\0';
@@ -40,11 +40,11 @@ const char *ChannelName(const cChannel *Channel, int Number)
 	return buffer;
 }
 
-const char *ChannelShortName(const cChannel *Channel, int Number) 
+const char *ChannelShortName(const cChannel *Channel, int Number)
 {
 	static char buffer[256];
 	buffer[0] = '\0';
-	if (Channel) 
+	if (Channel)
 		snprintf(buffer, sizeof(buffer), "%s", Channel->ShortName(true));
 	else if (!Number)
 		snprintf(buffer, sizeof(buffer), "%s", trVDR("*** Invalid Channel ***"));
@@ -59,7 +59,7 @@ const char *EventType(uint Number)
 	return buffer;
 }
 
-bool StoppedTimer(const char *Name) 
+bool StoppedTimer(const char *Name)
 {
 	cTimer *timer = Timers.First();
 	while (timer) {
@@ -273,7 +273,7 @@ int GetRecordingCuttedLength(const char *FileName, double FramesPerSecond, bool 
 	return (int)length > totalLength ? totalLength : (int)length;
 }
 
-cxType TimeType(time_t Time, const std::string &Format) 
+cxType TimeType(time_t Time, const std::string &Format)
 {
 	static char result[1000];
 	struct tm tm_r, *tm;
@@ -282,7 +282,7 @@ cxType TimeType(time_t Time, const std::string &Format)
 	if (Time > 0) {
 		if (Format.length() > 0) {
 			strftime(result, sizeof(result), Format.c_str(), tm);
-			
+
 			cxType r = result;
 			/*if      (Format.find("%s") != -1 || Format.find("%S") != -1
 			      || Format.find("%Es") != -1 || Format.find("%ES") != -1
@@ -315,7 +315,7 @@ cxType DurationType(int Seconds, const std::string &Format, int Frame)
 	if (Seconds >= 0) {
 		if (Format.length() > 0) {
 			uint update = 0;
-			const char *ptr = Format.c_str(); 
+			const char *ptr = Format.c_str();
 			char *res = result;
 			enum { normal, format } state = normal;
 			int n = 0;
@@ -356,7 +356,7 @@ cxType DurationType(int Seconds, const std::string &Format, int Frame)
 						n = snprintf(res, sizeof(result) - (res - result), "%02d", s);
 						update = 1000;
 						break;
-					
+
 					case 'f':
 						if (Frame)
 							n = snprintf(res, sizeof(result) - (res - result), "%02d", Frame);
@@ -384,7 +384,7 @@ cxType DurationType(int Seconds, const std::string &Format, int Frame)
 	return false;
 }
 
-bool ParseVar(const char *Text, const char *Name, std::string &Value) 
+bool ParseVar(const char *Text, const char *Name, std::string &Value)
 {
 	const char *ptr1, *ptr2;
 	char *str;

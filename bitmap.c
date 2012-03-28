@@ -26,7 +26,7 @@ void cBitmapCache::ResetObject(cText2SkinBitmap *&Data)
 }
 
 
-cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height, 
+cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha, int height,
                                          int width, int colors, bool Quiet) {
 	tBitmapSpec spec(Filename, Alpha, height, width, colors);
 	Dprintf("checking image with spec %s_%d_%d_%d_%d..", Filename.c_str(),Alpha,height,width,colors);
@@ -44,10 +44,10 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 				fname = gbuf.gl_pathv[0];
 			} else {
 				if (!Quiet)
-					esyslog("ERROR: text2skin: No match for wildcard filename %s", 
+					esyslog("ERROR: text2skin: No match for wildcard filename %s",
 							Filename.c_str());
 				fname = "";
-			} 
+			}
 			globfree(&gbuf);
 		}
 
@@ -62,7 +62,7 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 			}
 		} else if (!Quiet)
 			esyslog("ERROR: text2skin: filename %s too short to identify format", fname.c_str());
-	
+
 		Dprintf("..load %sok\n", result ? "" : "not ");
 		if (result)
 			res->SetAlpha(Alpha);
@@ -73,7 +73,7 @@ cText2SkinBitmap *cText2SkinBitmap::Load(const std::string &Filename, int Alpha,
 	return res;
 }
 
-bool cText2SkinBitmap::Available(const std::string &Filename, int Alpha, int height, int width, 
+bool cText2SkinBitmap::Available(const std::string &Filename, int Alpha, int height, int width,
                                  int colors)
 {
 	if ((int)Filename.find('*') != -1) {
@@ -240,14 +240,14 @@ bool cText2SkinBitmap::LoadNonXpm(const char *Filename, int height, int width, i
 		for (int x = 0; x < bmp->Width(); ++x) {
 			if ( colors != 0 ){
 				bmp->DrawPixel(x, y ,  outputPalette[outputImage[y * bmp->Width() + x]] | 0xFF000000 );
-			}else{	
+			}else{
 				tColor col = (data[pos + 3] << 24) | (data[pos + 2] << 16) | (data[pos + 1] << 8) | data[pos + 0];
 				bmp->DrawPixel(x, y, col);
 				pos += 4;
 			}
 		}
 	}
-	
+
 	imlib_free_image();
 	imlib_context_free(ctx);
 	mBitmaps.push_back(bmp);

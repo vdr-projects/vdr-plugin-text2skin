@@ -45,7 +45,7 @@ private:
 	int         mNumber;
 	cxFunction *mParams[MAXPARAMETERS];
 	uint        mNumParams;
-	
+
 protected:
 	cxType FunFile  (const cxType &Param) const;
 	cxType FunPlugin(const cxType &Param) const;

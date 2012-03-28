@@ -17,7 +17,7 @@ cxFunction::cxFunction(cxObject *Parent):
 		mType(string),
 		mString(mObject, false),
 		mNumber(0),
-		mNumParams(0) 
+		mNumParams(0)
 {
 }
 
@@ -49,7 +49,7 @@ cxFunction::~cxFunction()
 		delete mParams[i];
 }
 
-bool cxFunction::Parse(const std::string &Text) 
+bool cxFunction::Parse(const std::string &Text)
 {
 	const char *text = Text.c_str();
 	const char *ptr = text, *last = text;
@@ -58,7 +58,7 @@ bool cxFunction::Parse(const std::string &Text)
 
 	if (*ptr == '\'' || *ptr == '{') {
 		// must be string
-		if (strlen(ptr) < 2 
+		if (strlen(ptr) < 2
 				|| (*ptr == '\'' && *(ptr + strlen(ptr) - 1) != '\'')
 				|| (*ptr == '{' && *(ptr + strlen(ptr) - 1) != '}')) {
 			esyslog("ERROR: Unmatched string end\n");
@@ -100,7 +100,7 @@ bool cxFunction::Parse(const std::string &Text)
 				if (inExpr++ == 0) {
 					int i;
 					for (i = 0; Internals[i] != NULL; ++i) {
-						if ((size_t)(ptr - last) == strlen(Internals[i]) 
+						if ((size_t)(ptr - last) == strlen(Internals[i])
 								&& memcmp(last, Internals[i], ptr - last) == 0){
 							type = (eType)(INTERNAL + 1 + i);
 							break;
@@ -143,11 +143,11 @@ bool cxFunction::Parse(const std::string &Text)
 						int params = 0;
 
 						switch (mType) {
-						case fun_and: 
+						case fun_and:
 						case fun_or:   params = -1; break;
 
-						case fun_eq:   
-						case fun_ne:   
+						case fun_eq:
+						case fun_ne:
 						case fun_gt:
 						case fun_lt:
 						case fun_ge:
@@ -160,7 +160,7 @@ bool cxFunction::Parse(const std::string &Text)
 						}
 
 						if (params != -1 && mNumParams != (uint)params) {
-							esyslog("ERROR: Text2Skin: Wrong number of parameters to %s, " 
+							esyslog("ERROR: Text2Skin: Wrong number of parameters to %s, "
 									"expecting %d", Internals[mType - 1 - INTERNAL], params);
 							return false;
 						}
@@ -176,7 +176,7 @@ bool cxFunction::Parse(const std::string &Text)
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -184,7 +184,7 @@ cxType cxFunction::FunFile(const cxType &Param) const
 {
 	std::string path = cText2SkinRender::ImagePath(Param);
 	//Dprintf("checking file(%s) in cache\n", path.c_str());
-	return cText2SkinBitmap::Available(path, mObject->Alpha(), 
+	return cText2SkinBitmap::Available(path, mObject->Alpha(),
 	                                   mObject->Size().h > 1 ? mObject->Size().h : 0,
 	                                   mObject->Size().w > 1 ? mObject->Size().w : 0,
 									   mObject->Colors())
@@ -254,7 +254,7 @@ cxType cxFunction::Evaluate(void) const
 
 	case fun_trans:
 		return mSkin->Translate(mParams[0]->Evaluate());
-	
+
 	case fun_plugin:
 		return FunPlugin(mParams[0]->Evaluate());
 

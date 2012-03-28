@@ -86,7 +86,7 @@ void cText2SkinDisplayChannel::SetMessage(eMessageType Type, const char *Text)
 	}
 	UpdateUnlock();
 }
-	
+
 void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, const char *Yellow, const char *Blue)
 {
 	if (mFallbackDisplay != NULL) {
@@ -100,7 +100,7 @@ void cText2SkinDisplayChannel::SetButtons(const char *Red, const char *Green, co
 	if (Green  == NULL) Green  = "";
 	if (Yellow == NULL) Yellow = "";
 	if (Blue   == NULL) Blue   = "";
-	if (mButtonRed != Red || mButtonGreen != Green || mButtonYellow != Yellow 
+	if (mButtonRed != Red || mButtonGreen != Green || mButtonYellow != Yellow
 			|| mButtonBlue != Blue) {
 		mButtonRed    = Red;
 		mButtonGreen  = Green;
@@ -116,7 +116,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 	switch (Token.Type) {
 	case tChannelNumber:
 		return ChannelNumber(mChannel, mNumber);
-		
+
 	case tChannelName:
 		return mChannel != NULL
 		       ? (cxType)ChannelName(mChannel, mNumber)
@@ -126,7 +126,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return mChannel != NULL
 		       ? (cxType)ChannelShortName(mChannel, mNumber)
 		       : (cxType)false;
-	
+
 	case tChannelBouquet:
 		return mChannel != NULL
 		       ? (cxType)mChannel->Provider()
@@ -173,7 +173,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       : (cxType)false;
 
 	case tPresentRemaining:
-		if (mPresent != NULL && time(NULL) - mPresent->StartTime() 
+		if (mPresent != NULL && time(NULL) - mPresent->StartTime()
 		                        <= mPresent->Duration()) {
 			return (cxType)DurationType(mPresent->Duration() - (time(NULL) - mPresent->StartTime()),
 		                                    Token.Attrib.Text);
@@ -204,7 +204,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return mFollowing != NULL
 		       ? (cxType)TimeType(mFollowing->Vps(), Token.Attrib.Text)
 		       : (cxType)false;
-	
+
 	case tFollowingEndDateTime:
 		return mFollowing != NULL
 		       ? (cxType)TimeType(mFollowing->EndTime(), Token.Attrib.Text)
@@ -214,7 +214,7 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return mFollowing != NULL
 		       ? (cxType)DurationType(mFollowing->Duration(), Token.Attrib.Text)
 		       : (cxType)false;
-		
+
 	case tFollowingTitle:
 		return mFollowing != NULL
 		       ? (cxType)mFollowing->Title()
@@ -298,19 +298,19 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 	case tHasTimer:
 	case tPresentHasTimer:
 		return mPresent != NULL && mPresent->HasTimer();
-	
+
 	case tIsRunning:
 	case tPresentIsRunning:
 		return mPresent != NULL && mPresent->IsRunning();
 
 	case tFollowingHasTimer:
 		return mFollowing != NULL && mFollowing->HasTimer();
-	
+
 	case tFollowingIsRunning:
 		return mFollowing != NULL && mFollowing->IsRunning();
 
 	case tFollowingHasVPS:
-		return mFollowing != NULL && mFollowing->Vps() != 0 
+		return mFollowing != NULL && mFollowing->Vps() != 0
 		    && mFollowing->Vps() != mFollowing->StartTime();
 
 	case tMessage:
@@ -325,12 +325,12 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return mType == mtWarning
 		       ? (cxType)mText
 		       : (cxType)false;
-	
+
 	case tMessageStatus:
 		return mType == mtStatus
 		       ? (cxType)mText
 		       : (cxType)false;
-	
+
 	case tMessageError:
 		return mType == mtError
 		       ? (cxType)mText
@@ -391,7 +391,7 @@ cxType cText2SkinDisplayVolume::GetTokenData(const txToken &Token) {
 	default:             return cText2SkinRender::GetTokenData(Token);
 	}
 }
-	
+
 // --- cText2SkinDisplayReplay ------------------------------------------------
 
 cText2SkinDisplayReplay::cText2SkinDisplayReplay(cText2SkinLoader *Loader, bool ModeOnly):
@@ -506,7 +506,7 @@ void cText2SkinDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 	}
 	UpdateUnlock();
 }
-	
+
 void cText2SkinDisplayReplay::SetButtons(const char *Red, const char *Green, const char *Yellow,
                                          const char *Blue)
 {
@@ -559,7 +559,7 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 	case tIsPlaying:
 	case tReplayIsPlaying:
 		return mStateInfo && mSpeed == -1 && mPlay;
-	
+
 	case tIsPausing:
 	case tReplayIsPausing:
 		return mStateInfo && mSpeed == -1 && !mPlay;
@@ -572,7 +572,7 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 			       : (cxType)true;
 		}
 		return false;
-		
+
 	case tIsFastRewind:
 	case tReplayIsFastRewind:
 		if (mStateInfo && mSpeed != -1 && mPlay && !mForward) {
@@ -626,12 +626,12 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 		return mType == mtWarning
 		       ? (cxType)mText
 		       : (cxType)false;
-	
+
 	case tMessageStatus:
 		return mType == mtStatus
 		       ? (cxType)mText
 		       : (cxType)false;
-	
+
 	case tMessageError:
 		return mType == mtError
 		       ? (cxType)mText
@@ -658,15 +658,15 @@ cxType cText2SkinDisplayReplay::GetTokenData(const txToken &Token)
 
 cText2SkinDisplayMessage::cText2SkinDisplayMessage(cText2SkinLoader *Loader):
 		cText2SkinRender(Loader, cxDisplay::message),
-		mText("") 
+		mText("")
 {
 }
 
-cText2SkinDisplayMessage::~cText2SkinDisplayMessage() 
+cText2SkinDisplayMessage::~cText2SkinDisplayMessage()
 {
 }
 
-void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text) 
+void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text)
 {
 	UpdateLock();
 	if (Text == NULL) Text = "";
@@ -678,7 +678,7 @@ void cText2SkinDisplayMessage::SetMessage(eMessageType Type, const char *Text)
 	UpdateUnlock();
 }
 
-cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token) 
+cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token)
 {
 	switch (Token.Type) {
 	case tMessage:
@@ -693,12 +693,12 @@ cxType cText2SkinDisplayMessage::GetTokenData(const txToken &Token)
 		return mType == mtWarning
 		       ? (cxType)mText
 		       : (cxType)false;
-	
+
 	case tMessageStatus:
 		return mType == mtStatus
 		       ? (cxType)mText
 		       : (cxType)false;
-	
+
 	case tMessageError:
 		return mType == mtError
 		       ? (cxType)mText
@@ -751,13 +751,13 @@ cText2SkinDisplayMenu::cText2SkinDisplayMenu(cText2SkinLoader *Loader):
 	}
 }
 
-cText2SkinDisplayMenu::~cText2SkinDisplayMenu() 
+cText2SkinDisplayMenu::~cText2SkinDisplayMenu()
 {
 	if (mFallbackDisplay != NULL)
 		delete mFallbackDisplay;
 }
 
-void cText2SkinDisplayMenu::Clear(void) 
+void cText2SkinDisplayMenu::Clear(void)
 {
 	if (mFallbackDisplay != NULL) {
 		printf("fallback clear\n");
@@ -778,7 +778,7 @@ void cText2SkinDisplayMenu::Clear(void)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetTitle(const char *Title) 
+void cText2SkinDisplayMenu::SetTitle(const char *Title)
 {
 	if (mFallbackDisplay != NULL) {
 		printf("fallback title\n");
@@ -798,8 +798,8 @@ void cText2SkinDisplayMenu::SetTitle(const char *Title)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const char *Yellow, 
-                                       const char *Blue) 
+void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const char *Yellow,
+                                       const char *Blue)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->SetButtons(Red, Green, Yellow, Blue);
@@ -811,7 +811,7 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 	if (Green  == NULL) Green  = "";
 	if (Yellow == NULL) Yellow = "";
 	if (Blue   == NULL) Blue   = "";
-	if (mButtonRed != Red || mButtonGreen != Green || mButtonYellow != Yellow 
+	if (mButtonRed != Red || mButtonGreen != Green || mButtonYellow != Yellow
 			|| mButtonBlue != Blue) {
 		mButtonRed    = Red;
 		mButtonGreen  = Green;
@@ -822,7 +822,7 @@ void cText2SkinDisplayMenu::SetButtons(const char *Red, const char *Green, const
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text) 
+void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 {
 	if (mFallbackDisplay != NULL) {
 		printf("fallback message\n");
@@ -840,7 +840,7 @@ void cText2SkinDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable) 
+void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->SetItem(Text, Index, Current, Selectable);
@@ -884,7 +884,7 @@ void cText2SkinDisplayMenu::SetItem(const char *Text, int Index, bool Current, b
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetEvent(const cEvent *Event) 
+void cText2SkinDisplayMenu::SetEvent(const cEvent *Event)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->SetEvent(Event);
@@ -901,7 +901,7 @@ void cText2SkinDisplayMenu::SetEvent(const cEvent *Event)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording) 
+void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->SetRecording(Recording);
@@ -919,7 +919,7 @@ void cText2SkinDisplayMenu::SetRecording(const cRecording *Recording)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont) 
+void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->SetText(Text, FixedFont);
@@ -935,7 +935,7 @@ void cText2SkinDisplayMenu::SetText(const char *Text, bool FixedFont)
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5) 
+void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int Tab5)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->SetTabs(Tab1, Tab2, Tab3, Tab4, Tab5);
@@ -947,7 +947,7 @@ void cText2SkinDisplayMenu::SetTabs(int Tab1, int Tab2, int Tab3, int Tab4, int 
 	UpdateUnlock();
 }
 
-void cText2SkinDisplayMenu::Scroll(bool Up, bool Page) 
+void cText2SkinDisplayMenu::Scroll(bool Up, bool Page)
 {
 	if (mFallbackDisplay != NULL) {
 		mFallbackDisplay->Scroll(Up, Page);
@@ -960,7 +960,7 @@ void cText2SkinDisplayMenu::Scroll(bool Up, bool Page)
 	UpdateUnlock();
 }
 
-cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token) 
+cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 {
 	switch (Token.Type) {
 	case tMenuItem:
@@ -994,7 +994,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	case tIsMenuItem:
 		return mItems.size() > (uint)Token.Index && mItems[Token.Index].sel
 		       && mCurrentItem != (uint)Token.Index;
-	
+
 	case tMenuCurrent:
 		if (mItems.size() <= mCurrentItem)
 			return false;
@@ -1060,17 +1060,17 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return mMessageType == mtWarning
 		       ? (cxType)mMessageText
 		       : (cxType)false;
-	
+
 	case tMessageStatus:
 		return mMessageType == mtStatus
 		       ? (cxType)mMessageText
 		       : (cxType)false;
-	
+
 	case tMessageError:
 		return mMessageType == mtError
 		       ? (cxType)mMessageText
 		       : (cxType)false;
-	
+
 	case tPresentStartDateTime:
 		return mEvent != NULL
 		       ? (cxType)TimeType(mEvent->StartTime(), Token.Attrib.Text)
@@ -1194,7 +1194,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		return mEvent != NULL
 		       ? (cxType)EventType(mEvent->EventID())
 		       : (cxType)false;
-	
+
 	case tHasVPS:
 	case tChannelHasVPS:
 		return mEvent != NULL && mEvent->Vps() != 0;
@@ -1237,7 +1237,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 	case tHasTimer:
 	case tPresentHasTimer:
 		return mEvent != NULL && mEvent->HasTimer();
-	
+
 	case tIsRunning:
 	case tPresentIsRunning:
 		return mEvent != NULL && mEvent->IsRunning();
@@ -1288,7 +1288,7 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 		} else
 			return (cxType)false;
 
-	case tRecordingLanguageCode: 
+	case tRecordingLanguageCode:
 		if (mRecording) {
 			const cComponents *components = mRecording->Info()->Components();
 			if (components) {
@@ -1313,8 +1313,8 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 			}
 		}
 		return false;
-			       
-	case tRecordingLanguageDescription: 
+
+	case tRecordingLanguageDescription:
 		if (mRecording) {
 			const cComponents *components = mRecording->Info()->Components();
 			if (components) {
@@ -1478,7 +1478,7 @@ cxType cText2SkinDisplayTracks::GetTokenData(const txToken &Token)
 
 	case tAudioChannel:
 		return ChannelName(mAudioChannel);
-			
+
 	default:
 		return cText2SkinRender::GetTokenData(Token);
 	}

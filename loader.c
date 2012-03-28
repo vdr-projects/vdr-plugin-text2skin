@@ -20,7 +20,7 @@ void cText2SkinLoader::Start(void) {
 			struct stat buf;
 			if (strcmp(result->d_name, ".") == 0 || strcmp(result->d_name, "..") == 0)
 				continue;
-			if (stat((SkinPath() + "/" + result->d_name).c_str(), &buf) == 0 
+			if (stat((SkinPath() + "/" + result->d_name).c_str(), &buf) == 0
 					&& S_ISDIR(buf.st_mode))
 				Load(result->d_name);
 		}
@@ -33,7 +33,7 @@ void cText2SkinLoader::Load(const char *Skin) {
 	cText2SkinTheme *theme = new cText2SkinTheme(Skin);
 	std::string themefile = SkinPath() + "/" + Skin + "/" + Skin + ".colors";
 	theme->Load(themefile);
-	
+
 	std::string skinfile = SkinPath() + "/" + Skin + "/" + Skin + ".skin";
 	if (access(skinfile.c_str(), F_OK) == 0) {
 		isyslog("parsing %s", skinfile.c_str());
@@ -53,8 +53,8 @@ void cText2SkinLoader::Load(const char *Skin) {
 	}
 }
 
-cText2SkinLoader::cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, 
-                                   const std::string &Skin, const std::string &Description): 
+cText2SkinLoader::cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme,
+                                   const std::string &Skin, const std::string &Description):
 		cSkin(Skin.c_str(), Theme->Theme()),
 		mData(Data),
 		mI18n(I18n),
@@ -63,39 +63,39 @@ cText2SkinLoader::cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2Ski
 {
 }
 
-cText2SkinLoader::~cText2SkinLoader() 
+cText2SkinLoader::~cText2SkinLoader()
 {
 	delete mData;
 	delete mI18n;
 	delete mTheme;
 }
 
-cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo) 
+cSkinDisplayChannel *cText2SkinLoader::DisplayChannel(bool WithInfo)
 {
 	return new cText2SkinDisplayChannel(this, WithInfo);
 }
 
-cSkinDisplayMenu *cText2SkinLoader::DisplayMenu(void) 
+cSkinDisplayMenu *cText2SkinLoader::DisplayMenu(void)
 {
 	return new cText2SkinDisplayMenu(this);
 }
 
-cSkinDisplayVolume *cText2SkinLoader::DisplayVolume(void) 
+cSkinDisplayVolume *cText2SkinLoader::DisplayVolume(void)
 {
 	return new cText2SkinDisplayVolume(this);
 }
 
-cSkinDisplayReplay *cText2SkinLoader::DisplayReplay(bool ModeOnly) 
+cSkinDisplayReplay *cText2SkinLoader::DisplayReplay(bool ModeOnly)
 {
 	return new cText2SkinDisplayReplay(this, ModeOnly);
 }
 
-cSkinDisplayMessage *cText2SkinLoader::DisplayMessage(void) 
+cSkinDisplayMessage *cText2SkinLoader::DisplayMessage(void)
 {
 	return new cText2SkinDisplayMessage(this);
 }
 
-cSkinDisplayTracks *cText2SkinLoader::DisplayTracks(const char *Title, int NumTracks, 
+cSkinDisplayTracks *cText2SkinLoader::DisplayTracks(const char *Title, int NumTracks,
                                                     const char * const *Tracks)
 {
 	return new cText2SkinDisplayTracks(this, Title, NumTracks, Tracks);

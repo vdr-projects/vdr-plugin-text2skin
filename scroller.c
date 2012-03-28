@@ -4,9 +4,9 @@
 #include "screen.h"
 #include <vdr/tools.h>
 
-cText2SkinScroller::cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, 
-                                       int Height, const char *Text, const cFont *Font, 
-                                       tColor ColorFg, tColor ColorBg) 
+cText2SkinScroller::cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width,
+                                       int Height, const char *Text, const cFont *Font,
+                                       tColor ColorFg, tColor ColorBg)
 {
   Set(Screen, Left, Top, Width, Height, Text, Font, ColorFg, ColorBg);
 }
@@ -25,7 +25,7 @@ void cText2SkinScroller::Set(cText2SkinScreen *Screen, int Left, int Top, int Wi
 	// sets mHeight to the actually used mHeight, which may be less than Height
   mWrapper.Set(Text, Font, Width);
   mShown   = min(Total(), mHeight / mFont->Height());
-  mHeight  = mShown * mFont->Height(); 
+  mHeight  = mShown * mFont->Height();
   DrawText();
 }
 

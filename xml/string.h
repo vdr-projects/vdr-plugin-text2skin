@@ -225,7 +225,7 @@ struct txToken {
 	int         Tab;
 
 	txToken(void): Index(-1), Tab(-1) {}
-	txToken(exToken t, uint o, const std::string &a): 
+	txToken(exToken t, uint o, const std::string &a):
 		Type(t), Offset(o), Attrib(a), Index(-1), Tab(-1) {}
 
 	friend bool operator< (const txToken &A, const txToken &B);
@@ -233,7 +233,7 @@ struct txToken {
 	static std::string Token(const txToken &Token);
 };
 
-inline bool operator< (const txToken &A, const txToken &B) 
+inline bool operator< (const txToken &A, const txToken &B)
 {
 	return A.Type == B.Type
 	       ? A.Attrib == B.Attrib

@@ -41,11 +41,11 @@ bool cxVersion::Parse(const std::string &Text)
 cxSkin::cxSkin(const std::string &Name, cText2SkinI18n *I18n, cText2SkinTheme *Theme):
 		mName(Name),
 		mI18n(I18n),
-		mTheme(Theme) 
+		mTheme(Theme)
 {
 }
 
-void cxSkin::SetBase(eScreenBase Base) 
+void cxSkin::SetBase(eScreenBase Base)
 {
 	if (Base != (eScreenBase)-1)
 		mBase = Base;
@@ -76,7 +76,7 @@ void cxSkin::SetBase(eScreenBase Base)
 	}
 }
 
-bool cxSkin::ParseBase(const std::string &Text) 
+bool cxSkin::ParseBase(const std::string &Text)
 {
 	int i;
 	for (i = 0; i < (int)__COUNT_BASE__; ++i) {
@@ -89,7 +89,7 @@ bool cxSkin::ParseBase(const std::string &Text)
 	}
 	return false;
 }
-	
+
 std::string cxSkin::Translate(const std::string &Text)
 {
 	if (mI18n != NULL)

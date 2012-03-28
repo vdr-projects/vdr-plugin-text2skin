@@ -18,7 +18,7 @@ public:
 	virtual ~cText2SkinFile();
 
 	virtual bool Load(const std::string &Filename);
-	
+
 	const std::string &Skin(void) const { return mSkin; }
 };
 

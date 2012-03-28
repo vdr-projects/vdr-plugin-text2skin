@@ -50,10 +50,10 @@ private:
 	std::vector<int>    mDirtyItems;
 	uint                mMaxItems;
 	cSkin              *mFallback;
-	
+
 	// update thread
 	bool                mActive;
-	
+
 	cCondVar            mDoUpdate;
 	cMutex              mDoUpdateMutex;
 	cCondVar            mStarted;
@@ -80,9 +80,9 @@ protected:
 	                int ListItem = -1, bool ForceUpdate = false);
 	void DrawItemText(cxObject *o, int i, const txPoint &ListOffset, const txSize &ListSize);
 
-	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
+	void DrawBackground(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg,
 	                    int Alpha, const std::string &Path);
-	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg, 
+	void DrawImage(const txPoint &Pos, const txSize &Size, const tColor *Bg, const tColor *Fg,
 	               const tColor *Mask, int Alpha, int Colors, const std::string &Path);
 	void DrawText(const txPoint &Pos, const txSize &Size, const tColor *Fg, const tColor *Bg,
 	              const std::string &Text, const cFont *Font, int Align);
@@ -94,8 +94,8 @@ protected:
 	void DrawRectangle(const txPoint &Pos, const txSize &Size, const tColor *Fg);
 	void DrawEllipse(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
 	void DrawSlope(const txPoint &Pos, const txSize &Size, const tColor *Fg, int Arc);
-	void DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, int Total, 
-	                     const tColor *Bg, const tColor *Fg, const tColor *Selected, 
+	void DrawProgressbar(const txPoint &Pos, const txSize &Size, int Current, int Total,
+	                     const tColor *Bg, const tColor *Fg, const tColor *Selected,
 	                     const tColor *Mark, const tColor *Cur, const cMarks *Marks = NULL);
 	void DrawMark(const txPoint &Pos, const txSize &Size, bool Start, bool Current, bool Horizontal,
 	              const tColor *Mark, const tColor *Cur);
@@ -124,7 +124,7 @@ protected:
 	cSkin *Fallback(void) const { return mFallback; }
 
 public:
-	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section, 
+	cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Section,
 	                 const std::string &BasePath = "", bool OffScreen = false);
 	virtual ~cText2SkinRender();
 
@@ -163,7 +163,7 @@ public:
 	} mUpdate;
 };
 
-inline void cText2SkinRender::Flush(bool Force) 
+inline void cText2SkinRender::Flush(bool Force)
 {
 	if (Force)
 		// do a full redraw

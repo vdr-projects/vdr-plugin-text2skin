@@ -102,7 +102,7 @@ public:
 	virtual void SetTotal(const char *Total);
 	virtual void SetJump(const char *Jump);
 	virtual void SetMessage(eMessageType Type, const char *Text);
-	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow, 
+	virtual void SetButtons(const char *Red, const char *Green, const char *Yellow,
 	                        const char *Blue);
 
 	virtual void Flush(void) { cText2SkinRender::Flush(); }
@@ -192,13 +192,13 @@ public:
 inline bool cText2SkinDisplayMenu::HasTabText(int Index, int n)
 {
 	if (Index < 0 || mItems.size () > (uint)Index)
-		return n == -1 
+		return n == -1
 		       ? mItems[Index].text.length() > 0
 		       : mItems[Index].tabs[n].length() > 0;
 	return false;
 }
 
-inline void cText2SkinDisplayMenu::Flush(void) 
+inline void cText2SkinDisplayMenu::Flush(void)
 {
 	if (mFallbackDisplay != NULL)
 		mFallbackDisplay->Flush();
@@ -218,7 +218,7 @@ private:
 	tListItems  mItems;
 	uint        mCurrentItem;
 	int         mAudioChannel;
-	
+
 protected:
 	virtual cxType GetTokenData(const txToken &Token);
 	virtual bool HasTabText(int Index, int n);
@@ -227,7 +227,7 @@ protected:
 public:
 	static const std::string &ChannelName(int AudioChannel);
 
-	cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title, int NumTracks, 
+	cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title, int NumTracks,
 	                        const char * const *Tracks);
 	virtual ~cText2SkinDisplayTracks();
 

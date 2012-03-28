@@ -12,7 +12,7 @@ const std::string ReplayNames[__REPLAY_COUNT__] =
 
 cText2SkinStatus Text2SkinStatus;
 
-cText2SkinStatus::cText2SkinStatus(void): 
+cText2SkinStatus::cText2SkinStatus(void):
 		mRender(NULL),
 		mReplayMode(replayNone),
 		mReplayIsLoop(false),
@@ -33,7 +33,7 @@ void cText2SkinStatus::SetRender(cText2SkinRender *Render)
 }
 
 void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
-								 const char *FileName, bool On) 
+								 const char *FileName, bool On)
 {
 	Dprintf("cText2SkinStatus::Replaying(%s)\n", Name);
 	eReplayMode oldMode = mReplayMode;
@@ -101,7 +101,7 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 }
 
 void cText2SkinStatus::Recording(const cDevice *Device, const char *Name,
-								 const char *FileName, bool On) 
+								 const char *FileName, bool On)
 {
 	if (mRender != NULL)
 		mRender->UpdateLock();
@@ -122,7 +122,7 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name,
 	}
 }
 
-void cText2SkinStatus::OsdClear(void) 
+void cText2SkinStatus::OsdClear(void)
 {
 	if (I18nCurrentLanguage() != mLastLanguage) {
 		mLastLanguage = I18nCurrentLanguage();
@@ -407,7 +407,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 				mCurrentRecording = (mCurrentRecording + 1) % mRecordings.size();
 				mNextRecording = now + 2000;
 			}
-			
+
 			uint next = 0;
 			if (mRecordings.size() > 1) {
 				next = mNextRecording - now;

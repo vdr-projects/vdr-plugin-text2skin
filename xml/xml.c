@@ -176,7 +176,7 @@ XML::readChar(int c) {
 			if (isTokenChar(0, c)) {
 				tag += c;
 			} else if (c == '>') {
-				if (nodestartcb) 
+				if (nodestartcb)
 					if (!nodestartcb(tag, attr))
 						return (-1);
 				state = LOOK4START;
@@ -215,7 +215,7 @@ XML::readChar(int c) {
 		// looking for attr name, > or /
 		case LOOK4ATTRN:
 			if (c == '>') {
-				if (nodestartcb) 
+				if (nodestartcb)
 					if (!nodestartcb(tag, attr))
 						return (-1);
 				state = LOOK4START;
@@ -236,7 +236,7 @@ XML::readChar(int c) {
 		// saw / in element opening
 		case SAWSLASH:
 			if (c == '>') {
-				if (nodestartcb) 
+				if (nodestartcb)
 					if (!nodestartcb(tag, attr))
 						return (-1);
 				if (nodeendcb)
@@ -307,7 +307,7 @@ XML::readChar(int c) {
 			if (isTokenChar(0, c)) {
 				tag += c;
 			} else if (c == '>') {
-				if (nodeendcb) 
+				if (nodeendcb)
 					if (!nodeendcb(tag))
 						return false;
 				state = LOOK4START;

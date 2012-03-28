@@ -21,16 +21,16 @@ public:
 	static void Start(void);
 	static void Load(const char *Skin);
 
-	cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme, 
+	cText2SkinLoader(cxSkin *Data, cText2SkinI18n *I18n, cText2SkinTheme *Theme,
 			const std::string &Skin, const std::string &Description);
 	~cText2SkinLoader();
-  
+
 	virtual const char *Description(void) { return mDescription.c_str(); }
 	virtual cSkinDisplayChannel *DisplayChannel(bool WithInfo);
 	virtual cSkinDisplayMenu *DisplayMenu(void);
 	virtual cSkinDisplayReplay *DisplayReplay(bool ModeOnly);
 	virtual cSkinDisplayVolume *DisplayVolume(void);
-	virtual cSkinDisplayTracks *DisplayTracks(const char *Title, int NumTracks, 
+	virtual cSkinDisplayTracks *DisplayTracks(const char *Title, int NumTracks,
 	                                          const char * const *Tracks);
 	virtual cSkinDisplayMessage *DisplayMessage(void);
 

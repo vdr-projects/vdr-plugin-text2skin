@@ -23,10 +23,10 @@ private:
 	cTextWrapper      mWrapper;
 
 public:
-	cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, 
+	cText2SkinScroller(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height,
 	                   const char *Text, const cFont *Font, tColor ColorFg, tColor ColorBg);
 
-	void Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, const char *Text, 
+	void Set(cText2SkinScreen *Screen, int Left, int Top, int Width, int Height, const char *Text,
 	         const cFont *Font, tColor ColorFg, tColor ColorBg);
 	void DrawText(void);
 	void Reset(void);

@@ -21,7 +21,7 @@ private:
 	int      mNumRegions;
 
 protected:
-	static void DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &Bitmap, 
+	static void DrawBitmapOverlay(cBitmap &Dest, int x, int y, cBitmap &Bitmap,
 	                              const tColor *ColorMask = NULL);
 
 public:
@@ -33,7 +33,7 @@ public:
 	void Clear(void);
 	void DrawBitmap(int x, int y, const cBitmap &Bitmap, const tColor *ColorMask = NULL);
 	void DrawRectangle(int x1, int y1, int x2, int y2, tColor Color);
-	void DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, 
+	void DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font,
 	              int Width = 0, int Height = 0, int Alignment = taDefault);
 	void DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quadrants = 0);
 	void DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type);

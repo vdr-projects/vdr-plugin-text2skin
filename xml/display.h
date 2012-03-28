@@ -1,7 +1,7 @@
 //								-*- c++ -*-
 
-#ifndef VDR_TEXT2SKIN_DISPLAY_H 
-#define VDR_TEXT2SKIN_DISPLAY_H 
+#ifndef VDR_TEXT2SKIN_DISPLAY_H
+#define VDR_TEXT2SKIN_DISPLAY_H
 
 #include "xml/object.h"
 #include <string>
@@ -56,4 +56,4 @@ public:
 	~cxDisplays();
 };
 
-#endif // VDR_TEXT2SKIN_DISPLAY_H 
+#endif // VDR_TEXT2SKIN_DISPLAY_H
