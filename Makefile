@@ -29,7 +29,7 @@ VERSION = $(shell grep 'const char \*cText2SkinPlugin::VERSION *=' $(PLUGIN).c |
 ### The C++ compiler and options:
 
 CXX      ?= g++
-CXXFLAGS ?= -fPIC -Wall -Woverloaded-virtual
+CXXFLAGS ?= -fPIC -Wall -Werror=overloaded-virtual
 
 ### The directory environment:
 
