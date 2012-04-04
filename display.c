@@ -1257,17 +1257,29 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tRecordingPriority:
 		return mRecording != NULL
+#if APIVERSNUM >= 10721
+		       ? (cxType)mRecording->Priority()
+#else
 		       ? (cxType)mRecording->priority
+#endif
 		       : (cxType)false;
 
 	case tRecordingLifetime:
 		return mRecording != NULL
+#if APIVERSNUM >= 10721
+		       ? (cxType)mRecording->Lifetime()
+#else
 		       ? (cxType)mRecording->lifetime
+#endif
 		       : (cxType)false;
 
 	case tRecordingDateTime:
 		return mRecording != NULL
+#if APIVERSNUM >= 10721
+		       ? (cxType)TimeType(mRecording->Start(), Token.Attrib.Text)
+#else
 		       ? (cxType)TimeType(mRecording->start, Token.Attrib.Text)
+#endif
 		       : (cxType)false;
 
 	case tRecordingTitle:

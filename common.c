@@ -255,11 +255,19 @@ int GetRecordingCuttedLength(const char *FileName, double FramesPerSecond, bool 
 		int start = 1; // first frame
 		bool isStart = true;
 
+#if APIVERSNUM >= 10721
+		for (cMark *m = marks.First(); m; m = marks.GetNext(m->Position())) {
+			if (isStart)
+			        start = m->Position();
+			else
+				length += (double)(m->Position() - start + 1 + diffIFrame) / (60 * FramesPerSecond); // [min]
+#else
 		for (cMark *m = marks.First(); m; m = marks.GetNext(m->position)) {
 			if (isStart)
 				start = m->position;
 			else
 				length += (double)(m->position - start + 1 + diffIFrame) / (60 * FramesPerSecond); // [min]
+#endif
 
 			isStart = !isStart;
 		}

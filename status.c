@@ -314,7 +314,11 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 
 	case tReplayDateTime:
 		return mReplay != NULL
+#if APIVERSNUM >= 10721
+		       ? (cxType)TimeType(mReplay->Start(), Token.Attrib.Text)
+#else
 		       ? (cxType)TimeType(mReplay->start, Token.Attrib.Text)
+#endif
 		       : (cxType)false;
 
 	case tReplayShortText:

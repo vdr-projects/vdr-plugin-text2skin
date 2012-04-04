@@ -597,14 +597,25 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 		if (Marks) {
 			bool start = true;
 			for (const cMark *m = Marks->First(); m; m = Marks->Next(m)) {
+#if APIVERSNUM >= 10721
+				txPoint pt(Pos.x + m->Position() * Size.w / Total, Pos.y);
+#else
 				txPoint pt(Pos.x + m->position * Size.w / Total, Pos.y);
+#endif
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
 					DrawRectangle(txPoint(pt.x, Pos.y + Size.h / 3),
+#if APIVERSNUM >= 10721
+					              txSize(((m2 ? m2->Position() : Total) - m->Position())
+					              * Size.w / Total + 1, Size.h - Size.h * 2 / 3 + 1), Selected);
+				}
+				DrawMark(pt, Size, start, m->Position() == Current, false, Mark, Cur);
+#else
 					              txSize(((m2 ? m2->position : Total) - m->position)
 					              * Size.w / Total + 1, Size.h - Size.h * 2 / 3 + 1), Selected);
 				}
 				DrawMark(pt, Size, start, m->position == Current, false, Mark, Cur);
+#endif
 				start = !start;
 			}
 		}
@@ -614,15 +625,26 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 		if (Marks) {
 			bool start = true;
 			for (const cMark *m = Marks->First(); m; m = Marks->Next(m)) {
+#if APIVERSNUM >= 10721
+				txPoint pt(Pos.x, Pos.y + m->Position() * Size.h / Total);
+#else
 				txPoint pt(Pos.x, Pos.y + m->position * Size.h / Total);
+#endif
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
 					DrawRectangle(txPoint(Pos.x + Size.w / 3, pt.y),
 					              txSize(Size.w - Size.w * 2 / 3 + 1,
+#if APIVERSNUM >= 10721
+					              ((m2 ? m2->Position() : Total) - m->Position())
+					              * Size.h / Total + 1), Selected);
+				}
+				DrawMark(pt, Size, start, m->Position() == Current, true, Mark, Cur);
+#else
 					              ((m2 ? m2->position : Total) - m->position)
 					              * Size.h / Total + 1), Selected);
 				}
 				DrawMark(pt, Size, start, m->position == Current, true, Mark, Cur);
+#endif
 				start = !start;
 			}
 		}
