@@ -192,7 +192,7 @@ public:
 	~cxObjects();
 };
 
-// recursive dependancy
+// recursive dependency
 inline uint cxObject::Objects(void) const
 {
 	return mObjects ? mObjects->size() : 0;
