@@ -16,6 +16,8 @@
 #include <vdr/videodir.h>
 #include <vdr/skinclassic.h>
 
+using std::string;
+
 cText2SkinRender *cText2SkinRender::mRender = NULL;
 
 cText2SkinRender::cText2SkinRender(cText2SkinLoader *Loader, cxDisplay::eType Display,
@@ -853,6 +855,18 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 			int FreeMB, UsedMB;
 			VideoDiskSpace(&FreeMB, &UsedMB);
 			return (cxType)FreeMB+UsedMB;
+		}
+		
+#if VDRVERSNUM >= 10728
+	case tDiskUsage:	{
+			cVideoDiskUsage::ForceCheck();
+			string DiskUsage = string(cString::sprintf("%s", *cVideoDiskUsage::String()));
+			return DiskUsage;
+		}
+#endif
+
+	case tVdrVersion:	{
+			return VDRVERSION;
 		}
 
 	case tDateTime:      return TimeType(time(NULL), Token.Attrib.Text);

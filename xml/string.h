@@ -12,6 +12,7 @@ enum exToken {
 	tFreeDiskSpace,
 	tUsedDiskSpace,
 	tTotalDiskSpace,
+	tDiskUsage,
 	tVideoSizeWidth,
 	tVideoSizeHeight,
 	tAudioTrack,
@@ -137,6 +138,7 @@ enum exToken {
 	tReplayIsLoop,
 
 	// Menu Page
+	tVdrVersion,
 	tMenuTitle,
 	tMenuGroup,
 	tIsMenuGroup,

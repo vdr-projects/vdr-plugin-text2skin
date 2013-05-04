@@ -4,7 +4,7 @@
 #include "render.h"
 
 static const char *Tokens[__COUNT_TOKEN__] = {
-	"DateTime", "FreeDiskSpace", "UsedDiskSpace", "TotalDiskSpace", "VideoSizeWidth", "VideoSizeHeight", "AudioTrack", "AudioChannel",
+	"DateTime", "FreeDiskSpace", "UsedDiskSpace", "TotalDiskSpace", "DiskUsage", "VideoSizeWidth", "VideoSizeHeight", "AudioTrack", "AudioChannel",
 
 	// Channel Display
 	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal",
@@ -42,7 +42,7 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"ReplayIsLoop",
 
 	// Menu Page
-	"MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent",
+	"VdrVersion", "MenuTitle", "MenuGroup", "IsMenuGroup", "MenuItem", "IsMenuItem", "MenuCurrent",
 	"IsMenuCurrent", "MenuText", "RecordingName", "RecordingFilename", "RecordingDateTime", "RecordingTitle",
 	"RecordingShortText", "RecordingDescription", "RecordingLanguageCode",
 	"FrontendSTR", "FrontendSNR", "FrontendHasLock", "FrontendHasSignal", "RecordingPriority", "RecordingLifetime",
