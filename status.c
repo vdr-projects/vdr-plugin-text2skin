@@ -110,8 +110,14 @@ void cText2SkinStatus::Recording(const cDevice *Device, const char *Name,
 
 	mRecordingsLock.Lock();
 	mRecordings.clear();
+#if APIVERSNUM < 20301
 	cTimer *t = Timers.First();
 	for (; t != NULL; t = Timers.Next(t)) {
+#else
+	LOCK_TIMERS_READ;
+	const cTimer *t = Timers->First();
+	for (; t != NULL; t = Timers->Next(t)) {
+#endif
 		if (t->Recording())
 			mRecordings.push_back(t->File());
 	}
@@ -184,9 +190,17 @@ void cText2SkinStatus::UpdateEvents(void)
 		mRender->mUpdate.events = false;
 
 		mEvents.Clear();
+#if APIVERSNUM < 20301
 		Timers.IncBeingEdited();
+#else
+		LOCK_TIMERS_READ;
+#endif
 
+#if APIVERSNUM < 20301
 		for (cTimer *tim = Timers.First(); tim; tim = Timers.Next(tim)) {
+#else
+		for (const cTimer *tim = Timers->First(); tim; tim = Timers->Next(tim)) {
+#endif
 			if (tim->HasFlags(tfActive)) {
 				int i = 0;
 				cTimer dummy;
@@ -209,7 +223,9 @@ void cText2SkinStatus::UpdateEvents(void)
 			}
 		}
 
+#if APIVERSNUM < 20301
 		Timers.DecBeingEdited();
+#endif
 		mEvents.Sort();
 	}
 }

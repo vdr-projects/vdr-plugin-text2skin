@@ -63,19 +63,34 @@ const char *EventType(uint Number)
 
 bool StoppedTimer(const char *Name)
 {
+#if APIVERSNUM < 20301
 	cTimer *timer = Timers.First();
+#else
+	LOCK_TIMERS_READ;
+	const cTimer *timer = Timers->First();
+#endif
 	while (timer) {
 		if (strcmp(Name, timer->File()) == 0)
 			break;
+#if APIVERSNUM < 20301
 		timer = Timers.Next(timer);
+#else
+		timer = Timers->Next(timer);
+#endif
 	}
 	return timer == NULL || !timer->Recording();
 }
 
 const cRecording *GetRecordingByName(const char *Name)
 {
+#if APIVERSNUM < 20301
 	const cRecording *rec = Recordings.First();
 	for (; rec != NULL; rec = Recordings.Next(rec)) {
+#else
+	LOCK_RECORDINGS_READ;
+	const cRecording *rec = Recordings->First();
+	for (; rec != NULL; rec = Recordings->Next(rec)) {
+#endif
 		if (strcmp(rec->Name(), Name) == 0)
 			return rec;
 	}
@@ -84,7 +99,12 @@ const cRecording *GetRecordingByName(const char *Name)
 
 const cRecording *GetRecordingByFileName(const char *FileName)
 {
+#if APIVERSNUM < 20301
 	return (FileName) ? Recordings.GetByName(FileName) : NULL;
+#else
+	LOCK_RECORDINGS_READ;
+	return (FileName) ? Recordings->GetByName(FileName) : NULL;
+#endif
 }
 
 #if VDRVERSNUM < 20000

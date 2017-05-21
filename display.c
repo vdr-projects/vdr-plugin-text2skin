@@ -1118,7 +1118,12 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 			if (ExtPresentDescription == "") {
 				// find corresponding timer
 				const char *aux = NULL;
+#if APIVERSNUM < 20301
 				for (cTimer *tim = Timers.First(); tim; tim = Timers.Next(tim))
+#else
+				LOCK_TIMERS_READ;
+				for (const cTimer *tim = Timers->First(); tim; tim = Timers->Next(tim))
+#endif
 					if (tim->Event() == mEvent)
 						aux = tim->Aux();
 				ExtPresentDescription = AddExtInfoToDescription(mEvent->Title(), mEvent->ShortText(), mEvent->Description(), aux, Text2SkinSetup.StripAux);
@@ -1201,14 +1206,24 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tChannelName:
 		if (mEvent) { // extended EPG
+#if APIVERSNUM < 20301
 			cChannel *channel = Channels.GetByChannelID(mEvent->ChannelID(), true);
+#else
+			LOCK_CHANNELS_READ;
+			const cChannel *channel = Channels->GetByChannelID(mEvent->ChannelID(), true);
+#endif
 			return channel != NULL
 			       ? (cxType)ChannelName(channel, 0)
 			       : (cxType)false;
 		}
 		else if (mRecording) { // recording Info
 			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
+#if APIVERSNUM < 20301
 			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
+#else
+			LOCK_CHANNELS_READ;
+			const cChannel *channel = Channels->GetByChannelID(recInfo->ChannelID(), true);
+#endif
 			return channel != NULL
 			       ? (cxType)ChannelName(channel, 0)
 			       : (cxType)false;
@@ -1217,14 +1232,24 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tChannelShortName:
 		if (mEvent) { // extended EPG
+#if APIVERSNUM < 20301
 			cChannel *channel = Channels.GetByChannelID(mEvent->ChannelID(), true);
+#else
+			LOCK_CHANNELS_READ;
+			const cChannel *channel = Channels->GetByChannelID(mEvent->ChannelID(), true);
+#endif
 			return channel != NULL
 			       ? (cxType)ChannelShortName(channel, 0)
 			       : (cxType)false;
 		}
 		else if (mRecording) { // recording Info
 			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
+#if APIVERSNUM < 20301
 			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
+#else
+			LOCK_CHANNELS_READ;
+			const cChannel *channel = Channels->GetByChannelID(recInfo->ChannelID(), true);
+#endif
 			return channel != NULL
 			       ? (cxType)ChannelShortName(channel, 0)
 			       : (cxType)false;
