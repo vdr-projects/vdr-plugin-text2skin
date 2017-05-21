@@ -87,6 +87,8 @@ const cRecording *GetRecordingByFileName(const char *FileName)
 	return (FileName) ? Recordings.GetByName(FileName) : NULL;
 }
 
+#if VDRVERSNUM < 20000
+
 int GetFrontendSTR(void)
 {
 	uint16_t value = 0;
@@ -114,6 +116,27 @@ int GetFrontendSNR(void)
 
 	return value / 655;
 }
+#endif
+
+#if VDRVERSNUM >= 20000
+int GetFrontendSTR(void)
+{
+	int SignalStrength = cDevice::ActualDevice()->SignalStrength();
+	if ( SignalStrength < 0)
+	return 0;
+
+	return SignalStrength;
+}
+
+int GetFrontendSNR(void)
+{
+	int SignalQuality = cDevice::ActualDevice()->SignalQuality();
+	if ( SignalQuality < 0)
+	return 0;
+
+	return SignalQuality;
+}
+#endif
 
 bool GetFrontendHasLock(void)
 {
