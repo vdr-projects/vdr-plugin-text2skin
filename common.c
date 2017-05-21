@@ -9,11 +9,13 @@
 
 #define FRONTEND_DEVICE "/dev/dvb/adapter%d/frontend%d"
 
-const std::string &SkinPath(void)
+const std::string SkinPath(void)
 {
 	// should never change
-	static std::string path = cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
-	return path;
+	static cString path;
+	if ((*path == NULL) || (strlen(*path) == 0))
+		path = cPlugin::ConfigDirectory(PLUGIN_NAME_I18N);
+	return std::string(*path);
 }
 
 const char *ChannelNumber(const cChannel *Channel, int Number)

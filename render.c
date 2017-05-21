@@ -900,7 +900,7 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 		}
 
 	case tAudioChannel:
-		return cText2SkinDisplayTracks::ChannelName(cDevice::PrimaryDevice()->GetAudioChannel());
+		return cxType(cText2SkinDisplayTracks::ChannelName(cDevice::PrimaryDevice()->GetAudioChannel()));
 
 	default:             return Text2SkinStatus.GetTokenData(Token);
 	}

@@ -225,7 +225,7 @@ protected:
 	virtual void SetMaxItems(int MaxItems) { mMaxItems = MaxItems; }
 
 public:
-	static const std::string &ChannelName(int AudioChannel);
+	static const char *ChannelName(int AudioChannel);
 
 	cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title, int NumTracks,
 	                        const char * const *Tracks);

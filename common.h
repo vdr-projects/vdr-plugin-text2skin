@@ -35,7 +35,7 @@ class cRecording;
 
 // helper functions
 
-const std::string &SkinPath(void);
+const std::string SkinPath(void);
 const char *ChannelNumber(const cChannel *Channel, int Number);
 const char *ChannelName(const cChannel *Channel, int Number);
 const char *ChannelShortName(const cChannel *Channel, int Number);

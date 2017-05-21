@@ -1393,8 +1393,6 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 // --- cText2SkinDisplayTracks ------------------------------------------------
 
-const std::string ChannelNames[] = { "", "stereo", "left", "right" };
-
 cText2SkinDisplayTracks::cText2SkinDisplayTracks(cText2SkinLoader *Loader, const char *Title,
                                                  int NumTracks, const char * const *Tracks):
 		cText2SkinRender(Loader, cxDisplay::audioTracks),
@@ -1414,9 +1412,15 @@ cText2SkinDisplayTracks::~cText2SkinDisplayTracks()
 {
 }
 
-const std::string &cText2SkinDisplayTracks::ChannelName(int AudioChannel)
+const char *cText2SkinDisplayTracks::ChannelName(int AudioChannel)
 {
-	return ChannelNames[AudioChannel + 1];
+	switch (AudioChannel)
+	{
+		case 0: return "stereo";
+		case 1: return "left";
+		case 2: return "right";
+	}
+	return "";
 }
 
 void cText2SkinDisplayTracks::SetTrack(int Index, const char * const *Tracks)
