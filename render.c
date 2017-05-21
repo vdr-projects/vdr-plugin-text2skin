@@ -336,7 +336,7 @@ void cText2SkinRender::DrawItemText(cxObject *Object, int i, const txPoint &List
 		const cFont *defFont = cFont::GetFont(fontOsd);
 		const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 		//if (defFont != Object->Font())
-		mTabScale = 1.08 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
+		mTabScale = 1.4 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
 		mTabScaleSet = true;
 	}
 

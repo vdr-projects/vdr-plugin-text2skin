@@ -1,6 +1,7 @@
 #DEBUG=1
 #BENCH=1
 STRIP=strip
+DEVELOPMENT_FEATURES=1
 
 # BEWARE that you can not use GraphTFT together with
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)

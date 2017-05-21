@@ -144,7 +144,7 @@ bool GetFrontendHasSignal(void)
 std::string AddExtInfoToDescription(const char *Title, const char *ShortText, const char *Description, const char *Aux, bool StripAux)
 {
 	// max. width so lines don't get wrapped
-	#define MAX_CHARS 50
+	#define MAX_CHARS 100
 
 	// prepare the description
 	std::stringstream desc("");
@@ -178,9 +178,15 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 				list->First(); r && i < 5; r = list->Next(r)) {
 					i++;
 					std::stringstream buf;
+					cChannel *channel = Channels.GetByChannelID(r->event->ChannelID(), true, true);
+					if (channel)
+					buf << "\n";
+					buf << " - ";
+					buf << channel->ShortName(true);
 					buf << " - ";
 					buf << *DayDateTime(r->event->StartTime());
-					buf << ": " << r->event->Title();
+					buf << " - " << r->event->Title();
+
 					if (!isempty(r->event->ShortText())) buf << "~" << r->event->ShortText();
 					desc << FitToWidth(buf, MAX_CHARS) << "\n";
 				}
