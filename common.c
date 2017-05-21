@@ -223,7 +223,12 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 					i++;
                                         if (r->event && r->event->StartTime() < time(NULL)) continue;
 					std::stringstream buf;
+#if APIVERSNUM < 20301
 					cChannel *channel = Channels.GetByChannelID(r->event->ChannelID(), true, true);
+#else
+					LOCK_CHANNELS_READ;
+					const cChannel *channel = Channels->GetByChannelID(r->event->ChannelID(), true, true);
+#endif
 					if (channel)
 					buf << "\n";
 					buf << " - ";
