@@ -1,7 +1,6 @@
 #DEBUG=1
 #BENCH=1
 STRIP=strip
-DEVELOPMENT_FEATURES=1
 
 # BEWARE that you can not use GraphTFT together with
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
@@ -66,10 +65,6 @@ OBJS = $(PLUGIN).o loader.o display.o render.o common.o bitmap.o \
        xml/type.o xml/display.o xml/xml.o
 
 ### Includes and Defines (add further entries here):
-
-ifdef DEVELOPMENT_FEATURES
-	DEFINES += -DDEVELOPMENT_FEATURES
-endif
 
 ifeq ($(IMAGELIB), imagemagick)
 	DEFINES += -DHAVE_IMAGEMAGICK

@@ -202,7 +202,6 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 		desc << buf << "\n"; // keep one newline
 	}
 
-#ifdef DEVELOPMENT_FEATURES
 	// try to find a rerun of the show using epgsearch-service
 	if (!isempty(Title)) {
 		Epgsearch_searchresults_v1_0 data;
@@ -244,7 +243,6 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 			}
 		}
 	}
-#endif // DEVELOPMENT_FEATURES
 
 	// Add the AUX-Info of the Recording
 	if (Aux) {
