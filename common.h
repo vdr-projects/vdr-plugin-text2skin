@@ -17,7 +17,7 @@
 #	endif
 #	define __STDC_FORMAT_MACROS
 #	define Dbench(x) uint64_t bench_##x = cTimeMs::Now()
-#	define Ddiff(t,x) fprintf(stderr, "%s took %"PRIu64" ms\n", t, cTimeMs::Now() - bench_##x)
+#	define Ddiff(t,x) fprintf(stderr, "%s took %" PRIu64 " ms\n", t, cTimeMs::Now() - bench_##x)
 #else
 #	define Dprintf(x...)
 #	define Dbench(x)
