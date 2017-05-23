@@ -1263,14 +1263,24 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tChannelServiceReference:
 		if (mEvent) { // extended EPG
+#if APIVERSNUM < 20301
 			cChannel *channel = Channels.GetByChannelID(mEvent->ChannelID(), true);
+#else
+			LOCK_CHANNELS_READ;
+			const cChannel *channel = Channels->GetByChannelID(mEvent->ChannelID(), true);
+#endif
 			return channel != NULL
 			       ? (cxType)ChannelServiceReference(channel, 0)
 			       : (cxType)false;
 		}
 		else if (mRecording) { // recording Info
 			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
+#if APIVERSNUM < 20301
 			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
+#else
+			LOCK_CHANNELS_READ;
+			const cChannel *channel = Channels->GetByChannelID(recInfo->ChannelID(), true);
+#endif
 			return channel != NULL
 			       ? (cxType)ChannelServiceReference(channel, 0)
 			       : (cxType)false;
