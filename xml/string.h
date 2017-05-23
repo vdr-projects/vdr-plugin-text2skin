@@ -22,6 +22,7 @@ enum exToken {
 	tChannelNumber,
 	tChannelName,
 	tChannelShortName,
+	tChannelServiceReference,
 	tChannelBouquet,
 	tChannelPortal,
 	tChannelSource,

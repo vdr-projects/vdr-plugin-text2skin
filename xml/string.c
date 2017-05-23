@@ -7,7 +7,7 @@ static const char *Tokens[__COUNT_TOKEN__] = {
 	"DateTime", "FreeDiskSpace", "UsedDiskSpace", "TotalDiskSpace", "DiskUsage", "VideoSizeWidth", "VideoSizeHeight", "AudioTrack", "AudioChannel",
 
 	// Channel Display
-	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelBouquet", "ChannelPortal",
+	"ChannelNumber", "ChannelName", "ChannelShortName", "ChannelServiceReference", "ChannelBouquet", "ChannelPortal",
 	"ChannelSource", "ChannelID", "PresentStartDateTime", "PresentVPSDateTime",
 	"CurrentEventsTitle1", "CurrentEventsStartDateTime1", "CurrentEventsStopDateTime1", "CurrentEventsChannelNumber1", "CurrentEventsChannelName1", "CurrentEventsIsRecording1",
 	"CurrentEventsTitle2", "CurrentEventsStartDateTime2", "CurrentEventsStopDateTime2", "CurrentEventsChannelNumber2", "CurrentEventsChannelName2", "CurrentEventsIsRecording2",

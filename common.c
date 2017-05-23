@@ -53,6 +53,43 @@ const char *ChannelShortName(const cChannel *Channel, int Number)
 	return buffer;
 }
 
+const char *ChannelServiceReference(const cChannel *Channel, int Number)
+{
+	static char buffer[256];
+	int hash = 0;
+	buffer[0] = '\0';
+	if (Channel) {
+		if (cSource::IsSat(Channel->Source())) {
+			hash = Channel->Source() & cSource::st_Pos;
+			if (hash > 0x00007FFF)
+				hash |= 0xFFFF0000;
+
+			if (hash < 0)
+				hash = -hash;
+			else
+				hash = 1800 + hash;
+
+			hash = hash << 16;
+		}
+		else if (cSource::IsCable(Channel->Source()))
+			hash = 0xFFFF0000;
+		else if(cSource::IsTerr(Channel->Source()))
+			hash = 0xEEEE0000;
+		else if(cSource::IsAtsc(Channel->Source()))
+			hash = 0xDDDD0000;
+
+		snprintf(buffer, sizeof(buffer), "1_0_%i_%X_%X_%X_%X_0_0_0",
+                (!(Channel->Vpid() == 0 && Channel->Apid(0) == 0) && (Channel->Vpid() == 0 || Channel->Vpid() == 1)) ? 2 : (Channel->Vtype() == 27) ? 19 : 1,
+				Channel->Sid(),
+				Channel->Tid(),
+				Channel->Nid(),
+				hash);
+	}
+	else if (!Number)
+		snprintf(buffer, sizeof(buffer), "%s", trVDR("*** Invalid Channel ***"));
+	return buffer;
+}
+
 const char *EventType(uint Number)
 {
 	static char buffer[25];

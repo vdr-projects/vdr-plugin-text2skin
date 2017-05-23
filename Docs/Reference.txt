@@ -707,6 +707,8 @@ Defines an item for the list.
 -----------------------------------------------------------------------------
 | ChannelShortName       |                           | Short name of channel if available
 -----------------------------------------------------------------------------
+| ChannelServiceReference|                           | Service reference of channel if available
+-----------------------------------------------------------------------------
 | ChannelBouquet         |                           | Provider/bouquet name if available
 -----------------------------------------------------------------------------
 | ChannelPortal          |                           | Portal name if available
@@ -1007,6 +1009,8 @@ Defines an item for the list.
 | ChannelName            |                           | Channel name
 -----------------------------------------------------------------------------
 | ChannelShortName       |                           | Short name of channel if available
+-----------------------------------------------------------------------------
+| ChannelServiceReference|                           | Service reference of channel if available
 -----------------------------------------------------------------------------
 | ChannelHasVPS          | (also in Channel Display) | True, if current channel can broadcast VPS
 |  (alt: HasVPS)         |                           |

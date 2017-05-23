@@ -127,6 +127,11 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		       ? (cxType)ChannelShortName(mChannel, mNumber)
 		       : (cxType)false;
 
+	case tChannelServiceReference:
+		return mChannel != NULL
+		       ? (cxType)ChannelServiceReference(mChannel, mNumber)
+		       : (cxType)false;
+
 	case tChannelBouquet:
 		return mChannel != NULL
 		       ? (cxType)mChannel->Provider()
@@ -1252,6 +1257,22 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 #endif
 			return channel != NULL
 			       ? (cxType)ChannelShortName(channel, 0)
+			       : (cxType)false;
+		} else
+			return (cxType)false;
+
+	case tChannelServiceReference:
+		if (mEvent) { // extended EPG
+			cChannel *channel = Channels.GetByChannelID(mEvent->ChannelID(), true);
+			return channel != NULL
+			       ? (cxType)ChannelServiceReference(channel, 0)
+			       : (cxType)false;
+		}
+		else if (mRecording) { // recording Info
+			cRecordingInfo *recInfo = const_cast<cRecordingInfo*>(mRecording->Info());
+			cChannel *channel = Channels.GetByChannelID(recInfo->ChannelID(), true);
+			return channel != NULL
+			       ? (cxType)ChannelServiceReference(channel, 0)
 			       : (cxType)false;
 		} else
 			return (cxType)false;
