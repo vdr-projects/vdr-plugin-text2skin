@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vdr-text2skin 1.2\n"
 "Report-Msgid-Bugs-To: http://projects.vdr-developer.org/projects/show/plg-text2skin\n"
-"POT-Creation-Date: 2011-10-22 15:13+0300\n"
+"POT-Creation-Date: 2012-04-23 20:50+0200\n"
 "PO-Revision-Date: 2009-07-15 23:45+0100\n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
 "Language-Team: Italian <vdr@linuxtv.org>\n"
@@ -19,12 +19,6 @@ msgstr ""
 "X-Poedit-Country: ITALY\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-msgid "Loader for text-based skins"
-msgstr "Gestore di stili interfaccia basati su testo"
-
-msgid "Skin too large or incorrectly aligned"
-msgstr "Interfaccia troppo grande o allineamento incorretto"
-
 msgid "RERUNS OF THIS SHOW"
 msgstr "REPLICHE DI QUESTO SPETTACOLO"
 
@@ -33,6 +27,9 @@ msgstr "INFORMAZIONI AUSILIARIE"
 
 msgid "Search timer"
 msgstr "Cerca timer"
+
+msgid "Skin too large or incorrectly aligned"
+msgstr "Interfaccia troppo grande o allineamento incorretto"
 
 msgid "Show scrollbar in the menus"
 msgstr "Mostra barra scorrimento nei menu"
@@ -65,5 +62,17 @@ msgstr "Svuota cache immagini"
 msgid "Max. image cache size"
 msgstr "Dim. massima cache immagini"
 
+msgid "Old Skin compatibility (<1.0)"
+msgstr ""
+
+msgid "no"
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
 msgid "Flushing image cache..."
 msgstr "Svuotamento cache immagini..."
+
+msgid "Loader for text-based skins"
+msgstr "Gestore di stili interfaccia basati su testo"

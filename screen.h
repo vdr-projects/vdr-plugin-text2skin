@@ -4,10 +4,11 @@
 #define VDR_TEXT2SKIN_SCREEN_H
 
 #include "common.h"
+#include "setup.h"
 #include <vdr/osd.h>
 
 // #undef DIRECTBLIT
-#define DIRECTBLIT
+//#define DIRECTBLIT
 
 class cText2SkinScreen {
 	/* Skin Editor */
