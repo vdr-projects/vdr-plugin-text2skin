@@ -1,6 +1,6 @@
 #DEBUG=1
 #BENCH=1
-STRIP=strip
+STRIP ?= /bin/true
 
 # BEWARE that you can not use GraphTFT together with
 # Text2Skin if you use Imlib2! (That's why I actually implemented ImageMagick)
@@ -139,9 +139,7 @@ i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo)
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
-ifndef DEBUG
 	$(STRIP) $(LIBDIR)/$@.$(APIVERSION)
-endif
 
 dist: $(addprefix $(PODIR)/,$(I18Npo)) clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
