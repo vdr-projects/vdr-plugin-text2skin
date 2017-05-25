@@ -24,7 +24,7 @@ void cText2SkinScroller::Set(cText2SkinScreen *Screen, int Left, int Top, int Wi
   mOffset  = 0;
 	// sets mHeight to the actually used mHeight, which may be less than Height
   mWrapper.Set(Text, Font, Width);
-  mShown   = min(Total(), mHeight / mFont->Height());
+  mShown   = std::min(Total(), mHeight / mFont->Height());
   mHeight  = mShown * mFont->Height();
   DrawText();
 }
