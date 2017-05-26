@@ -272,7 +272,7 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 					buf << " - " << r->event->Title();
 
 					if (!isempty(r->event->ShortText())) buf << "~" << r->event->ShortText();
-					desc << FitToWidth(buf, (Text2SkinSetup.MaxChars)) << "\n";
+					desc << FitToWidth(buf, Text2SkinSetup.MaxChars) << "\n";
 				}
 				delete list;
 			}
@@ -295,7 +295,7 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 					desc << tr("AUXILIARY INFOS") << ":\n";
 					std::stringstream buf;
 					buf << " - " << tr("Search timer") << ": " << searchTimer;
-					desc << FitToWidth(buf, (Text2SkinSetup.MaxChars)) << "\n";
+					desc << FitToWidth(buf, Text2SkinSetup.MaxChars) << "\n";
 				}
 			}
 		}
