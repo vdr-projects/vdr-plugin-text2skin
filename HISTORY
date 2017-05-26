@@ -5,25 +5,25 @@ VDR Plugin 'text2skin' Revision History
 
 - Add compatibility for VDR API >= 2.3.1.
 - Purge DEVELOPMENT_FEATURES, as they have been permanently enabled with t2s-rerunandtab.diff.
-- fix some c++11 compiler errors and warnings
-- Make DIRECTBLIT configurable, Patch by Gerald Raaf <gerald.raaf@t-online.de>
-- Add New token: ChannelServiceReference, patch by Tuomas Jormola <tj@solitudo.net>
+- fix some c++11 compiler errors and warnings.
+- Make DIRECTBLIT configurable, Patch by Gerald Raaf <gerald.raaf@t-online.de> (closes #945).
+- Add New token: ChannelServiceReference, patch by Tuomas Jormola <tj@solitudo.net> (closes #1278).
 - Detach STRIP from DEBUG flag, thanks to Tobias Grimm for his support.
-- Make MAX_CHARS configurable.
-- Make tab width configurable.
+- Make MAX_CHARS configurable, requested by nvertigo, (closes #830).
+- Make tab width configurable, narrow equals original value, wide Tomas Saxer's implementation.
 
 2017-05-21: Version 1.3.3
 
 - New tokens: UsedDiskSpace, TotalDiskSpace, VideoSizeWidth, VideoSizeHeight
   (closes #465, thanks to NemoN).
 - Documentation fixes.
-- Commit t2s_rerunandtab.diff by tomas@vdr-portal.de
+- Commit t2s_rerunandtab.diff by Tomas Saxer <tomas@vdr-portal.de>
   http://www.vdr-portal.de/board17-developer/board25-patches/p914968-patch-f%C3%BCr-text2skin-channelnames4reruns/#post914968
 - Commit common_c.diff most probably by Christian Winninger (unknown source)
 - Commit status_c.diff most probably by Gerald Dachs (unknown source)
 - Commit static-std-string.diff by Lars Hanisch (unknown source)
-- Commit text2skin-signal.patch by tomas@vdr-portal.de (unknown source)
-- Commit text2skin-vdr2.1.2compat.diff by Christopher Reimer (unknown source)
+- Commit text2skin-signal.patch by tomas@vdr-portal.de (unknown source)(closes #1077)
+- Commit text2skin-vdr2.1.2compat.diff by Christopher Reimer (unknown source)(closes #2091)
 - New version reflecting VDR 2.2.0 compatibility
 
 2011-11-06: Version 1.3.2
