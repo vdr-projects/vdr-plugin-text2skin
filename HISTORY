@@ -4,6 +4,13 @@ VDR Plugin 'text2skin' Revision History
 20xx-xx-xx: Version x.x.x
 
 - Add compatibility for VDR API >= 2.3.1.
+- Purge DEVELOPMENT_FEATURES, as they have been permanently enabled with t2s-rerunandtab.diff.
+- fix some c++11 compiler errors and warnings
+- Make DIRECTBLIT configurable, Patch by Gerald Raaf <gerald.raaf@t-online.de>
+- Add New token: ChannelServiceReference, patch by Tuomas Jormola <tj@solitudo.net>
+- Detach STRIP from DEBUG flag, thanks to Tobias Grimm for his support.
+- Make MAX_CHARS configurable.
+- Make tab width configurable.
 
 2017-05-21: Version 1.3.3
 
