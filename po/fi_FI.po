@@ -1,16 +1,16 @@
 # Finnish translations for vdr-text2skin package.
 # Copyright (C) Sascha Volkenandt <sascha@akv-soft.de>
 # This file is distributed under the same license as the vdr-text2skin package.
-# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2004, 2005.
+# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2004, 2005, 2017
 # Ville Skyttä <ville.skytta@iki.fi>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: vdr-text2skin 1.3\n"
 "Report-Msgid-Bugs-To: http://projects.vdr-developer.org/projects/show/plg-text2skin\n"
-"POT-Creation-Date: 2012-04-23 20:50+0200\n"
-"PO-Revision-Date: 2011-05-28 15:38+0200\n"
-"Last-Translator: Ville Skyttä <ville.skytta@iki.fi>\n"
+"POT-Creation-Date: 2017-05-26 15:00+0200\n"
+"PO-Revision-Date: 2017-05-26 15:00+0200\n"
+"Last-Translator: Rolf Ahrenberg <rahrenbe@cc.hut.fi>\n"
 "Language-Team: Finnish <vdr@linuxtv.org>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
@@ -61,25 +61,19 @@ msgid "Max. image cache size"
 msgstr "Välimuistin maksimikoko"
 
 msgid "Max. characters per line"
-msgstr ""
+msgstr "Rivin maksimipituus"
 
 msgid "Tabulator width"
-msgstr ""
+msgstr "Sarkaimen koko"
 
 msgid "narrow"
-msgstr ""
+msgstr "kapea"
 
 msgid "wide"
-msgstr ""
+msgstr "leveä"
 
 msgid "Old Skin compatibility (<1.0)"
-msgstr ""
-
-msgid "no"
-msgstr ""
-
-msgid "yes"
-msgstr ""
+msgstr "Tue vanhoja ulkoasuja (<1.0)"
 
 msgid "Flushing image cache..."
 msgstr "Tyhjennetään välimuistia..."

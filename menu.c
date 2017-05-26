@@ -27,7 +27,7 @@ void cText2SkinSetupPage::Setup(void) {
 	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill, 1));
 	Add(new cMenuEditIntItem(tr("Max. characters per line"), &mData.MaxChars, 1));
 	Add(new cMenuEditBoolItem(tr("Tabulator width"), &mData.TabWidth, tr("narrow"), tr("wide")));
-	Add(new cMenuEditBoolItem(tr("Old Skin compatibility (<1.0)"), &mData.SupportOldSkins, tr("no"), tr("yes")));
+	Add(new cMenuEditBoolItem(tr("Old Skin compatibility (<1.0)"), &mData.SupportOldSkins, trVDR("no"), trVDR("yes")));
 
 	SetCurrent(Get(current));
 	Display();
