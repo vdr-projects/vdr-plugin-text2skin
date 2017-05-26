@@ -26,6 +26,7 @@ void cText2SkinSetupPage::Setup(void) {
 	Add(new cOsdItem(tr("Flush image cache"), osUser1));
 	Add(new cMenuEditIntItem(tr("Max. image cache size"), &mData.MaxCacheFill, 1));
 	Add(new cMenuEditIntItem(tr("Max. characters per line"), &mData.MaxChars, 1));
+	Add(new cMenuEditBoolItem(tr("Tabulator width"), &mData.TabWidth, tr("narrow"), tr("wide")));
 	Add(new cMenuEditBoolItem(tr("Old Skin compatibility (<1.0)"), &mData.SupportOldSkins, tr("no"), tr("yes")));
 
 	SetCurrent(Get(current));
@@ -44,6 +45,7 @@ void cText2SkinSetupPage::Store(void) {
 	SetupStore("CheckTimerConflict", mData.CheckTimerConflict);
 	SetupStore("MaxCacheFill", mData.MaxCacheFill);
 	SetupStore("MaxChars", mData.MaxChars);
+	SetupStore("TabWidth", mData.TabWidth);
 	SetupStore("SupportOldSkins", mData.SupportOldSkins);
 	Text2SkinSetup = mData;
 }

@@ -63,6 +63,15 @@ msgstr "Max. Größe des Bildspeichers"
 msgid "Max. characters per line"
 msgstr "Max. Zeichenzahl pro Linie"
 
+msgid "Tabulator width"
+msgstr "Tabulator Breite"
+
+msgid "narrow"
+msgstr "schmal"
+
+msgid "wide"
+msgstr "breit"
+
 msgid "Old Skin compatibility (<1.0)"
 msgstr "Unterstützung alter Skins (<1.0)"
 

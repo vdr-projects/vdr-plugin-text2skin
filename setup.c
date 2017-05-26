@@ -15,6 +15,7 @@ cText2SkinSetup::cText2SkinSetup(void):
 	CheckTimerConflict(false),
 	MaxCacheFill(25),
 	MaxChars(100),
+	TabWidth(false),
 	SupportOldSkins(true)
 {
 }
@@ -28,6 +29,7 @@ bool cText2SkinSetup::SetupParse(const char *Name, const char *Value) {
 	else if (strcmp(Name, "CheckTimerConflict") == 0) CheckTimerConflict = atoi(Value);
 	else if (strcmp(Name, "MaxCacheFill") == 0) MaxCacheFill = atoi(Value);
 	else if (strcmp(Name, "MaxChars") == 0) MaxChars = atoi(Value);
+	else if (strcmp(Name, "TabWidth") == 0) TabWidth = atoi(Value);
 	else if (strcmp(Name, "SupportOldSkins") == 0) SupportOldSkins = atoi(Value);
 	else return false;
 	return true;

@@ -5,6 +5,7 @@
 #include "i18n.h"
 #include "theme.h"
 #include "bitmap.h"
+#include "setup.h"
 #include "status.h"
 #include "screen.h"
 #include "display.h"
@@ -336,7 +337,10 @@ void cText2SkinRender::DrawItemText(cxObject *Object, int i, const txPoint &List
 		const cFont *defFont = cFont::GetFont(fontOsd);
 		const char *dummy = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 		//if (defFont != Object->Font())
-		mTabScale = 1.4 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
+		if (Text2SkinSetup.TabWidth)
+			mTabScale = 1.4 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
+		else
+			mTabScale = 1.08 * (float)Object->Font()->Width(dummy) / (float)defFont->Width(dummy);
 		mTabScaleSet = true;
 	}
 

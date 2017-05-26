@@ -19,6 +19,7 @@ public:
 	int CheckTimerConflict;
 	int MaxCacheFill;
 	int MaxChars;
+	int TabWidth;
 	int SupportOldSkins;
 };
 

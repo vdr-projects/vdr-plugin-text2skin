@@ -65,6 +65,15 @@ msgstr "Dim. massima cache immagini"
 msgid "Max. characters per line"
 msgstr ""
 
+msgid "Tabulator width"
+msgstr ""
+
+msgid "narrow"
+msgstr ""
+
+msgid "wide"
+msgstr ""
+
 msgid "Old Skin compatibility (<1.0)"
 msgstr ""
 
