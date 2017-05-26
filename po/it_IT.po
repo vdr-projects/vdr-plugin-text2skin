@@ -62,6 +62,9 @@ msgstr "Svuota cache immagini"
 msgid "Max. image cache size"
 msgstr "Dim. massima cache immagini"
 
+msgid "Max. characters per line"
+msgstr ""
+
 msgid "Old Skin compatibility (<1.0)"
 msgstr ""
 

@@ -60,6 +60,9 @@ msgstr "Tyhjennä kuvat välimuistista"
 msgid "Max. image cache size"
 msgstr "Välimuistin maksimikoko"
 
+msgid "Max. characters per line"
+msgstr ""
+
 msgid "Old Skin compatibility (<1.0)"
 msgstr ""
 

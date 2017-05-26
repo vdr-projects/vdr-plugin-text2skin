@@ -1,6 +1,7 @@
 //								-*- c++ -*-
 
 #include "common.h"
+#include "setup.h"
 #include <sstream>
 #include <vdr/plugin.h>
 #include <vdr/device.h>
@@ -225,9 +226,6 @@ bool GetFrontendHasSignal(void)
 
 std::string AddExtInfoToDescription(const char *Title, const char *ShortText, const char *Description, const char *Aux, bool StripAux)
 {
-	// max. width so lines don't get wrapped
-	#define MAX_CHARS 100
-
 	// prepare the description
 	std::stringstream desc("");
 
@@ -274,7 +272,7 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 					buf << " - " << r->event->Title();
 
 					if (!isempty(r->event->ShortText())) buf << "~" << r->event->ShortText();
-					desc << FitToWidth(buf, MAX_CHARS) << "\n";
+					desc << FitToWidth(buf, (Text2SkinSetup.MaxChars)) << "\n";
 				}
 				delete list;
 			}
@@ -297,7 +295,7 @@ std::string AddExtInfoToDescription(const char *Title, const char *ShortText, co
 					desc << tr("AUXILIARY INFOS") << ":\n";
 					std::stringstream buf;
 					buf << " - " << tr("Search timer") << ": " << searchTimer;
-					desc << FitToWidth(buf, MAX_CHARS) << "\n";
+					desc << FitToWidth(buf, (Text2SkinSetup.MaxChars)) << "\n";
 				}
 			}
 		}

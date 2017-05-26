@@ -18,6 +18,7 @@ public:
 	int StripAux;
 	int CheckTimerConflict;
 	int MaxCacheFill;
+	int MaxChars;
 	int SupportOldSkins;
 };
 

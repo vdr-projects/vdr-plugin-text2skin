@@ -60,6 +60,9 @@ msgstr "Bildspeicher leeren"
 msgid "Max. image cache size"
 msgstr "Max. Größe des Bildspeichers"
 
+msgid "Max. characters per line"
+msgstr "Max. Zeichenzahl pro Linie"
+
 msgid "Old Skin compatibility (<1.0)"
 msgstr "Unterstützung alter Skins (<1.0)"
 
