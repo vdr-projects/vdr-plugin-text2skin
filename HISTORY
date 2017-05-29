@@ -1,7 +1,7 @@
 VDR Plugin 'text2skin' Revision History
 ---------------------------------------
 
-20xx-xx-xx: Version x.x.x
+2017-05-29: Version 1.3.4
 
 - Add compatibility for VDR API >= 2.3.1.
 - Purge DEVELOPMENT_FEATURES, as they have been permanently enabled with t2s-rerunandtab.diff.
@@ -11,6 +11,7 @@ VDR Plugin 'text2skin' Revision History
 - Detach STRIP from DEBUG flag, thanks to Tobias Grimm for his support.
 - Make MAX_CHARS configurable, requested by nvertigo, (closes #830).
 - Make tab width configurable, narrow equals original value, wide Tomas Saxer's implementation.
+- New release reflecting VDR 2.3.x compatibility
 
 2017-05-21: Version 1.3.3
 
