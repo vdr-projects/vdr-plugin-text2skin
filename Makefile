@@ -102,7 +102,8 @@ all: libvdr-$(PLUGIN).so i18n
 ### Implicit rules:
 
 %.o: %.c
-	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
+	@echo CC $@
+	@$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
 
 ### Dependencies:
 
@@ -121,15 +122,18 @@ I18Npo    = $(notdir $(wildcard $(PODIR)/*.po))
 I18Npot   = $(PODIR)/$(PLUGIN).pot
 
 $(I18Npot): $(wildcard *.c)
-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) --msgid-bugs-address=http://projects.vdr-developer.org/projects/show/plg-text2skin -o $@ $^
+	@echo GT $@
+	@xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) --msgid-bugs-address=http://projects.vdr-developer.org/projects/show/plg-text2skin -o $@ $^
 
 %.po: $(I18Npot)
-	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
+	@echo PO $@
+	@msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
 	@touch $@
 
 $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.po
 	@mkdir -p $(dir $@)
-	msgfmt -c -o $@ $<
+	@echo MO $@
+	@msgfmt -c -o $@ $<
 
 .PHONY: i18n
 i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo)
@@ -137,7 +141,9 @@ i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo)
 ### Targets:
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	@echo LD $@
+	@$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	@echo IN $@ $(LIBDIR)/$@.$(APIVERSION)
 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 	$(STRIP) $(LIBDIR)/$@.$(APIVERSION)
 
