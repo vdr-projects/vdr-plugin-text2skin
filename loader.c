@@ -12,11 +12,11 @@
 #include <dirent.h>
 
 void cText2SkinLoader::Start(void) {
-	DIR *d = opendir(SkinPath().c_str());
+	DIR *d;
+	struct dirent *result;
+	d = opendir(SkinPath().c_str());
 	if (d) {
-		struct dirent ent;
-		struct dirent *result;
-		while ((readdir_r(d, &ent, &result)) == 0 && result != NULL) {
+		while ((result = readdir(p)) != NULL) {
 			struct stat buf;
 			if (strcmp(result->d_name, ".") == 0 || strcmp(result->d_name, "..") == 0)
 				continue;
