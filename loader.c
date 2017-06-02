@@ -16,7 +16,7 @@ void cText2SkinLoader::Start(void) {
 	struct dirent *result;
 	d = opendir(SkinPath().c_str());
 	if (d) {
-		while ((result = readdir(p)) != NULL) {
+		while ((result = readdir(d)) != NULL) {
 			struct stat buf;
 			if (strcmp(result->d_name, ".") == 0 || strcmp(result->d_name, "..") == 0)
 				continue;
