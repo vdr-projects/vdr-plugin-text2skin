@@ -12,9 +12,8 @@
 #include <dirent.h>
 
 void cText2SkinLoader::Start(void) {
-	DIR *d;
+	DIR *d = opendir(SkinPath().c_str());
 	struct dirent *result;
-	d = opendir(SkinPath().c_str());
 	if (d) {
 		while ((result = readdir(d)) != NULL) {
 			struct stat buf;
