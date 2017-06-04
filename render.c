@@ -603,25 +603,14 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 		if (Marks) {
 			bool start = true;
 			for (const cMark *m = Marks->First(); m; m = Marks->Next(m)) {
-#if APIVERSNUM >= 10721
 				txPoint pt(Pos.x + m->Position() * Size.w / Total, Pos.y);
-#else
-				txPoint pt(Pos.x + m->position * Size.w / Total, Pos.y);
-#endif
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
 					DrawRectangle(txPoint(pt.x, Pos.y + Size.h / 3),
-#if APIVERSNUM >= 10721
 					              txSize(((m2 ? m2->Position() : Total) - m->Position())
 					              * Size.w / Total + 1, Size.h - Size.h * 2 / 3 + 1), Selected);
 				}
 				DrawMark(pt, Size, start, m->Position() == Current, false, Mark, Cur);
-#else
-					              txSize(((m2 ? m2->position : Total) - m->position)
-					              * Size.w / Total + 1, Size.h - Size.h * 2 / 3 + 1), Selected);
-				}
-				DrawMark(pt, Size, start, m->position == Current, false, Mark, Cur);
-#endif
 				start = !start;
 			}
 		}
@@ -631,26 +620,15 @@ void cText2SkinRender::DrawProgressbar(const txPoint &Pos, const txSize &Size, i
 		if (Marks) {
 			bool start = true;
 			for (const cMark *m = Marks->First(); m; m = Marks->Next(m)) {
-#if APIVERSNUM >= 10721
 				txPoint pt(Pos.x, Pos.y + m->Position() * Size.h / Total);
-#else
-				txPoint pt(Pos.x, Pos.y + m->position * Size.h / Total);
-#endif
 				if (Selected && start) {
 					const cMark *m2 = Marks->Next(m);
 					DrawRectangle(txPoint(Pos.x + Size.w / 3, pt.y),
 					              txSize(Size.w - Size.w * 2 / 3 + 1,
-#if APIVERSNUM >= 10721
 					              ((m2 ? m2->Position() : Total) - m->Position())
 					              * Size.h / Total + 1), Selected);
 				}
 				DrawMark(pt, Size, start, m->Position() == Current, true, Mark, Cur);
-#else
-					              ((m2 ? m2->position : Total) - m->position)
-					              * Size.h / Total + 1), Selected);
-				}
-				DrawMark(pt, Size, start, m->position == Current, true, Mark, Cur);
-#endif
 				start = !start;
 			}
 		}
@@ -841,11 +819,7 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 	switch (Token.Type) {
 	case tFreeDiskSpace: {
 			int FreeMB;
-#if APIVERSNUM > 20101
 			cVideoDirectory::VideoDiskSpace(&FreeMB);
-#else
-			VideoDiskSpace(&FreeMB);
-#endif
 			Dprintf("FreeMB: %d, attrib type is %d\n", FreeMB,Token.Attrib.Type);
 			return Token.Attrib.Type == aString && Token.Attrib.Text.length() > 0
 			       ? (cxType)DurationType(FreeMB * 60 / MB_PER_MINUTE,
@@ -855,31 +829,21 @@ cxType cText2SkinRender::GetTokenData(const txToken &Token)
 
 	case tUsedDiskSpace: {
 			int FreeMB, UsedMB;
-#if APIVERSNUM > 20101
 			cVideoDirectory::VideoDiskSpace(&FreeMB, &UsedMB);
-#else
-			VideoDiskSpace(&FreeMB, &UsedMB);
-#endif
 			return (cxType)UsedMB;
 		}
 
 	case tTotalDiskSpace: {
 			int FreeMB, UsedMB;
-#if APIVERSNUM > 20101
 			cVideoDirectory::VideoDiskSpace(&FreeMB, &UsedMB);
-#else
-			VideoDiskSpace(&FreeMB, &UsedMB);
-#endif
 			return (cxType)FreeMB+UsedMB;
 		}
 		
-#if VDRVERSNUM >= 10728
 	case tDiskUsage:	{
 			cVideoDiskUsage::ForceCheck();
 			string DiskUsage = string(cString::sprintf("%s", *cVideoDiskUsage::String()));
 			return DiskUsage;
 		}
-#endif
 
 	case tVdrVersion:	{
 			return VDRVERSION;

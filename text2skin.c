@@ -12,8 +12,8 @@
 #include "loader.h"
 #include "status.h"
 
-#if APIVERSNUM < 10600
-#error "VDR-1.6.0 API version or greater is required!"
+#if APIVERSNUM < 20200
+#error "VDR-2.2.0 API version or greater is required!"
 #endif
 
 const char *cText2SkinPlugin::VERSION        = "1.3.4+git";

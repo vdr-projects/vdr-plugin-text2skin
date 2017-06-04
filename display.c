@@ -250,27 +250,19 @@ cxType cText2SkinDisplayChannel::GetTokenData(const txToken &Token)
 		return false;
 
 	case tVideoSizeWidth:    {
-#if VDRVERSNUM >= 10707
 			int width, height;
 			double aspect;
 			cDevice *dev = cDevice::PrimaryDevice();
 			dev->GetVideoSize(width, height, aspect);
 			return (cxType)width;
-#else
-			return 0;
-#endif
 		}
 
 	case tVideoSizeHeight:    {
-#if VDRVERSNUM >= 10707
 			int width, height;
 			double aspect;
 			cDevice *dev = cDevice::PrimaryDevice();
 			dev->GetVideoSize(width, height, aspect);
 			return (cxType)height;
-#else
-			return 0;
-#endif
 		}
 
 	case tHasTeletext:
@@ -1313,29 +1305,17 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tRecordingPriority:
 		return mRecording != NULL
-#if APIVERSNUM >= 10721
 		       ? (cxType)mRecording->Priority()
-#else
-		       ? (cxType)mRecording->priority
-#endif
 		       : (cxType)false;
 
 	case tRecordingLifetime:
 		return mRecording != NULL
-#if APIVERSNUM >= 10721
 		       ? (cxType)mRecording->Lifetime()
-#else
-		       ? (cxType)mRecording->lifetime
-#endif
 		       : (cxType)false;
 
 	case tRecordingDateTime:
 		return mRecording != NULL
-#if APIVERSNUM >= 10721
 		       ? (cxType)TimeType(mRecording->Start(), Token.Attrib.Text)
-#else
-		       ? (cxType)TimeType(mRecording->start, Token.Attrib.Text)
-#endif
 		       : (cxType)false;
 
 	case tRecordingTitle:
@@ -1426,20 +1406,12 @@ cxType cText2SkinDisplayMenu::GetTokenData(const txToken &Token)
 
 	case tRecordingLength:
 		return mRecording != NULL
-#if VDRVERSNUM >= 10703
 		       ? (cxType)GetRecordingLength(mRecording->FileName(), mRecording->FramesPerSecond(), mRecording->IsPesRecording())
-#else
-		       ? (cxType)GetRecordingLength(mRecording->FileName(), FRAMESPERSEC, true)
-#endif
 		       : (cxType)false;
 
 	case tRecordingCuttedLength:
 		return mRecording != NULL
-#if VDRVERSNUM >= 10703
 		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName(), mRecording->FramesPerSecond(), mRecording->IsPesRecording())
-#else
-		       ? (cxType)GetRecordingCuttedLength(mRecording->FileName(), FRAMESPERSEC, true)
-#endif
 		       : (cxType)false;
 
 	default:

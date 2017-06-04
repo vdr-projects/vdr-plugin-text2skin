@@ -88,12 +88,8 @@ void cText2SkinStatus::Replaying(const cControl* /*Control*/, const char *Name,
 	  mReplayIsShuffle = false;
 	}
 
-#if VDRVERSNUM >= 10703
 	// Workaround: Control->FramesPerSecond() not possible because its not const
 	mReplayFramesPerSecond = mReplay != NULL ? mReplay->FramesPerSecond() : DEFAULTFRAMESPERSECOND;
-#else
-	mReplayFramesPerSecond = FRAMESPERSEC;
-#endif
 
 	if (mRender != NULL) {
 		if (mReplayMode != oldMode)
@@ -332,11 +328,7 @@ cxType cText2SkinStatus::GetTokenData(const txToken &Token)
 
 	case tReplayDateTime:
 		return mReplay != NULL
-#if APIVERSNUM >= 10721
 		       ? (cxType)TimeType(mReplay->Start(), Token.Attrib.Text)
-#else
-		       ? (cxType)TimeType(mReplay->start, Token.Attrib.Text)
-#endif
 		       : (cxType)false;
 
 	case tReplayShortText:

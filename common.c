@@ -145,38 +145,6 @@ const cRecording *GetRecordingByFileName(const char *FileName)
 #endif
 }
 
-#if VDRVERSNUM < 20000
-
-int GetFrontendSTR(void)
-{
-	uint16_t value = 0;
-	cString dev = cString::sprintf(FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
-
-	int fe = open(dev, O_RDONLY | O_NONBLOCK);
-	if (fe < 0)
-		return 0;
-	CHECK(ioctl(fe, FE_READ_SIGNAL_STRENGTH, &value));
-	close(fe);
-
-	return value / 655;
-}
-
-int GetFrontendSNR(void)
-{
-	uint16_t value = 0;
-	cString dev = cString::sprintf(FRONTEND_DEVICE, cDevice::ActualDevice()->CardIndex(), 0);
-
-	int fe = open(dev, O_RDONLY | O_NONBLOCK);
-	if (fe < 0)
-		return 0;
-	CHECK(ioctl(fe, FE_READ_SNR, &value));
-	close(fe);
-
-	return value / 655;
-}
-#endif
-
-#if VDRVERSNUM >= 20000
 int GetFrontendSTR(void)
 {
 	int SignalStrength = cDevice::ActualDevice()->SignalStrength();
@@ -194,7 +162,6 @@ int GetFrontendSNR(void)
 
 	return SignalQuality;
 }
-#endif
 
 bool GetFrontendHasLock(void)
 {
@@ -334,29 +301,17 @@ int GetRecordingCuttedLength(const char *FileName, double FramesPerSecond, bool 
 	int totalLength = GetRecordingLength(FileName, FramesPerSecond, IsPesRecording);
 	const double diffIFrame = FramesPerSecond / 2; // approx. 1/2 sec.
 
-#if VDRVERSNUM >= 10703
 	marks.Load(FileName, FramesPerSecond, IsPesRecording);
-#else
-	marks.Load(FileName);
-#endif
 
 	if (marks.Count()) {
 		int start = 1; // first frame
 		bool isStart = true;
 
-#if APIVERSNUM >= 10721
 		for (cMark *m = marks.First(); m; m = marks.GetNext(m->Position())) {
 			if (isStart)
 			        start = m->Position();
 			else
 				length += (double)(m->Position() - start + 1 + diffIFrame) / (60 * FramesPerSecond); // [min]
-#else
-		for (cMark *m = marks.First(); m; m = marks.GetNext(m->position)) {
-			if (isStart)
-				start = m->position;
-			else
-				length += (double)(m->position - start + 1 + diffIFrame) / (60 * FramesPerSecond); // [min]
-#endif
 
 			isStart = !isStart;
 		}
