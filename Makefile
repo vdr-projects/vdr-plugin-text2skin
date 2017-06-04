@@ -45,6 +45,15 @@ TMPDIR = /tmp
 
 -include $(VDRDIR)/Make.config
 
+# Output control
+
+ifdef VERBOSE
+Q =
+else
+Q = @
+endif
+export Q
+
 ### The version number of VDR's plugin API (taken from VDR's "config.h"):
 
 APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' \
@@ -103,7 +112,7 @@ all: libvdr-$(PLUGIN).so i18n
 
 %.o: %.c
 	@echo CC $@
-	@$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
+	$(Q)$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
 
 ### Dependencies:
 
@@ -123,17 +132,17 @@ I18Npot   = $(PODIR)/$(PLUGIN).pot
 
 $(I18Npot): $(wildcard *.c)
 	@echo GT $@
-	@xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) --msgid-bugs-address=http://projects.vdr-developer.org/projects/show/plg-text2skin -o $@ $^
+	$(Q)xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) --msgid-bugs-address=http://projects.vdr-developer.org/projects/show/plg-text2skin -o $@ $^
 
 %.po: $(I18Npot)
 	@echo PO $@
-	@msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
+	$(Q)msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
 	@touch $@
 
 $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.po
 	@mkdir -p $(dir $@)
 	@echo MO $@
-	@msgfmt -c -o $@ $<
+	$(Q)msgfmt -c -o $@ $<
 
 .PHONY: i18n
 i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo)
@@ -142,10 +151,10 @@ i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo)
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	@echo LD $@
-	@$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@echo IN $@ $(LIBDIR)/$@.$(APIVERSION)
-	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
-	$(STRIP) $(LIBDIR)/$@.$(APIVERSION)
+	$(Q)cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
+	$(Q)$(STRIP) $(LIBDIR)/$@.$(APIVERSION)
 
 dist: $(addprefix $(PODIR)/,$(I18Npo)) clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
