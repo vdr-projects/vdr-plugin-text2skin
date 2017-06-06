@@ -45,15 +45,6 @@ TMPDIR = /tmp
 
 -include $(VDRDIR)/Make.config
 
-# Output control
-
-ifdef VERBOSE
-Q =
-else
-Q = @
-endif
-export Q
-
 ### The version number of VDR's plugin API (taken from VDR's "config.h"):
 
 APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' \
