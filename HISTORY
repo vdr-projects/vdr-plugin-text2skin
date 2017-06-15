@@ -3,6 +3,10 @@ VDR Plugin 'text2skin' Revision History
 
 20xx-xx-xx: Version x.x.x
 
+- Drop legacy code prio VDR 2.2.0
+- Replace readdir_r as it is marked DEPRECATED from glibc 2.2.4
+- Adopt verbosity settings in Makefile form VDR 2.3.5/2.3.6
+
 2017-05-29: Version 1.3.4
 
 - Add compatibility for VDR API >= 2.3.1.
