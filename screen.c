@@ -26,12 +26,8 @@ eOsdError cText2SkinScreen::SetAreas(const tArea *Areas, int NumAreas)
 	}
 
 	mNumRegions = NumAreas;
-//#ifndef DIRECTBLIT
-	if (!Text2SkinSetup.SupportOldSkins) {
-		for (int i = 0; i < mNumRegions; ++i)
-			mRegions[i] = new cBitmap(Areas[i].Width(), Areas[i].Height(), Areas[i].bpp, Areas[i].x1, Areas[i].y1);
-	}
-//#endif
+	for (int i = 0; i < mNumRegions; ++i)
+		mRegions[i] = new cBitmap(Areas[i].Width(), Areas[i].Height(), Areas[i].bpp, Areas[i].x1, Areas[i].y1);
 	Clear();
 
 	return oeOk;
@@ -40,98 +36,42 @@ eOsdError cText2SkinScreen::SetAreas(const tArea *Areas, int NumAreas)
 void cText2SkinScreen::Clear(void)
 {
 	for (int i = 0; i < mNumRegions; ++i) {
-//#ifndef DIRECTBLIT
-		if (!Text2SkinSetup.SupportOldSkins) {
-			mRegions[i]->Reset();
-			mRegions[i]->Clean();
-			mRegions[i]->DrawRectangle(mRegions[i]->X0(), mRegions[i]->Y0(), mRegions[i]->X0() + mRegions[i]->Width() - 1, mRegions[i]->Y0() + mRegions[i]->Height() - 1, clrTransparent);
-		}
-		else {
-//#else
-		cBitmap *b = mOsd->GetBitmap(i);
-			if (b) {
-				b->Reset();
-				b->Clean();
-				b->DrawRectangle(b->X0(), b->Y0(), b->X0() + b->Width() - 1, b->Y0() + b->Height() - 1, clrTransparent);
-			}
-		}
-//#endif
+		mRegions[i]->Reset();
+		mRegions[i]->Clean();
+		mRegions[i]->DrawRectangle(mRegions[i]->X0(), mRegions[i]->Y0(), mRegions[i]->X0() + mRegions[i]->Width() - 1, mRegions[i]->Y0() + mRegions[i]->Height() - 1, clrTransparent);
 	}
 }
 
 void cText2SkinScreen::DrawBitmap(int x, int y, const cBitmap &Bitmap, const tColor *ColorMask)
 {
-//#ifndef DIRECTBLIT
-	if (!Text2SkinSetup.SupportOldSkins) {
-		for (int i = 0; i < mNumRegions; ++i)
-			DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorMask);
-			//mRegions[i]->DrawBitmap(x, y, Bitmap);
-	}
-	else {
-//#else
-	// mOsd->DrawBitmap(x, y, Bitmap, ColorFg, ColorBg);
-	cBitmap *bm = NULL;
-	for (int i = 0; (bm = mOsd->GetBitmap(i)) != NULL; ++i)
-		DrawBitmapOverlay(*bm, x, y, (cBitmap&)Bitmap, ColorMask);
-	}
-//#endif
+	for (int i = 0; i < mNumRegions; ++i)
+		//DrawBitmapOverlay(*mRegions[i], x, y, (cBitmap&)Bitmap, ColorMask);
+		mRegions[i]->DrawBitmap(x, y, Bitmap);
 }
 
 void cText2SkinScreen::DrawRectangle(int x1, int y1, int x2, int y2, tColor Color)
 {
-//#ifndef DIRECTBLIT
-	if (!Text2SkinSetup.SupportOldSkins) {
-		for (int i = 0; i < mNumRegions; ++i)
-			mRegions[i]->DrawRectangle(x1, y1, x2, y2, Color);
-	}
-	else {
-//#else
-	mOsd->DrawRectangle(x1, y1, x2, y2, Color);
-	}
-//#endif
+	for (int i = 0; i < mNumRegions; ++i)
+		mRegions[i]->DrawRectangle(x1, y1, x2, y2, Color);
 }
 
 void cText2SkinScreen::DrawText(int x, int y, const char *s, tColor ColorFg, tColor ColorBg,
                                 const cFont *Font, int Width, int Height, int Alignment)
 {
-//#ifndef DIRECTBLIT
-	if (!Text2SkinSetup.SupportOldSkins) {
-		for (int i = 0; i < mNumRegions; ++i)
-			mRegions[i]->DrawText(x, y, s, ColorFg, ColorBg, Font, Width, Height, Alignment);
-	}
-	else {
-//#else
-		mOsd->DrawText(x, y, s, ColorFg, ColorBg, Font, Width, Height, Alignment);
-	}
-//#endif
+	for (int i = 0; i < mNumRegions; ++i)
+		mRegions[i]->DrawText(x, y, s, ColorFg, ColorBg, Font, Width, Height, Alignment);
 }
 
 void cText2SkinScreen::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quadrants)
 {
-//#ifndef DIRECTBLIT
-	if (!Text2SkinSetup.SupportOldSkins) {
-		for (int i = 0; i < mNumRegions; ++i)
-			mRegions[i]->DrawEllipse(x1, y1, x2, y2, Color, Quadrants);
-	}
-	else {
-//#else
-		mOsd->DrawEllipse(x1, y1, x2, y2, Color, Quadrants);
-	}
-//#endif
+	for (int i = 0; i < mNumRegions; ++i)
+		mRegions[i]->DrawEllipse(x1, y1, x2, y2, Color, Quadrants);
 }
 
 void cText2SkinScreen::DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type)
 {
-//#ifndef DIRECTBLIT
-	if (!Text2SkinSetup.SupportOldSkins) {
-		for (int i = 0; i < mNumRegions; ++i)
-			mRegions[i]->DrawSlope(x1, y1, x2, y2, Color, Type);
-	}
-	else {
-//#else
-		mOsd->DrawSlope(x1, y1, x2, y2, Color, Type);
-	}
-//#endif
+	for (int i = 0; i < mNumRegions; ++i)
+		mRegions[i]->DrawSlope(x1, y1, x2, y2, Color, Type);
 }
 
 void cText2SkinScreen::Flush(void)
@@ -139,20 +79,8 @@ void cText2SkinScreen::Flush(void)
 	for (int i = 0; i < mNumRegions; ++i) {
 		if (mOffScreen)
 			mScreen->DrawBitmap(mRegions[i]->X0(), mRegions[i]->Y0(), *mRegions[i]);
-//#ifndef DIRECTBLIT
-//		else
-		if (!Text2SkinSetup.SupportOldSkins)
-			mOsd->DrawBitmap(mRegions[i]->X0(), mRegions[i]->Y0(), *mRegions[i]);
-//#endif
+		mOsd->DrawBitmap(mRegions[i]->X0(), mRegions[i]->Y0(), *mRegions[i]);
 	}
-#ifdef BENCH
-	int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-	cBitmap *bm;
-	for (int j = 0; (bm = mOsd->GetBitmap(j)) != NULL; j++)
-		if (bm->Dirty(x1, y1, x2, y2))
-			fprintf(stderr, "Flush dirty screen area %2i: x1=%3i x2=%3i y1=%3i y2=%3i\n",
-				j, x1, x2, y1, y2);
-#endif
 	if (!mOffScreen)
 		mOsd->Flush();
 }

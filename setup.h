@@ -20,7 +20,6 @@ public:
 	int MaxCacheFill;
 	int MaxChars;
 	int TabWidth;
-	int SupportOldSkins;
 };
 
 extern cText2SkinSetup Text2SkinSetup;

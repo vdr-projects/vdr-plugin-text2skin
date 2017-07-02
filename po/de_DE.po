@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: vdr-text2skin 1.3\n"
 "Report-Msgid-Bugs-To: http://projects.vdr-developer.org/projects/show/plg-text2skin\n"
 "POT-Creation-Date: 2017-05-26 15:00+0200\n"
-"PO-Revision-Date: 2017-05-26 15:00+0200\n"
+"PO-Revision-Date: 2017-06-15 15:00+0200\n"
 "Last-Translator: Frank Neumann <fnu@yavdr.org>\n"
 "Language-Team: German <vdr@linuxtv.org>\n"
 "Language: de\n"
@@ -72,9 +72,6 @@ msgstr "schmal"
 
 msgid "wide"
 msgstr "breit"
-
-msgid "Old Skin compatibility (<1.0)"
-msgstr "Unterstützung alter Skins (<1.0)"
 
 msgid "Flushing image cache..."
 msgstr "Bildspeicher wird geleert..."

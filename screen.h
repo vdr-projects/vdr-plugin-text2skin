@@ -7,9 +7,6 @@
 #include "setup.h"
 #include <vdr/osd.h>
 
-// #undef DIRECTBLIT
-//#define DIRECTBLIT
-
 class cText2SkinScreen {
 	/* Skin Editor */
 	friend class VSkinnerScreen;
